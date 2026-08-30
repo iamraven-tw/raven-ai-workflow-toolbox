@@ -31,4 +31,14 @@
 4. 驗證 manifest、技能 frontmatter、Markdown fence 與所有必要來源路徑。
 5. 在乾淨的暫存工作區測試 template 初始化；不得用真實案例資料測試公開安裝。
 
+## 本機同步 manifest
+
+維護者可以用被 Git 忽略的 `.local/sync-manifest.toml` 記錄通用核心、發行副本與私人實際案例的本機關係。可提交規則只能要求「若 manifest 存在就讀取與驗證」；實際路徑、同步狀態與備份不得進入公開 repository。
+
+- `status` 與 `verify` 必須只讀。
+- 兩邊同時修改且內容不同時停止。
+- 同步只處理去識別化的共用白名單，排除實際 `sources/`、帳號與工具登入資料。
+- 實際案例可用 symlink 讀取通用技能，但公開發行副本必須包含完整實體檔案。
+- 本機內容同步、Git commit、push 與發布是不同動作。
+
 同步本機檔案不代表 commit、push、建立遠端 repository 或發布；對外動作仍須獨立核准。
