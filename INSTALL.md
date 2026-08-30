@@ -25,7 +25,7 @@ flowchart TD
 
 ## Agent 執行規則
 
-1. 先讀取 `docs/installation.md` 與 `docs/providers.md`。
+1. 先讀取 `docs/installation.md`、`docs/client-compatibility.md` 與 `docs/providers.md`。
 2. 技能清單、來源路徑、安裝範圍、provider 版本與順序，一律來自 `install.manifest.toml`。
 3. 下載、安裝、覆蓋既有工具或開啟登入流程前，先取得使用者同意。
 4. 預設使用套件管理器安裝正式發行版，不 clone 上游 repository。
