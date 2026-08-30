@@ -28,8 +28,8 @@
 | 用戶端與版本 | 驗證方式 | 結果 | 限制 |
 |---|---|---|---|
 | Codex CLI `0.144.1` | 從通用核心、Toolbox mirror 與 runtime consumer 三種角色啟動，唯讀檢查實際 prompt 輸入 | 三處都載入共用同步契約；技能名稱與描述可見 | 未在這一步執行技能本體或外部 Provider |
-| Claude Code `2.1.206` | 從三種角色執行 `/context`，停用工具與持久工作階段 | 三處都載入 `CLAUDE.md`，並由它匯入 `AGENTS.md`；測試為零回合、零模型費用 | 此環境未提供 `/skills` 指令，因此技能發現另由檔案入口與後續啟動測試確認 |
-| Antigravity Desktop `2.11.0` | 把三種角色各自加入為桌面專案，以不使用工具的問題詢問啟動規則 | 三處都只回答共用 manifest 相對路徑 `.local/sync-manifest.toml` | 只驗證桌面版專案規則；未執行檔案修改 |
+| Claude Code `2.1.206` | 從三種角色執行 `/context`，並在 runtime consumer 啟動除錯掃描 | 三處都載入 `CLAUDE.md`，並由它匯入 `AGENTS.md`；兩層 symlink 後仍從 `.claude/skills` 載入 project skills | 模型回覆測試遇到本機 OAuth 到期而未執行；規則與技能掃描本身為零模型費用 |
+| Antigravity Desktop `2.11.0` | 把三種角色各自加入為桌面專案，以不使用工具的問題詢問啟動規則與技能清單 | 三處都回答共用 manifest 相對路徑；runtime consumer 另精確列出四個 symlink 共用技能 | 只驗證桌面版規則與技能發現；未執行檔案修改 |
 | Antigravity CLI `1.1.22` | 從相同目錄執行 `/skills` 與最小模型提示 | 未載入 workspace 規則或 workspace skills | 目前視為命令列版已知限制；不要用此結果否定已通過的 Antigravity Desktop 驗證 |
 
 ## 驗收方式
@@ -43,3 +43,15 @@
 5. 驗證過程不得修改知識內容、上傳資料、安裝 Provider 或把私人路徑寫入公開 repository。
 
 Antigravity CLI 更新後應重新測試 workspace rules 與 workspace skills；只有實際通過後，才能移除上表的已知限制。
+
+## Runtime symlink 驗證
+
+私人實際案例不改寫原始技能資料夾，而是讓三個用戶端入口共同指向一個被 Git 忽略的 runtime 技能農場：
+
+1. 共用知識庫技能各自連到 canonical 的 `skills/<name>/`。
+2. 案例專用技能各自連回 runtime consumer 原本的技能資料夾。
+3. Codex 的實際 prompt 輸入會顯示共用技能來自 canonical、案例技能來自 runtime consumer。
+4. Claude Code 啟動掃描能沿 `.claude/skills` symlink 載入 project skills。
+5. Antigravity Desktop 的全新專案對話能列出 `book-notes`、`knowledge-source-retrieval`、`socratic-dialogue` 與 `solopreneur-profile`。
+
+這個結果不代表所有作業系統都支援相同的 symlink 行為。公開套件本身仍必須保存完整實體檔案；symlink 只用於維護者或進階使用者自行設定的本機 runtime。
