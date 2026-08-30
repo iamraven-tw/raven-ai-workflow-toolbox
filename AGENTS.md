@@ -22,6 +22,9 @@
 
 ## 實際案例與公開核心的同步
 
+- 如果本機存在 `.local/sync-manifest.toml`，修改共用技能、schema、Provider 契約、安裝或驗證流程前先讀取，辨識 canonical、mirror、runtime consumer 與排除範圍；完成前執行 manifest 指定的一致性檢查。
+- 本機 manifest、同步狀態、備份與私人路徑只放在 `.local/`，不得提交。
+- 兩邊都在上次同步後修改且內容不同時停止，不自動選邊覆寫。
 - `template/sources/` 定義公開版的共用知識庫骨架；實際案例的 `sources/` 必須維持相同的核心目錄與 schema，但可以加入案例專用擴充。
 - 實際案例若驗證出技能、工作流程、資料結構、模板、Provider 介面或安裝方式的通用改進，先去識別化與參數化，再回饋本專案。
 - 不得從實際案例複製讀書筆記、專案專用規則、Notebook 紀錄、研究資料、Graphify 產物、帳號資訊、私人路徑或未公開內容。
