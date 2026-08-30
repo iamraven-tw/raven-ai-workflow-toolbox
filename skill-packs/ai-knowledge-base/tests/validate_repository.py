@@ -94,6 +94,21 @@ def validate_workspace_template(manifest: dict) -> None:
     if "status: not_configured" not in profile_text:
         raise ValidationError("公開一人公司設定範本必須保持 not_configured")
 
+    validate_client_instruction_files(template_root, "工作區範本")
+
+
+def validate_client_instruction_files(root: Path, label: str) -> None:
+    """確認 Codex、Claude 與 Antigravity 都能載入同一份專案規則。"""
+
+    agents = root / "AGENTS.md"
+    claude = root / "CLAUDE.md"
+    if not agents.is_file():
+        raise ValidationError(f"{label} 缺少 AGENTS.md：{agents}")
+    if not claude.is_file():
+        raise ValidationError(f"{label} 缺少 CLAUDE.md：{claude}")
+    if "@AGENTS.md" not in claude.read_text(encoding="utf-8"):
+        raise ValidationError(f"{label} 的 CLAUDE.md 未匯入 AGENTS.md：{claude}")
+
 
 def iter_public_text_files() -> list[Path]:
     """列出需要驗證的公開文字檔，排除 Git 與本機暫存。"""
@@ -157,7 +172,8 @@ def validate_no_public_symlinks() -> None:
     symlinks = [
         path
         for path in ROOT.rglob("*")
-        if path.is_symlink() and ".git" not in path.relative_to(ROOT).parts
+        if path.is_symlink()
+        and not {".git", ".local"}.intersection(path.relative_to(ROOT).parts)
     ]
     if symlinks:
         raise ValidationError(f"公開核心含 symlink：{symlinks}")
@@ -169,6 +185,7 @@ def main() -> int:
     try:
         manifest = read_manifest()
         validate_manifest_and_skills(manifest)
+        validate_client_instruction_files(ROOT, "repository 根目錄")
         validate_workspace_template(manifest)
         files = iter_public_text_files()
         validate_markdown_fences(files)
