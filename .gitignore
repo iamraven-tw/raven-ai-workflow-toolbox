@@ -1,0 +1,17 @@
+.DS_Store
+.local/
+__pycache__/
+*.pyc
+
+# 本機環境與秘密
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+storage_state.json
+
+# 工具暫存
+.cache/
+.tmp/
+tmp/
