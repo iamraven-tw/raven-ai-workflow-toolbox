@@ -151,6 +151,7 @@ My Real Second Brain/
 ├── CLAUDE.md
 ├── docs/
 │   ├── architecture.md
+│   ├── client-compatibility.md
 │   ├── development-workflow.md
 │   ├── installation.md
 │   ├── providers.md
@@ -195,6 +196,8 @@ AI Agent 會：
 7. 驗證工作區、版本、技能與遠端存取，留下不含憑證的本機狀態。
 
 完整流程請見 `INSTALL.md`。第一次安裝需要網路，但使用者不必另行造訪兩個上游倉庫。
+
+三種目標用戶端的規則入口、已驗證版本與已知限制，請見 `docs/client-compatibility.md`。
 
 `install.manifest.toml` 是機器可讀的單一安裝入口，明確列出五個必要技能、來源路徑、預設範圍、provider 固定版本，以及安裝與驗證順序。
 
