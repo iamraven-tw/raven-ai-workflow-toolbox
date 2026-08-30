@@ -1,0 +1,7 @@
+graphify-out/
+wiki/
+references/notebooks/
+.DS_Store
+**/.DS_Store
+**/*.tmp
+**/*.bak

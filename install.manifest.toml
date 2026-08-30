@@ -1,0 +1,191 @@
+schema_version = 1
+manifest_type = "my-real-second-brain-install"
+project_id = "my-real-second-brain"
+display_name = "My Real Second Brain"
+entrypoint = "INSTALL.md"
+checked_on = "2026-08-30"
+requires_network = true
+
+[defaults]
+self_skill_scope = "user"
+provider_skill_scope = "project"
+skill_target = "agents"
+package_manager = "uv"
+conflict_policy = "stop_and_ask"
+
+[workspace]
+template_path = "template"
+sources_template_path = "template/sources"
+target = "user_selected_project"
+copy_policy = "merge_missing_stop_on_conflict"
+required_directories = [
+  "sources/strategy",
+  "sources/book-notes",
+  "sources/references/notebooks/entries",
+  "sources/wiki",
+  "sources/graphify-out",
+]
+
+[[skills]]
+id = "my-real-second-brain-setup"
+source_path = "skills/my-real-second-brain-setup"
+required = true
+install_scope = "user"
+install_order = 30
+
+[[skills]]
+id = "solopreneur-profile"
+source_path = "skills/solopreneur-profile"
+required = true
+install_scope = "user"
+install_order = 31
+
+[[skills]]
+id = "book-notes"
+source_path = "skills/book-notes"
+required = true
+install_scope = "user"
+install_order = 32
+
+[[skills]]
+id = "knowledge-source-retrieval"
+source_path = "skills/knowledge-source-retrieval"
+required = true
+install_scope = "user"
+install_order = 33
+
+[[skills]]
+id = "socratic-dialogue"
+source_path = "skills/socratic-dialogue"
+required = true
+install_scope = "user"
+install_order = 34
+
+[[providers]]
+id = "graphify"
+role = "knowledge_structure"
+package = "graphifyy"
+version = "0.9.35"
+package_spec = "graphifyy==0.9.35"
+source = "https://pypi.org/project/graphifyy/"
+upstream = "https://github.com/Graphify-Labs/graphify"
+install_method = "uv_tool"
+install_order = 40
+skill_install_order = 50
+skill_install_scope = "project"
+skill_install_template = "graphify install --project --platform {agent_platform}"
+verify_commands = ["graphify --version"]
+replaceable = true
+
+[[providers]]
+id = "notebook"
+role = "grounded_retrieval"
+package = "notebooklm-py"
+version = "0.8.0"
+extras = ["browser"]
+package_spec = "notebooklm-py[browser]==0.8.0"
+source = "https://pypi.org/project/notebooklm-py/"
+upstream = "https://github.com/teng-lin/notebooklm-py"
+install_method = "uv_tool"
+install_order = 41
+skill_install_order = 51
+skill_install_scope = "project"
+skill_install_template = "notebooklm skill install --scope project --target {skill_target}"
+verify_commands = ["notebooklm --version", "notebooklm auth check --test --json"]
+requires_user_login = true
+replaceable = true
+unofficial_api = true
+
+[[install_steps]]
+order = 10
+id = "read_instructions"
+action = "read"
+inputs = ["AGENTS.md", "INSTALL.md", "install.manifest.toml", "docs/installation.md", "docs/providers.md"]
+requires_confirmation = false
+
+[[install_steps]]
+order = 20
+id = "inspect_environment"
+action = "preflight"
+requires_confirmation = false
+
+[[install_steps]]
+order = 25
+id = "confirm_changes"
+action = "approval_gate"
+requires_confirmation = true
+
+[[install_steps]]
+order = 30
+id = "install_self_skills"
+action = "install_skills"
+source = "skills"
+scope_from = "defaults.self_skill_scope"
+requires_confirmation = true
+
+[[install_steps]]
+order = 35
+id = "initialize_workspace"
+action = "merge_template"
+source = "workspace.template_path"
+target_from = "workspace.target"
+conflict_policy_from = "workspace.copy_policy"
+requires_confirmation = true
+
+[[install_steps]]
+order = 40
+id = "install_provider_packages"
+action = "install_providers"
+source = "providers"
+requires_confirmation = true
+
+[[install_steps]]
+order = 50
+id = "install_provider_skills"
+action = "install_provider_skills"
+scope_from = "defaults.provider_skill_scope"
+requires_confirmation = true
+
+[[install_steps]]
+order = 60
+id = "user_login"
+action = "interactive_login"
+provider = "notebook"
+performed_by = "user"
+requires_confirmation = true
+
+[[install_steps]]
+order = 70
+id = "verify_installation"
+action = "verify"
+requires_confirmation = false
+
+[[verification_steps]]
+order = 10
+id = "verify_self_skills"
+checks = ["all_required_skill_paths_exist", "frontmatter_name_matches_skill_id"]
+
+[[verification_steps]]
+order = 15
+id = "verify_workspace"
+checks = ["all_required_workspace_directories_exist", "existing_user_files_not_overwritten", "workspace_instructions_exist"]
+
+[[verification_steps]]
+order = 20
+id = "verify_provider_versions"
+checks = ["installed_provider_versions_match_manifest"]
+
+[[verification_steps]]
+order = 30
+id = "verify_provider_skills"
+checks = ["provider_skills_exist_in_selected_project_scope"]
+
+[[verification_steps]]
+order = 40
+id = "verify_notebook_access"
+checks = ["auth_status_ok", "token_fetch_true", "notebook_list_returns_json"]
+
+[[verification_steps]]
+order = 50
+id = "write_local_state"
+checks = ["state_contains_no_credentials", "state_is_gitignored"]
