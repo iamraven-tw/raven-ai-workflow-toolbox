@@ -13,6 +13,7 @@
 - `status`、`plan` 與 `verify` 只讀，不修改檔案。
 - `record` 只有兩邊完全一致時才建立本機基準。
 - `sync` 預設只顯示預覽；必須加上 `--apply` 才會寫入。
+- `runtime-link` 預設只預覽技能入口；必須加上 `--apply` 才會建立或替換 symlink。
 - 寫入前備份所有將被覆寫或刪除的目標檔案。
 - 兩邊都在上次基準後修改且內容不同時回報 `conflict`，不自動選邊。
 - manifest 的 `exclude_roots` 必須排除實際資料、秘密、登入狀態與工具暫存。
@@ -36,6 +37,18 @@ python3 tools/knowledge_base_sync.py \
   --manifest .local/sync-manifest.toml record
 ```
 
+啟用 manifest 的 `[runtime]` 後，先預覽技能農場。共用技能會指向 canonical；`local_skills_dir` 中其他含 `SKILL.md` 的技能仍指向私人工作區原本的技能資料夾：
+
+```bash
+python3 tools/knowledge_base_sync.py \
+  --manifest .local/sync-manifest.toml runtime-link
+
+python3 tools/knowledge_base_sync.py \
+  --manifest .local/sync-manifest.toml runtime-link --apply
+```
+
+工具只管理 runtime 技能農場與 `client_links`；不會刪除或改寫 `local_skills_dir` 中的原始技能。若預定位置已有實體檔案或目錄，工具會停止，不會覆寫。
+
 只有人工或 AI 已確認正確方向時才同步：
 
 ```bash
@@ -58,4 +71,5 @@ AI 從 canonical、mirror 或 runtime consumer 任一位置開始工作時：
 2. 發現 `.local/sync-manifest.toml` 後讀取角色與排除範圍。
 3. 共用能力優先修改 canonical；若已在 mirror 發生修改，先檢查狀態再回饋 canonical。
 4. runtime consumer 的個案設定與實際資料只留在私人工作區。
-5. 完成前執行 `verify`，不得把「只改了一邊」宣稱為完成。
+5. runtime 新增或移除私人技能後重新執行 `runtime-link --apply`，讓三種用戶端看到相同技能清單。
+6. 完成前執行 `verify`，不得把「只改了一邊」宣稱為完成。

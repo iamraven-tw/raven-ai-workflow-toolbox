@@ -250,36 +250,196 @@ def write_state(config: PackageConfig, status: dict[str, Any]) -> None:
     )
 
 
-def runtime_errors(config: PackageConfig) -> list[str]:
-    """驗證 newsletter 等本機執行層的 symlink。"""
+def runtime_relative_path(root: Path, value: str, field: str) -> Path:
+    """把 runtime 相對路徑限制在私人工作區內。"""
+
+    relative = Path(value)
+    if relative.is_absolute() or ".." in relative.parts or not relative.parts:
+        raise SyncError(f"{field} 必須是工作區內的相對路徑：{value}")
+    candidate = root / relative
+    if candidate == root or root not in candidate.parents:
+        raise SyncError(f"{field} 超出 runtime.root：{value}")
+    return candidate
+
+
+def expected_runtime_links(
+    config: PackageConfig,
+) -> tuple[Path, Path, dict[Path, Path], dict[Path, Path]]:
+    """建立 runtime 技能農場與三種用戶端入口的預期連結。"""
 
     runtime = config.runtime
     if not runtime.get("enabled"):
-        return []
+        raise SyncError("runtime 尚未啟用")
 
     root = Path(runtime["root"]).resolve()
     validate_scoped_root(root, "runtime.root")
-    skills_dir = (root / runtime["skills_dir"]).resolve()
+    skills_dir = runtime_relative_path(
+        root,
+        runtime["skills_dir"],
+        "runtime.skills_dir",
+    )
+    local_skills_dir = runtime_relative_path(
+        root,
+        runtime.get("local_skills_dir", "skills"),
+        "runtime.local_skills_dir",
+    )
+    if not local_skills_dir.is_dir():
+        raise SyncError(f"runtime 私人技能目錄不存在：{local_skills_dir}")
+
+    skill_links: dict[Path, Path] = {}
+    for skill in config.shared_skills:
+        target = config.canonical_root / "skills" / skill
+        if not (target / "SKILL.md").is_file():
+            raise SyncError(f"canonical 缺少共用技能：{target}")
+        skill_links[skills_dir / skill] = target.resolve()
+
+    for target in sorted(local_skills_dir.iterdir(), key=lambda path: path.name):
+        if target.name in config.shared_skills:
+            continue
+        if target.name in config.exclude_names or not (target / "SKILL.md").is_file():
+            continue
+        skill_links[skills_dir / target.name] = target.resolve()
+
+    client_links: dict[Path, Path] = {}
+    for value in runtime.get("client_links", []):
+        link = runtime_relative_path(root, value, "runtime.client_links")
+        client_links[link] = skills_dir
+
+    return root, skills_dir, skill_links, client_links
+
+
+def runtime_errors(config: PackageConfig) -> list[str]:
+    """驗證 newsletter 等本機執行層的 symlink。"""
+
+    if not config.runtime.get("enabled"):
+        return []
+
+    _, skills_dir, skill_links, client_links = expected_runtime_links(config)
     errors: list[str] = []
 
-    for skill in config.shared_skills:
-        link = root / runtime["skills_dir"] / skill
-        expected = (config.canonical_root / "skills" / skill).resolve()
+    if skills_dir.is_symlink() or not skills_dir.is_dir():
+        errors.append(f"runtime 技能農場不是實體目錄：{skills_dir}")
+        return errors
+
+    for link, expected in skill_links.items():
         if not link.is_symlink():
             errors.append(f"缺少技能 symlink：{link}")
             continue
         if link.resolve() != expected:
             errors.append(f"技能 symlink 指向錯誤：{link} -> {link.resolve()}")
 
-    for relative in runtime.get("client_links", []):
-        link = root / relative
+    expected_names = {path.name for path in skill_links}
+    for path in skills_dir.iterdir():
+        if path.name in config.exclude_names:
+            continue
+        if path.name not in expected_names:
+            errors.append(f"runtime 技能農場含未管理項目：{path}")
+
+    for link, expected in client_links.items():
         if not link.is_symlink():
             errors.append(f"缺少用戶端技能入口：{link}")
             continue
-        if link.resolve() != skills_dir:
+        if link.resolve() != expected.resolve():
             errors.append(f"用戶端技能入口指向錯誤：{link} -> {link.resolve()}")
 
     return errors
+
+
+def runtime_link_actions(config: PackageConfig) -> tuple[Path, list[dict[str, str]]]:
+    """規劃建立 runtime 技能農場所需的最小 symlink 動作。"""
+
+    root, skills_dir, skill_links, client_links = expected_runtime_links(config)
+    actions: list[dict[str, str]] = []
+
+    if skills_dir.is_symlink():
+        raise SyncError(f"runtime 技能農場不得是 symlink：{skills_dir}")
+    if skills_dir.exists() and not skills_dir.is_dir():
+        raise SyncError(f"runtime 技能農場位置已有非目錄項目：{skills_dir}")
+    if not skills_dir.exists():
+        actions.append(
+            {
+                "action": "mkdir",
+                "path": skills_dir.relative_to(root).as_posix(),
+            }
+        )
+
+    expected_names = {path.name for path in skill_links}
+    if skills_dir.is_dir():
+        for path in sorted(skills_dir.iterdir(), key=lambda item: item.name):
+            if path.name in config.exclude_names or path.name in expected_names:
+                continue
+            if not path.is_symlink():
+                raise SyncError(f"不覆寫 runtime 技能農場內的實體項目：{path}")
+            actions.append(
+                {
+                    "action": "delete",
+                    "path": path.relative_to(root).as_posix(),
+                }
+            )
+
+    for link, target in [*skill_links.items(), *client_links.items()]:
+        if link.is_symlink() and link.resolve() == target.resolve():
+            continue
+        if link.exists() and not link.is_symlink():
+            raise SyncError(f"不覆寫既有實體項目：{link}")
+        actions.append(
+            {
+                "action": "replace" if link.is_symlink() else "create",
+                "path": link.relative_to(root).as_posix(),
+                "target": str(target.resolve()),
+            }
+        )
+
+    return root, actions
+
+
+def configure_runtime_links(
+    config: PackageConfig,
+    apply_changes: bool,
+) -> dict[str, Any]:
+    """預覽或套用 runtime 技能農場，不修改原始技能資料夾。"""
+
+    root, actions = runtime_link_actions(config)
+    result: dict[str, Any] = {
+        "package": config.package_id,
+        "applied": apply_changes,
+        "action_count": len(actions),
+        "actions": actions,
+    }
+    if not apply_changes or not actions:
+        return result
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    backup_dir = config.backup_root / f"{timestamp}-runtime-links"
+    backup_dir.mkdir(parents=True, exist_ok=False)
+
+    for action in actions:
+        path = root / action["path"]
+        ensure_inside(root, path)
+        if action["action"] == "mkdir":
+            path.mkdir(parents=True, exist_ok=False)
+            continue
+
+        backup_existing(path, root, backup_dir)
+        if path.is_symlink():
+            path.unlink()
+        if action["action"] == "delete":
+            continue
+
+        path.parent.mkdir(parents=True, exist_ok=True)
+        target = Path(action["target"])
+        relative_target = os.path.relpath(target, start=path.parent)
+        path.symlink_to(relative_target, target_is_directory=True)
+
+    (backup_dir / "runtime-actions.json").write_text(
+        json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    errors = runtime_errors(config)
+    if errors:
+        raise SyncError("runtime 連結套用後驗證失敗：" + "；".join(errors))
+    result["backup_dir"] = str(backup_dir)
+    return result
 
 
 def print_result(payload: dict[str, Any], json_output: bool) -> None:
@@ -431,6 +591,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("plan")
     subparsers.add_parser("verify")
     subparsers.add_parser("record")
+    runtime_link = subparsers.add_parser("runtime-link")
+    runtime_link.add_argument("--apply", action="store_true")
     sync = subparsers.add_parser("sync")
     sync.add_argument("--from", choices=("canonical", "mirror"), required=True)
     sync.add_argument("--apply", action="store_true")
@@ -472,6 +634,20 @@ def main() -> int:
         if args.command == "record":
             write_state(config, status)
             print("已記錄目前一致狀態。")
+            return 0
+
+        if args.command == "runtime-link":
+            result = configure_runtime_links(config, args.apply)
+            if args.json_output:
+                print(json.dumps(result, ensure_ascii=False, indent=2))
+            else:
+                mode = "已執行" if args.apply else "預覽"
+                print(f"{mode} {result['action_count']} 個 runtime 連結動作。")
+                for action in result["actions"]:
+                    suffix = f" -> {action['target']}" if action.get("target") else ""
+                    print(f"- {action['action']}: {action['path']}{suffix}")
+                if result.get("backup_dir"):
+                    print(f"backup: {result['backup_dir']}")
             return 0
 
         result = synchronize(config, getattr(args, "from"), args.apply)

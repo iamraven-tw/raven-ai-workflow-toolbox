@@ -13,7 +13,7 @@ AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計�
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於早期開發階段。AI 知識庫已收錄第一個完整套件並具備自己的安裝與 repository 驗證；三種目標用戶端的實際相容性仍在驗證。其餘四套技能包尚未完成，也尚未公開發布本 repository。
+> 本專案目前處於早期開發階段。AI 知識庫已收錄第一個完整套件；Codex、Claude Code 與 Antigravity Desktop 的專案規則及本機 symlink 技能入口已實測。全新環境安裝與 Provider 登入仍待端到端驗收。其餘四套技能包尚未完成，也尚未公開發布本 repository。
 
 ## 專案要解決的問題
 
@@ -37,7 +37,7 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 |---|---|---|
 | AI 剪片工作流 | 既有能力分散在 `video-use` 與內容製作技能中，待盤點與拆分 | 從素材盤點、轉錄、剪輯、字幕、動畫到最終品質檢查，建立可恢復且有人工確認點的完整流程 |
 | Google 工具自動化 | [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 已獨立公開；Google Cloud 工作流尚待設計 | 保留 Apps Script 初學者路線，補上 Workspace API、OAuth 與 Google Cloud 應用的實際案例 |
-| AI 知識庫 | 已收錄完整的 `skill-packs/ai-knowledge-base/`，跨用戶端驗證進行中 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
+| AI 知識庫 | 已收錄完整套件並通過三種用戶端的規則與本機技能入口驗證；全新安裝仍待驗收 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
 | 社群媒體管理工作流 | 有個人化實驗與自動化經驗，但公開版本需要重新設計 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
 | 官網打造工作流 | 尚待設計 | 從商業目標、網站架構、文案與設計開始，完成開發、網域、部署、成效追蹤與後續維護 |
 
@@ -296,7 +296,7 @@ ai-workflow-toolbox/
 
 ## 安裝
 
-AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INSTALL.md) 與 `install.manifest.toml`。目前請只把它視為早期可驗證套件；完成 ChatGPT／Codex、Claude 與 Google Antigravity 的實際相容性測試後，才會標示為正式支援。
+AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INSTALL.md) 與 `install.manifest.toml`。三種目標用戶端的規則入口與本機技能發現結果見 [`docs/client-compatibility.md`](skill-packs/ai-knowledge-base/docs/client-compatibility.md)；目前仍應視為早期可驗證套件，待全新環境安裝、Provider、登入與實際技能流程完成端到端驗收後，才標示為正式支援。
 
 其餘四個技能包尚未提供安裝方式。
 

@@ -28,6 +28,7 @@ shared_skills = [
 enabled = false
 root = "/absolute/path/to/private-workspace"
 skills_dir = ".local/runtime-skills"
+local_skills_dir = "skills"
 client_links = [
   ".agents/skills",
   ".claude/skills",

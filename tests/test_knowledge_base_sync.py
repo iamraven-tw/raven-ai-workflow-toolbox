@@ -54,6 +54,7 @@ class KnowledgeBaseSyncTests(unittest.TestCase):
             enabled = {str(runtime_enabled).lower()}
             root = "{self.runtime}"
             skills_dir = ".local/runtime-skills"
+            local_skills_dir = "skills"
             client_links = [".agents/skills"]
             """
         )
@@ -174,24 +175,49 @@ class KnowledgeBaseSyncTests(unittest.TestCase):
         self.assertEqual(self.status_json()["difference_count"], 0)
 
     def test_runtime_symlinks(self) -> None:
-        """啟用 runtime 後必須同時驗證技能與用戶端入口。"""
+        """runtime-link 應建立共用、私人與用戶端三種連結。"""
 
         self.write_manifest(runtime_enabled=True)
+        private_skill = self.runtime / "skills/private-skill"
+        private_skill.mkdir(parents=True)
+        (private_skill / "SKILL.md").write_text(
+            "---\nname: private-skill\ndescription: 私人測試\n---\n",
+            encoding="utf-8",
+        )
+
+        preview = json.loads(self.run_cli("runtime-link").stdout)
+        self.assertFalse(preview["applied"])
+        self.assertFalse((self.runtime / ".local/runtime-skills").exists())
+
+        applied = json.loads(self.run_cli("runtime-link", "--apply").stdout)
+        self.assertTrue(applied["applied"])
         runtime_skills = self.runtime / ".local/runtime-skills"
-        runtime_skills.mkdir(parents=True)
-        (runtime_skills / "sample").symlink_to(
-            self.canonical / "skills/sample",
-            target_is_directory=True,
+        self.assertEqual(
+            (runtime_skills / "sample").resolve(),
+            (self.canonical / "skills/sample").resolve(),
         )
-        (self.runtime / ".agents").mkdir()
-        (self.runtime / ".agents/skills").symlink_to(
-            runtime_skills,
-            target_is_directory=True,
+        self.assertEqual(
+            (runtime_skills / "private-skill").resolve(),
+            private_skill.resolve(),
         )
+        self.assertEqual(
+            (self.runtime / ".agents/skills").resolve(),
+            runtime_skills.resolve(),
+        )
+        self.assertTrue(Path(applied["backup_dir"]).is_dir())
+        repeated = json.loads(self.run_cli("runtime-link", "--apply").stdout)
+        self.assertEqual(repeated["action_count"], 0)
         self.run_cli("verify")
 
         (self.runtime / ".agents/skills").unlink()
         self.run_cli("verify", expected=2)
+
+    def test_runtime_link_refuses_physical_collision(self) -> None:
+        """runtime-link 不得覆寫既有的實體技能入口。"""
+
+        self.write_manifest(runtime_enabled=True)
+        (self.runtime / ".agents/skills").mkdir(parents=True)
+        self.run_cli("runtime-link", "--apply", expected=2)
 
 
 if __name__ == "__main__":
