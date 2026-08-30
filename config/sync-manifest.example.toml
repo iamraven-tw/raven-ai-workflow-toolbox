@@ -1,0 +1,35 @@
+schema_version = 1
+
+[package]
+id = "ai-knowledge-base"
+canonical_root = "/absolute/path/to/My Real Second Brain"
+mirror_root = "/absolute/path/to/ai-workflow-toolbox/skill-packs/ai-knowledge-base"
+state_file = "/absolute/path/to/local/sync-state.json"
+backup_root = "/absolute/path/to/local/backups"
+exclude_roots = [
+  ".git",
+  ".local",
+  ".second-brain",
+  ".notebooklm",
+  "sources",
+  "workspace",
+  "private",
+]
+exclude_names = ["__pycache__", ".DS_Store"]
+exclude_suffixes = [".pyc", ".pyo"]
+shared_skills = [
+  "book-notes",
+  "knowledge-source-retrieval",
+  "socratic-dialogue",
+  "solopreneur-profile",
+]
+
+[runtime]
+enabled = false
+root = "/absolute/path/to/private-workspace"
+skills_dir = ".local/runtime-skills"
+client_links = [
+  ".agents/skills",
+  ".claude/skills",
+  ".agent/skills",
+]
