@@ -43,6 +43,16 @@ Agent 應列出：
 
 如果目標已有同名技能，先比較內容並回報；不得靜默覆蓋。使用者可以明確改選專案範圍，但 Agent 不得自行更改預設範圍。
 
+不同宿主的預設使用者範圍位置如下。安裝前仍要檢查目前版本的官方規格與既有內容：
+
+| 宿主 | 使用者範圍技能位置 | 專案規則入口 |
+|---|---|---|
+| ChatGPT／Codex | `~/.agents/skills/` | `AGENTS.md` |
+| Claude Code | `~/.claude/skills/` | `CLAUDE.md`，由它匯入 `AGENTS.md` |
+| Google Antigravity | `~/.gemini/config/skills/` | `AGENTS.md` |
+
+公開範本同時提供 `AGENTS.md` 與 `CLAUDE.md`，但規則內容只維護在 `AGENTS.md`；這能避免三個宿主因重複規則逐漸產生差異。
+
 ## 4. 初始化第二大腦工作區
 
 1. 明確取得使用者指定的工作區；不得把 repository 本身或目前不明的目錄當成預設目的地。

@@ -148,6 +148,7 @@ My Real Second Brain/
 ├── THIRD_PARTY_NOTICES.md
 ├── install.manifest.toml
 ├── AGENTS.md
+├── CLAUDE.md
 ├── docs/
 │   ├── architecture.md
 │   ├── development-workflow.md
@@ -164,6 +165,7 @@ My Real Second Brain/
 │   └── socratic-dialogue/
 └── template/
     ├── AGENTS.md
+    ├── CLAUDE.md
     └── sources/
         ├── strategy/
         ├── book-notes/
