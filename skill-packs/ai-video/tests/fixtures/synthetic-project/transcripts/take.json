@@ -1,0 +1,20 @@
+{
+  "schema_version": 2,
+  "provider": "public-synthetic-fixture",
+  "model": "none",
+  "source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "language": "zh-Hant-TW",
+  "text": "這是公開測試流程，字幕應該清楚完整。",
+  "segments": [],
+  "words": [
+    {"text": "這", "start": 0.00, "end": 0.45, "type": "word"},
+    {"text": "是", "start": 0.45, "end": 0.90, "type": "word"},
+    {"text": "公開", "start": 0.90, "end": 1.45, "type": "word"},
+    {"text": "測試", "start": 1.45, "end": 2.00, "type": "word"},
+    {"text": "流程", "start": 2.00, "end": 2.55, "type": "word"},
+    {"text": "字幕", "start": 2.75, "end": 3.30, "type": "word"},
+    {"text": "應該", "start": 3.30, "end": 3.85, "type": "word"},
+    {"text": "清楚", "start": 3.85, "end": 4.40, "type": "word"},
+    {"text": "完整", "start": 4.40, "end": 5.05, "type": "word"}
+  ]
+}

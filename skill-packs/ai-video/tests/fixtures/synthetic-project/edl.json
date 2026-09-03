@@ -1,0 +1,14 @@
+{
+  "sources": {
+    "take": "take.mp4"
+  },
+  "ranges": [
+    {
+      "source": "take",
+      "start": 0.0,
+      "end": 5.05
+    }
+  ],
+  "subtitles": "master.srt",
+  "total_duration_s": 5.05
+}

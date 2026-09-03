@@ -1,0 +1,330 @@
+schema_version = 1
+manifest_type = "ai-video-install"
+project_id = "ai-video"
+display_name = "AI 剪片工作流"
+entrypoint = "INSTALL.md"
+checked_on = "2026-08-31"
+status = "ready_for_external_acceptance"
+installable = true
+requires_network = true
+support_level = "installable_candidate_not_formally_supported"
+
+[mvp]
+implementation_policy = "reuse_existing_workflows_before_new_code"
+public_skill_status = "validated_in_published_video_use_v0.1.1"
+brand_specific_content = "excluded"
+publishing_automation = "out_of_scope"
+release_policy = "manual_version_snapshots_without_private_workflow_sync"
+
+[release]
+local_candidate_status = "published_as_v0.1.1"
+public_source_status = "published"
+fork_repository = "https://github.com/iamraven-tw/video-use"
+release_url = "https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1"
+release_asset_url = "https://github.com/iamraven-tw/video-use/releases/download/v0.1.1/raven-video-use-v0.1.1.tar.gz"
+release_asset_sha256 = "21c53a9001abfc30eb08ef2e3ad7931e5364c95e0110eb1dce57545466b2a9f8"
+toolbox_install_status = "locally_verified_ready_for_external_acceptance"
+skill_sha256 = "90bf6930b0408151ad6494b89d894fe151507b94847f8ea3c6b8faccb2c56d11"
+uv_lock_sha256 = "9e91ae1775631bbb8b1a6ae4e1fe262217c21d2715a3c718ab4dad28828ba34d"
+fork_install_document_sha256 = "0593772314b1c986ded3c62aff9d078c0883a11f87d26b85935c76cb0cdd3364"
+
+[installation]
+kind = "ai_agent_executed_documented_workflow"
+candidate_version = "0.1.0"
+default_application_root = "$HOME/Library/Application Support/ai-workflow-toolbox"
+default_cache_root = "$HOME/Library/Caches/ai-workflow-toolbox"
+component_directory = "components/video-use/v0.1.1"
+base_install_downloads_models = false
+modifies_shell_profile = false
+modifies_user_media = false
+system_package_conflict_policy = "stop_without_upgrade_downgrade_or_removal"
+existing_skill_conflict_policy = "stop_without_overwrite"
+state_policy = "store_only_versions_paths_checksums_and_validation_results"
+
+[[client_targets]]
+id = "codex"
+scope = "project"
+path = "<target-workspace>/.agents/skills/video-use"
+registration = "directory_symlink_to_versioned_release"
+official_documentation = "https://developers.openai.com/codex/skills/"
+discovery_status = "locally_verified_with_codex_cli"
+
+[[client_targets]]
+id = "claude-code"
+scope = "project"
+path = "<target-workspace>/.claude/skills/video-use"
+registration = "directory_symlink_to_versioned_release"
+official_documentation = "https://code.claude.com/docs/en/slash-commands"
+discovery_status = "locally_verified_with_claude_code"
+
+[[client_targets]]
+id = "google-antigravity"
+scope = "workspace"
+path = "<target-workspace>/.agents/skills/video-use"
+registration = "directory_symlink_to_versioned_release"
+official_documentation = "https://antigravity.google/docs/skills"
+discovery_status = "official_workspace_path_and_structure_verified_cli_login_pending_external_acceptance"
+
+[lifecycle]
+repeat_install = "verify_release_and_lock_hashes_then_reuse_matching_version"
+update = "install_and_verify_new_version_before_atomically_switching_skill_link"
+rollback = "switch_skill_link_back_to_retained_verified_version"
+remove = "unlink_only_the_verified_skill_entry_by_default"
+component_runtime_cache_removal = "separate_explicit_approval_per_exact_path"
+user_media_removal = "never"
+
+[dependency_policy]
+document = "../../docs/dependency-policy.md"
+allow_unpinned_sources = false
+vendor_third_party_source = false
+
+[[dependencies]]
+id = "uv"
+role = "python_environment_manager"
+required = true
+source_type = "official_release_asset"
+upstream = "https://github.com/astral-sh/uv"
+source = "https://github.com/astral-sh/uv/releases/download/0.12.7/uv-aarch64-apple-darwin.tar.gz"
+ref = "0.12.7"
+checksum = "sha256:127ebdda7ad953cdf198e964b570ea5771b85467ea93eb7cb6d6f8e6f55408f3"
+license = "Apache-2.0 OR MIT"
+platform = "aarch64-apple-darwin"
+bundle_binary = false
+status = "locked_candidate_locally_verified"
+
+[[dependencies]]
+id = "cpython-runtime"
+role = "managed_python_runtime"
+required = true
+source_type = "uv_managed_python_build"
+upstream = "https://github.com/python/cpython"
+build_repository = "https://github.com/astral-sh/python-build-standalone"
+source = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-aarch64-apple-darwin-install_only_stripped.tar.gz"
+ref = "3.12.14+20260825"
+checksum = "sha256:8b0f1fa71eab7ca644e482c631807a1116fa848491051cd1c8d9429491de63a6"
+license = "Python-2.0"
+third_party_notices_required = true
+platform = "aarch64-apple-darwin"
+bundle_binary = false
+status = "locked_candidate_locally_verified"
+
+[[dependencies]]
+id = "video-use"
+role = "video_editing_engine"
+required = true
+source_type = "fork"
+upstream = "https://github.com/browser-use/video-use"
+repository = "https://github.com/iamraven-tw/video-use"
+source = "https://github.com/iamraven-tw/video-use/releases/download/v0.1.1/raven-video-use-v0.1.1.tar.gz"
+tag = "v0.1.1"
+ref = "da344098518230f69ff70f78a4860d4904e9e6cb"
+checksum = "sha256:21c53a9001abfc30eb08ef2e3ad7931e5364c95e0110eb1dce57545466b2a9f8"
+license = "MIT"
+status = "published"
+future_target = "official_video_use_plus_raven_zh_hant_tw_extension"
+required_capabilities = [
+  "offline_taiwan_chinese_transcription",
+  "word_level_alignment",
+  "traditional_chinese_normalization",
+  "chinese_lexical_boundary_protection",
+  "semantic_subtitle_segmentation",
+  "edl_rendering",
+]
+
+[[dependencies]]
+id = "qwen-asr-runtime"
+role = "offline_asr_runtime"
+required = true
+source_type = "official_python_package"
+upstream = "https://github.com/QwenLM/Qwen3-ASR"
+source = "https://pypi.org/project/qwen-asr/0.0.6/"
+ref = "0.0.6"
+checksum = "sha256:b9c55a38413298f3a990a4475467399daec6e8f4172363053fc42e2166c2dfd3"
+license = "Apache-2.0"
+package_wheel_sha256 = "b9c55a38413298f3a990a4475467399daec6e8f4172363053fc42e2166c2dfd3"
+runtime_python = "3.12.14"
+runtime_lock_sha256 = "1ced8120cefd86c1a7a5a3a4fd97f820cc872aef79b2bc5c9d8acf5fb216f046"
+runtime_lock_status = "published_in_video_use_v0.1.1"
+status = "locked_release_locally_install_tested"
+
+[[dependencies]]
+id = "qwen3-asr-model"
+role = "offline_speech_recognition_model"
+required = true
+source_type = "official_model"
+upstream = "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+source = "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+ref = "7278e1e70fe206f11671096ffdd38061171dd6e5"
+checksum = "hugging_face_revision"
+license = "Apache-2.0"
+bundle_weights = false
+approximate_download = "4.7 GB"
+status = "reviewed"
+
+[[dependencies]]
+id = "qwen3-forced-aligner-model"
+role = "word_level_forced_alignment_model"
+required = true
+source_type = "official_model"
+upstream = "https://huggingface.co/Qwen/Qwen3-ForcedAligner-0.6B"
+source = "https://huggingface.co/Qwen/Qwen3-ForcedAligner-0.6B"
+ref = "c7cbfc2048c462b0d63a45797104fc9db3ad62b7"
+checksum = "hugging_face_revision"
+license = "Apache-2.0"
+bundle_weights = false
+approximate_download = "1.84 GB"
+status = "reviewed"
+
+[[dependencies]]
+id = "opencc"
+role = "taiwan_traditional_chinese_normalization"
+required = true
+source_type = "homebrew_core_formula"
+upstream = "https://github.com/BYVoid/OpenCC"
+source = "https://formulae.brew.sh/formula/opencc"
+ref = "1.4.2"
+formula_repository = "https://github.com/Homebrew/homebrew-core"
+formula_commit = "9f847f78fd2f72e8e1d703b9124734feedaf7d2d"
+formula_path = "Formula/o/opencc.rb"
+formula_sha256 = "3f83c600e2000402ff5253a33bac7acc113db67ea6ac533b0d570161717ac214"
+source_archive_sha256 = "8e5f5cf7fe195bd9b9be851adc9738c1ef7dc5c24441dd5878a56db4087a9a70"
+license = "Apache-2.0"
+install_policy = "install_only_when_live_homebrew_metadata_matches_manifest"
+status = "locked_metadata_and_bottle_verified_clean_install_pending_external_acceptance"
+
+[dependencies.bottle_sha256]
+arm64_sonoma = "25644bad6d717f0aa881606c7bc0b1d2b741980805c0fd498158f0afbcc573da"
+arm64_sequoia = "2c624b20369b7b59f090e9843f63885f83dbcbaacca1a1ad14b83dcc5913eb2e"
+arm64_tahoe = "bbfaf3efb79e2c3f5c28164da7fac4392e37f92d2bd6c29f90b2f56e524f4e46"
+
+[[dependencies]]
+id = "ffmpeg-full-libass"
+role = "media_processing_and_subtitle_rendering"
+required = true
+source_type = "homebrew_core_formula"
+upstream = "https://ffmpeg.org/"
+source = "https://formulae.brew.sh/formula/ffmpeg-full"
+ref = "9.0.1_1"
+formula_repository = "https://github.com/Homebrew/homebrew-core"
+formula_commit = "9f847f78fd2f72e8e1d703b9124734feedaf7d2d"
+formula_path = "Formula/f/ffmpeg-full.rb"
+formula_sha256 = "bb93f7059f200431221f56f653ea4c269097264d938a51d1819bc2a9acf54afc"
+source_archive_sha256 = "cf38e0e28c7e5605942c4a77755349b0145804a397af37eb1fb4c77cb237f635"
+license = "GPL-3.0-or-later"
+keg_only = true
+libass_dependency_version = "0.17.5"
+libass_dependency_license = "ISC"
+libass_dependency_source_sha256 = "2dca25c0e0c837ddf00b52011b3f82cac1e4ddd3ad018227806b0c2288864acc"
+libass_dependency_formula_sha256 = "4ee934d7ece81986bc23a214237b37800b6a23fdaf57227a8efc6ef6efa984be"
+required_capabilities = ["ffprobe", "subtitles_filter_via_libass"]
+install_policy = "install_only_when_live_homebrew_metadata_matches_manifest"
+status = "locked_metadata_and_bottle_verified_clean_install_pending_external_acceptance"
+
+[dependencies.bottle_sha256]
+arm64_sonoma = "a12d53f94b4e386a94b444ac5116671aed70f9fc732c779368fe1e98311beb42"
+arm64_sequoia = "84785c5d016434fdc036a7dea309e0cfef872de4bd7e86e428aa36b3cb280a72"
+arm64_tahoe = "4e281c5770f8fb5d8354ac82eec967155b95f70a49de85f2c6f63ff8b934ac7d"
+
+[dependencies.libass_bottle_sha256]
+arm64_sonoma = "a14b9e2407d406f58b7a83c7c22d9332b69ba68dca53dd7e61d7e0afa0468ed4"
+arm64_sequoia = "3600420037feb1403141c0f6d07f135dcd79649cafa420ace2750468981664ec"
+arm64_tahoe = "47e1f2d60c97628331593c00673e03d00e675c2462c1267f1e459ba17a41129e"
+
+[[dependencies]]
+id = "ckip-transformers"
+role = "formal_chinese_word_segmentation_cache"
+required = true
+required_scope = "formal_zh_hant_tw_subtitles"
+installation_timing = "on_first_formal_chinese_subtitle_request"
+source_type = "official_python_package"
+upstream = "https://github.com/ckiplab/ckip-transformers"
+source = "https://pypi.org/project/ckip-transformers/"
+ref = "0.3.4"
+checksum = "sha256:5e79fc0b4af7ad7742e8e10c091ce4fafb02f14ac0ae2ba3c9917875e1ff3c54"
+license = "GPL-3.0"
+bundle_weights = false
+runtime_python = "3.12.14"
+runtime_lock_sha256 = "a4f2c87aa2cdc6ef9dc317db2285ef1a0ebc32bc81d7b059a46c27b43ba03486"
+runtime_lock_status = "published_in_video_use_v0.1.1"
+status = "locked_release_locally_install_tested"
+
+[[dependencies]]
+id = "ckip-bert-base-chinese-ws"
+role = "formal_chinese_word_segmentation_model"
+required = true
+required_scope = "formal_zh_hant_tw_subtitles"
+source_type = "official_model"
+upstream = "https://huggingface.co/ckiplab/bert-base-chinese-ws"
+source = "https://huggingface.co/ckiplab/bert-base-chinese-ws"
+ref = "60c22ced1c0ec221242906e8f9fbdf90fb560b77"
+checksum = "hugging_face_revision"
+license = "GPL-3.0"
+bundle_weights = false
+approximate_pytorch_weight = "406.8 MB"
+status = "locked_candidate_not_install_tested"
+
+[[dependencies]]
+id = "ckip-bert-base-chinese-pos"
+role = "formal_chinese_part_of_speech_model"
+required = true
+required_scope = "formal_zh_hant_tw_subtitles"
+source_type = "official_model"
+upstream = "https://huggingface.co/ckiplab/bert-base-chinese-pos"
+source = "https://huggingface.co/ckiplab/bert-base-chinese-pos"
+ref = "c3f173670d4793f00ce5d23381cbeffa17e4e197"
+checksum = "hugging_face_revision"
+license = "GPL-3.0"
+bundle_weights = false
+approximate_pytorch_weight = "407.0 MB"
+status = "locked_candidate_not_install_tested"
+
+[environment]
+currently_observed = "macOS Apple Silicon isolated local candidate"
+officially_supported = []
+minimum_macos_major = 14
+cpu_architecture = "arm64"
+runtime_python = "3.12.14"
+required_tools = ["python==3.12.14", "uv==0.12.7", "ffmpeg-full", "ffprobe", "opencc"]
+conditional_tools = ["node", "remotion", "hyperframes"]
+required_ffmpeg_capability = "subtitles filter via libass"
+
+[verification]
+automated_checks_status = "video_use_candidate_passed_94_tests_on_uv_0_12_7_python_3_12_14"
+dependency_lock_resolution_status = "asr_91_packages_and_ckip_26_packages_passed_fresh_install_repeat_sync_and_hash_verification"
+python_runtime_conflict_recovery_status = "wrong_python_stopped_unchanged_and_missing_packages_restored_from_locks"
+python_runtime_removal_status = "exact_asr_ckip_and_conflict_test_runtimes_removed_from_install_locations_by_recoverable_move_without_touching_project_or_media"
+ckip_runtime_compatibility_status = "pinned_runtime_and_two_exact_model_revisions_passed_offline_sentence_cache_generation"
+homebrew_metadata_status = "opencc_ffmpeg_full_libass_versions_formulae_and_arm64_bottles_match_manifest"
+homebrew_tahoe_bottle_status = "downloaded_and_sha256_verified_without_system_install_change"
+homebrew_install_status = "existing_version_conflict_detected_full_clean_install_not_tested"
+public_test_media_status = "generated_color_tone_and_neutral_transcript_fixture_packaged_and_smoke_tested"
+clean_python_environment_status = "fresh_temporary_uv_environment_passed"
+bootstrap_runtime_status = "uv_0_12_7_and_uv_managed_python_3_12_14_asset_hashes_and_local_bootstrap_verified"
+toolbox_install_status = "normal_repeat_missing_package_repair_version_conflict_update_rollback_and_remove_passed_in_isolation"
+client_discovery_status = "codex_and_claude_locally_verified_antigravity_official_workspace_contract_verified"
+public_test_case_status = "redistributable_generated_media_subtitle_render_decode_and_visual_check_passed"
+local_end_to_end_status = "pinned_offline_asr_subtitle_render_decode_and_visual_check_passed"
+remote_release_status = "video_use_v0.1.1_redownloaded_asset_sha256_verified"
+human_acceptance_owner = "user"
+human_acceptance_environment = "separate_computer"
+human_acceptance_timing = "after_all_workflows_and_automated_checks_pass"
+
+[[readiness_gates]]
+order = 10
+id = "fork_release"
+status = "complete"
+
+[[readiness_gates]]
+order = 20
+id = "public_workflow_extraction"
+status = "complete"
+
+[[readiness_gates]]
+order = 30
+id = "automated_verification"
+status = "complete"
+
+[[readiness_gates]]
+order = 40
+id = "external_machine_human_acceptance"
+status = "pending_user_acceptance_on_separate_computer"
