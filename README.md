@@ -13,7 +13,7 @@ AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計�
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於早期開發階段。AI 知識庫已收錄第一個完整套件；Codex、Claude Code 與 Antigravity Desktop 的專案規則及本機 symlink 技能入口已實測。全新環境安裝與 Provider 登入仍待端到端驗收。其餘四套技能包尚未完成，也尚未公開發布本 repository。
+> 本專案目前處於早期開發階段。AI 知識庫、AI 剪片與 Google 工具自動化的 Agent 端候選版可供外部驗收，但都尚未正式支援；各套件仍有另一臺電腦、外部帳號或人工成果驗收關卡。社群媒體與官網技能包尚未完成，本 repository 也尚未公開發布。
 
 ## 專案要解決的問題
 
@@ -35,15 +35,15 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 
 | 技能包 | 目前狀態 | 第一階段目標 |
 |---|---|---|
-| AI 剪片工作流 | 既有能力分散在 `video-use` 與內容製作技能中，待盤點與拆分 | 從素材盤點、轉錄、剪輯、字幕、動畫到最終品質檢查，建立可恢復且有人工確認點的完整流程 |
-| Google 工具自動化 | [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 已獨立公開；Google Cloud 工作流尚待設計 | 保留 Apps Script 初學者路線，補上 Workspace API、OAuth 與 Google Cloud 應用的實際案例 |
-| AI 知識庫 | 已收錄完整套件並通過三種用戶端的規則與本機技能入口驗證；全新安裝仍待驗收 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
+| AI 剪片工作流 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 由使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收；之後再朝官方核心＋臺灣中文擴充套件演進 |
+| Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 用固定版本 Learn-GAS 保留 Apps Script 路線，先完成需求分流、本機實作與遠端確認關卡，再由使用者做 Google 實機驗收 |
+| AI 知識庫 | Agent 端候選版可供外部驗收；本機生命週期與三種桌面／開發用戶端技能發現已通過，尚未正式支援 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
 | 社群媒體管理工作流 | 有個人化實驗與自動化經驗，但公開版本需要重新設計 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
 | 官網打造工作流 | 尚待設計 | 從商業目標、網站架構、文案與設計開始，完成開發、網域、部署、成效追蹤與後續維護 |
 
 ### 1. AI 剪片工作流
 
-這套技能包預計涵蓋：
+這套技能包涵蓋：
 
 - 素材盤點與來源保護
 - 語音轉文字、逐字稿校正與時間軸對齊
@@ -53,32 +53,38 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 - 音訊、畫面、字幕與輸出規格檢查
 - 人工觀看／聆聽驗收與交付狀態記錄
 
-第一輪工作會先盤點既有的 `video-use` 與內容製作技能，區分：
+公開版已把既有 `video-use` 與內容製作經驗區分為：
 
 1. 可供所有人重複使用的剪片能力。
 2. 特定創作者、品牌或節目才需要的規則。
 3. 必須保留上游授權與出處的第三方程式。
 4. 尚未通過真實影片驗證的實驗功能。
 
+目前決策是：不把 `Video-Use` 原始碼複製進 Toolbox，也不要求使用者安裝缺少臺灣中文能力的官方版本。MVP 會由安裝 manifest 取得 Raven 維護的固定 fork；未來再把補強整理成「官方 `Video-Use`＋Raven 臺灣中文擴充套件」。這項演進不以向上游提交 Pull Request 為前提。詳細決策見 [`docs/decisions/0001-video-use-integration.md`](docs/decisions/0001-video-use-integration.md)，第三方來源規則見 [`docs/dependency-policy.md`](docs/dependency-policy.md)。
+
+[Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1) 已公開，並鎖定 Release commit、標籤、下載資產與關鍵檔案 SHA-256。`skill-packs/ai-video/` 已完成 macOS 14 以上 Apple Silicon 的 Agent 安裝契約、隔離安裝、重複安裝、缺件修復、衝突停止、更新、回復、移除、公開 smoke test，以及 Codex／Claude Code 技能發現。manifest 現在允許安裝外部驗收候選版；另一臺電腦的乾淨 Homebrew 安裝、首次模型下載、Antigravity 實際發現及真人觀看／聆聽仍未驗收，因此尚未正式支援。
+
 ### 2. Google 工具自動化
 
-[Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 已經提供 Google Apps Script 的教學、專案開發、除錯與固定版面技能。本專案不會直接複製它並造成兩份來源，而會先決定它應該保持獨立依賴、成為子專案，或只由本工具箱提供安裝與分流入口。
+[Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 已提供 Google Apps Script 教學、專案開發／接管、除錯與 Google Docs 固定版面技能。Toolbox 已決定把它維持為固定 commit 的外部單一來源，不複製四個技能或範例程式；完整來源、Git tree、MIT License 與 LICENSE SHA-256 都記錄在 Google 技能包 manifest。整合決策見 [`docs/decisions/0002-learn-gas-integration.md`](docs/decisions/0002-learn-gas-integration.md)。
 
-Google Cloud 路線會從使用者故事（User Story，也就是使用者真正想完成的工作）出發，而不是先教一整套雲端產品。初步案例包括：
+Toolbox 新增的 `google-workflow-router` 只處理 Learn-GAS 沒有涵蓋的跨路線判斷：
 
-- **需要穩定公開入口的自動化：** 接收表單、付款或其他服務的 Webhook，再安全寫入 Google Sheets、Drive 或 Gmail 流程。
-- **超出 Apps Script 執行限制的工作：** 把耗時的資料處理放到 Cloud Run，透過 Cloud Scheduler 定時執行，並留下可檢查的紀錄。
-- **多人使用的 Google 應用：** 建立 OAuth 同意畫面、測試使用者、最小權限與安全的憑證保存方式。
-- **Google Workspace 外掛：** 從 Gmail、Docs 或 Sheets 介面啟動一段明確、可驗收的工作流程。
-- **事件驅動的文件處理：** 新檔案進入指定位置後，自動分類、轉換、通知與記錄，並避免重複處理。
+- **Apps Script：** 學習、修改、除錯、接管既有專案與固定版面，交給固定版本 Learn-GAS。
+- **Workspace API／OAuth：** 外部程式直接使用 Sheets、Drive、Gmail 等 API 時，先判斷 API key、使用者 OAuth 或服務帳戶，再完成 scope 最小化與本機測試。
+- **Cloud Run service：** 需要穩定 HTTP／Webhook 入口、較明確的並行、逾時、部署與回復時使用。
+- **Cloud Run job／Cloud Scheduler：** 需要跑到完成的長時間批次或固定排程時使用。
+- **專門設計：** Workspace Marketplace、Admin SDK、網域層級委派、多租戶公開 OAuth、正式 SLA 與大型雲端架構不納入 MVP。
 
-每個案例都必須說清楚：為什麼 Apps Script 不足、為什麼需要 Google Cloud、可能產生的費用、需要哪些權限，以及使用者如何判斷成果真的可用。
+這套流程會分開記錄本機程式、Google 登入、OAuth 授權、遠端同步／部署與人工驗收。Google Cloud Project、API、OAuth client、部署、`clasp push`、付費操作與外部登入都不會因為本機測試通過而自動執行。
+
+完整技能包位於 [`skill-packs/google-automation/`](skill-packs/google-automation/README.md)。Agent 端已具備固定來源、安裝／重跑／衝突／更新／回復／移除契約與虛構案例驗證；仍要由使用者在另一臺電腦或另一個 Google 帳號完成最終實機驗收，因此尚未正式支援。
 
 ### 3. AI 知識庫
 
-這套技能包會以 [My Real Second Brain](https://github.com/iamraven-tw/My-Real-Second-Brain) 的核心原則為基礎：AI 負責保存、整理、連結、檢索與提醒，但閱讀、理解、判斷和選擇仍由人類負責。
+這套技能包以 My Real Second Brain 的核心原則為基礎：AI 負責保存、整理、連結、檢索與提醒，但閱讀、理解、判斷和選擇仍由人類負責。
 
-預計拆分的能力包括：
+目前已拆分的能力包括：
 
 - 第一次沒有明確任務時，逐步建立一人公司設定檔
 - 用口說或文字記錄自己的想法與讀書心得
@@ -160,9 +166,11 @@ flowchart LR
 
 每個技能必須先回答「誰要完成什麼工作」以及「使用者怎麼看得出成功」，再選擇 API、程式或瀏覽器操作方式。
 
-### 共用核心，不複製三份流程
+### 公開核心只保留一份
 
 工作流程、確認關卡、參考資料與測試盡量只保留一份。ChatGPT／Codex、Claude 與 Antigravity 的入口檔案只處理安裝、工具差異和用戶端特有設定。
+
+維護者的私人工作流程與公開 Toolbox 不會自動同步。私人流程的後續修改不會觸發 hook，也不會直接進入公開版；只有維護者日後明確選定的改進，才會重新檢查公開性、一般化並納入下一個版本快照。第三方程式則由公開 manifest 依固定來源安裝。
 
 ### API 優先，瀏覽器是受控備援
 
@@ -245,9 +253,9 @@ ai-workflow-toolbox/
 
 | 既有來源 | 在本專案中的角色 | 整合前必須處理的事項 |
 |---|---|---|
-| [video-use](https://github.com/browser-use/video-use) 與既有影片技能 | AI 剪片的工程基礎與實際製作經驗 | 盤點本機修改、分離通用與品牌規則、確認上游授權、補齊真實影片驗收 |
+| [video-use](https://github.com/browser-use/video-use) 與既有影片技能 | AI 剪片的工程基礎與實際製作經驗；MVP 使用 [Raven 公開 fork](https://github.com/iamraven-tw/video-use) | v0.1.1 已完成一般化、公開 Release、Toolbox 生命週期與 Codex／Claude Code 驗證；外部電腦驗收待使用者執行 |
 | 維護者的內容製作工作區 | 電子報、影片、Substack 與社群發布的實際案例 | 只抽出通用流程，不公開品牌資產、私人文章、帳號資料或尚未驗證的操作 |
-| [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) | Google Apps Script 的既有公開技能包 | 維持單一來源，先決定依賴或分流方式，不建立內容分叉 |
+| [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) | Google Apps Script 的既有公開技能包 | 已固定為外部依賴與 Apps Script 分流入口；不複製原始碼、不追蹤 `main`，更新須建立新候選快照並完整回歸測試 |
 | [My Real Second Brain](https://github.com/iamraven-tw/My-Real-Second-Brain) | AI 知識庫的既有公開核心 | 保留人類理解優先、資料分層、Provider 與私人工作區邊界 |
 | 維護者的 Hermes 工作流 | 社群自動化、審核關卡與成效回顧的實際經驗 | 去除帳號、排程、憑證與品牌耦合，重新設計成一般使用者可設定的流程 |
 
@@ -257,7 +265,9 @@ ai-workflow-toolbox/
 
 ### 階段 0：專案基礎
 
-- 決定根專案授權與第三方授權處理方式
+- 根專案採用 Apache License 2.0，第三方內容保留各自授權與聲明
+- 確認公開核心與未來付費內容的邊界
+- 定義官方來源、擴充套件、fork 與 vendoring 的依賴政策
 - 定義共用技能格式、命名方式與驗證標準
 - 建立三種目標用戶端的相容性矩陣
 - 建立不含敏感資訊的貢獻與安全規則
@@ -296,9 +306,11 @@ ai-workflow-toolbox/
 
 ## 安裝
 
-AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INSTALL.md) 與 `install.manifest.toml`。三種目標用戶端的規則入口與本機技能發現結果見 [`docs/client-compatibility.md`](skill-packs/ai-knowledge-base/docs/client-compatibility.md)；目前仍應視為早期可驗證套件，待全新環境安裝、Provider、登入與實際技能流程完成端到端驗收後，才標示為正式支援。
+AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INSTALL.md) 與 `install.manifest.toml`。三種目標桌面／開發用戶端的規則入口與本機技能發現結果見 [`docs/client-compatibility.md`](skill-packs/ai-knowledge-base/docs/client-compatibility.md)；目前是「可供外部驗收」的候選版。第三方乾淨安裝、外部登入、遠端存取與另一臺電腦實測仍須逐項完成，之後才能由維護者決定是否正式支援。
 
-其餘四個技能包尚未提供安裝方式。
+AI 剪片已建立 [`skill-packs/ai-video/`](skill-packs/ai-video/README.md) 的完整 Agent 安裝與生命週期契約，並發布鎖定的 [Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1)。manifest 標示 `installable = true`，代表可安裝為外部驗收候選版；`officially_supported` 仍為空，直到使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收。根專案的套件分流見 [`INSTALL.md`](INSTALL.md)。
+
+社群媒體管理與官網打造兩個技能包尚未提供安裝方式。
 
 ## 貢獻
 
@@ -313,7 +325,11 @@ AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INST
 
 ## 授權
 
-本專案預計以開放原始碼方式發布，但根專案授權尚未選定。AI 知識庫子套件保留原專案的 Apache License 2.0 與第三方聲明；第一次公開發布根專案前，仍需決定其他內容的授權方式。
+本專案自行撰寫的公開核心採 [Apache License 2.0](LICENSE)，著作權標示為 `Copyright 2026 Kaiyuan Kang`。這項授權允許商業使用、修改與重新散布，但不授權 Raven 名稱、Logo 或其他商標。
+
+第三方專案、模型與素材仍適用各自授權；根授權不會覆蓋 `THIRD_PARTY_NOTICES.md` 或各技能包所記錄的第三方條款。
+
+公開核心與未來付費內容必須維持清楚的檔案、repository 與授權邊界；目前的 MVP 決策基準見 [`docs/distribution-and-commercial-boundary.md`](docs/distribution-and-commercial-boundary.md)。
 
 ## 非官方聲明
 
