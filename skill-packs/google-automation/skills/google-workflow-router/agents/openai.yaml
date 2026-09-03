@@ -1,0 +1,7 @@
+interface:
+  display_name: "Google 自動化分流"
+  short_description: "在 Apps Script、Workspace API 與 Cloud Run 間選路線"
+  default_prompt: "使用 $google-workflow-router 判斷這個 Google 自動化需求應走哪條路線，並分開列出本機、OAuth、部署與人工驗收狀態。"
+
+policy:
+  allow_implicit_invocation: true

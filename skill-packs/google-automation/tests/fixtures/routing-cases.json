@@ -1,0 +1,50 @@
+[
+  {
+    "id": "learn_expense_sheet",
+    "request": "我想一步步學會把虛構的午餐費用記進測試試算表。",
+    "expected_route": "GAS",
+    "expected_skill": "google-apps-script-teaching"
+  },
+  {
+    "id": "take_over_existing_script",
+    "request": "我有一個既有 Apps Script 專案，想先建立安全的本機 Git 基線再修改。",
+    "expected_route": "GAS",
+    "expected_skill": "google-apps-script-project-development"
+  },
+  {
+    "id": "debug_trigger",
+    "request": "測試用觸發器重複建立，而且執行記錄顯示權限錯誤。",
+    "expected_route": "GAS",
+    "expected_skill": "google-apps-script-debugging"
+  },
+  {
+    "id": "docs_labels",
+    "request": "要產生虛構收件人的固定尺寸郵寄標籤並確認列印位置。",
+    "expected_route": "GAS",
+    "expected_skill": "google-docs-layout"
+  },
+  {
+    "id": "desktop_workspace_client",
+    "request": "一個本機桌面工具要代表目前使用者讀取 Drive 測試檔案。",
+    "expected_route": "WORKSPACE_API",
+    "expected_auth": "user_oauth"
+  },
+  {
+    "id": "long_webhook",
+    "request": "外部測試服務會呼叫 Webhook，單次轉換可能二十分鐘並需要重送與冪等。",
+    "expected_route": "CLOUD_RUN_SERVICE",
+    "expected_auth": "caller_authentication_required"
+  },
+  {
+    "id": "nightly_batch",
+    "request": "每天凌晨處理一批程式產生的測試檔，完成後寫入測試結果。",
+    "expected_route": "CLOUD_RUN_JOB",
+    "expected_scheduler": true
+  },
+  {
+    "id": "domain_wide_admin",
+    "request": "要替整個 Workspace 網域讀取所有成員信箱並集中保存。",
+    "expected_route": "SPECIALIST_REVIEW",
+    "reason": "admin_sdk_and_domain_wide_delegation_out_of_scope"
+  }
+]

@@ -1,0 +1,27 @@
+# 第三方專案與工具
+
+## Learn-GAS
+
+- 專案：<https://github.com/iamraven-tw/Learn-GAS>
+- 用途：Google Apps Script 教學、專案開發／接管、除錯與 Google Docs 固定版面。
+- 固定 commit：`7d50a7bfcfbe41ea9d88c2aef8f11200871433a3`
+- 固定 Git tree：`ef6e45626d59ae18745eb5c7245de0b3f2e48cc9`
+- LICENSE SHA-256：`39106e322b00c852430a6e6fca5f93b1465b24a6abd8a6d723df99ae9d2eaa15`
+- 授權：MIT License，Copyright (c) 2026 iamraven-tw
+- 整合方式：安裝時從公開 repository 取得固定 commit；Toolbox 不複製或重新散布其原始碼。
+
+安裝 Agent 必須驗證 commit、tree、LICENSE 雜湊與上游驗證程式。若任一項不同就停止，不使用未鎖定的 `main` 或 `latest`。Toolbox 自有的 `google-workflow-router` 適用根專案 Apache License 2.0；Learn-GAS 的檔案仍適用其 MIT License。
+
+## Google clasp
+
+- 專案：<https://github.com/google/clasp>
+- 官方說明：<https://developers.google.com/apps-script/guides/clasp>
+- 用途：由 Learn-GAS 在個別 Apps Script 專案內管理本機與遠端程式。
+- 2026-08-31 查驗版本：`@google/clasp 3.4.1`，要求 Node.js 20 以上，Apache License 2.0。
+- npm integrity：`sha512-92wlpu0loC9t4oADuTyJOxQm6T4H2dOD9oQ+BvdFJuzM2uP7cK5dGrrJQhb/m/HLbaR0UOsBXBqRlYbfyR9jbA==`
+
+技能包本身不安裝 `clasp`。Learn-GAS 會在實際專案開始前即時核對官方版本與引擎需求，再把相容版本固定於該專案的 `package.json`／lockfile。這項即時查驗不授權安裝、OAuth 或遠端同步。
+
+## Google 服務
+
+Google Apps Script、Google Workspace APIs、OAuth、Google Cloud Run 與 Cloud Scheduler 是外部服務，不隨 Toolbox 散布。使用者仍受各服務當時的條款、配額、帳務與組織政策約束；manifest 記錄的官方文件查驗日期不保證未來行為不變。
