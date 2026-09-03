@@ -1,75 +1,23 @@
-# 本機共用套件同步
+# 版本快照政策
 
-公開 repository 不保存維護者的實際工作區路徑。需要同時維護獨立專案、Toolbox 發行副本與私人實際案例時，使用忽略的 `.local/sync-manifest.toml` 描述關係。
+## 目前決策
 
-## 三種角色
+AI Workflow Toolbox 不與維護者的私人工作區自動同步。過去評估過的 canonical／mirror／runtime consumer 設計已停用，不建立 hook、檔案監看、雙向同步，也不要求私人流程每次修改後做一般化工作。
 
-- **canonical**：通用核心的主要來源。
-- **mirror**：Toolbox 內可獨立下載的完整發行副本。
-- **runtime consumer**：實際使用的私人工作區，只透過本機 symlink 使用通用技能，並保留自己的資料與個案設定。
+## 發行方式
 
-## 安全規則
+公開版與私人流程各自獨立修改。準備新版本時，只處理維護者明確指定要公開的改進：
 
-- `status`、`plan` 與 `verify` 只讀，不修改檔案。
-- `record` 只有兩邊完全一致時才建立本機基準。
-- `sync` 預設只顯示預覽；必須加上 `--apply` 才會寫入。
-- `runtime-link` 預設只預覽技能入口；必須加上 `--apply` 才會建立或替換 symlink。
-- 寫入前備份所有將被覆寫或刪除的目標檔案。
-- 兩邊都在上次基準後修改且內容不同時回報 `conflict`，不自動選邊。
-- manifest 的 `exclude_roots` 必須排除實際資料、秘密、登入狀態與工具暫存。
-- 同步只改本機檔案，不自動 commit、push 或發布。
+1. 從私人經驗中人工挑選值得公開的能力。
+2. 排除私人內容、路徑、案例、預設詞彙與驗收紀錄。
+3. 將必要設定改成使用者輸入或中性的虛構範例。
+4. 在獨立候選版完成測試。
+5. 由維護者決定是否建立新的公開版本並上傳。
 
-## 指令
+私人工作區的改動不代表公開版過期；公開版只代表該次發行已驗證的版本快照。
 
-先從 `config/sync-manifest.example.toml` 建立不進 Git 的本機 manifest。
+## 舊本機草稿
 
-```bash
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml status
+維護環境可能仍保留被 Git 忽略的 `.local/sync-manifest.toml`、備份或同步實驗資料。它們只是歷史草稿，不屬於公開發行契約。AI Agent 不得讀取、執行或依它們修改其他專案。
 
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml plan
-
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml verify
-
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml record
-```
-
-啟用 manifest 的 `[runtime]` 後，先預覽技能農場。共用技能會指向 canonical；`local_skills_dir` 中其他含 `SKILL.md` 的技能仍指向私人工作區原本的技能資料夾：
-
-```bash
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml runtime-link
-
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml runtime-link --apply
-```
-
-工具只管理 runtime 技能農場與 `client_links`；不會刪除或改寫 `local_skills_dir` 中的原始技能。若預定位置已有實體檔案或目錄，工具會停止，不會覆寫。
-
-只有人工或 AI 已確認正確方向時才同步：
-
-```bash
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml \
-  sync --from canonical
-
-python3 tools/knowledge_base_sync.py \
-  --manifest .local/sync-manifest.toml \
-  sync --from canonical --apply
-```
-
-從 mirror 回饋 canonical 時同理使用 `--from mirror`。完成後必須重新執行套件驗證、技能驗證與 `verify`，再由維護者決定如何建立本機 Git commit。
-
-## AI 修改規則
-
-AI 從 canonical、mirror 或 runtime consumer 任一位置開始工作時：
-
-1. 先讀專案規則。
-2. 發現 `.local/sync-manifest.toml` 後讀取角色與排除範圍。
-3. 共用能力優先修改 canonical；若已在 mirror 發生修改，先檢查狀態再回饋 canonical。
-4. runtime consumer 的個案設定與實際資料只留在私人工作區。
-5. runtime 新增或移除私人技能後重新執行 `runtime-link --apply`，讓三種用戶端看到相同技能清單。
-6. 完成前執行 `verify`，不得把「只改了一邊」宣稱為完成。
+若未來要重新評估同步，必須由維護者另外提出明確需求，重新決定範圍、衝突處理、一般化成本與發布關卡；不得因舊檔案仍存在就自行恢復。
