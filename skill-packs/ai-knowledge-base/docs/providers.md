@@ -4,6 +4,17 @@
 
 `My Real Second Brain` 的核心是第一大腦心得、次級資料、知識生命週期、來源優先度與引用規則，不是 Graphify 或 Notebook。兩者只是目前預設的後端實作。
 
+## 2026-08-31 版本查證與決策
+
+| Provider | manifest 固定版本 | 查到的最新正式版 | 套件來源 | 授權 | 本次決策 |
+|---|---|---|---|---|---|
+| Graphify | `graphifyy==0.9.35` | [`0.9.53`](https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.53) | [PyPI 0.9.35](https://pypi.org/project/graphifyy/0.9.35/)、[v0.9.35 release](https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.35) | Apache-2.0，並保留適用的舊 MIT 條款 | 暫時保留固定版本；新版包含行為與安全修正，但尚未在隔離環境完成本技能包相容性與回復測試，不能只因版本較新就升級。 |
+| Notebook | `notebooklm-py[browser]==0.8.0` | [`0.8.1`](https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.1) | [PyPI 0.8.0](https://pypi.org/project/notebooklm-py/0.8.0/)、[v0.8.0 release](https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.0) | MIT | 暫時保留固定版本；本機既有 0.8.0 CLI 可回報版本與技能狀態，但本次未獲授權進行乾淨安裝、登入或遠端存取，不能視為完整相容。 |
+
+manifest 另保存固定 tag、commit、wheel 與 sdist 的 SHA-256，讓後續外部驗收可以核對下載產物。這些雜湊只證明發行檔識別，不代表套件已在目標電腦成功安裝。
+
+目前兩者都屬於「可選的固定版本候選後端，等待外部驗收」，不是正式支援。未安裝或失效時，技能仍應先回覆本機可取得的知識並清楚說明限制。
+
 ## 能力一：知識結構後端
 
 目前預設：Graphify。
@@ -62,3 +73,11 @@ flowchart LR
 ```
 
 替換 provider 不得要求改寫使用者的讀書筆記、次級資料、Wiki 或來源索引格式；若能力不等價，adapter 必須明確回報差異。
+
+## 更新與回復政策
+
+1. 先查證 PyPI、固定 tag、發行說明與授權，再提出版本變更。
+2. 在隔離環境測試套件安裝、專案範圍技能、三種 Agent 發現與既有工作區相容性。
+3. 通過後才更新 manifest 的固定版本、commit 與發行檔雜湊。
+4. 保留前一個已驗證規格；更新失敗時重新安裝原固定版本並重新驗證。
+5. 套件、上游技能、登入狀態、本機索引與遠端資源分開管理，不使用一個「解除安裝」命令推論其他層已移除。

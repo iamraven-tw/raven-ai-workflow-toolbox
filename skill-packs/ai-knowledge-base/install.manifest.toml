@@ -3,8 +3,11 @@ manifest_type = "my-real-second-brain-install"
 project_id = "my-real-second-brain"
 display_name = "My Real Second Brain"
 entrypoint = "INSTALL.md"
-checked_on = "2026-08-30"
+checked_on = "2026-08-31"
 requires_network = true
+status = "ready_for_external_acceptance"
+installable = true
+support_level = "installable_candidate_not_formally_supported"
 
 [defaults]
 self_skill_scope = "user"
@@ -17,7 +20,7 @@ conflict_policy = "stop_and_ask"
 template_path = "template"
 sources_template_path = "template/sources"
 target = "user_selected_project"
-copy_policy = "merge_missing_stop_on_conflict"
+copy_policy = "merge_missing_preserve_existing_stop_on_type_conflict"
 required_directories = [
   "sources/strategy",
   "sources/book-notes",
@@ -25,6 +28,48 @@ required_directories = [
   "sources/wiki",
   "sources/graphify-out",
 ]
+
+[installation]
+candidate_version = "0.1.0"
+manager = "scripts/manage_install.py"
+state_schema_version = 1
+managed_entries = [
+  "my-real-second-brain-setup",
+  "solopreneur-profile",
+  "book-notes",
+  "knowledge-source-retrieval",
+  "socratic-dialogue",
+]
+
+[registrations.agents_workspace]
+clients = ["codex", "google-antigravity-desktop", "google-antigravity-cli"]
+scope = "workspace"
+path = "<workspace>/.agents/skills"
+
+[registrations.claude_workspace]
+clients = ["claude-code"]
+scope = "workspace"
+path = "<workspace>/.claude/skills"
+
+[registrations.codex_user]
+clients = ["codex"]
+scope = "user"
+path = "$HOME/.agents/skills"
+
+[registrations.claude_user]
+clients = ["claude-code"]
+scope = "user"
+path = "$HOME/.claude/skills"
+
+[registrations.antigravity_desktop_user]
+clients = ["google-antigravity-desktop"]
+scope = "user"
+path = "$HOME/.gemini/config/skills"
+
+[registrations.antigravity_cli_user]
+clients = ["google-antigravity-cli"]
+scope = "user"
+path = "$HOME/.gemini/antigravity-cli/skills"
 
 [[skills]]
 id = "my-real-second-brain-setup"
@@ -68,12 +113,29 @@ package = "graphifyy"
 version = "0.9.35"
 package_spec = "graphifyy==0.9.35"
 source = "https://pypi.org/project/graphifyy/"
+source_version = "https://pypi.org/project/graphifyy/0.9.35/"
 upstream = "https://github.com/Graphify-Labs/graphify"
+upstream_release = "https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.35"
+upstream_tag = "v0.9.35"
+upstream_commit = "9f25a3aaa1050913c2d8a1b9f0b0f0ed18296abd"
+license_spdx = "Apache-2.0"
+license_url = "https://github.com/Graphify-Labs/graphify/blob/v0.9.35/LICENSE"
+wheel_sha256 = "97f5aa68a2779fe0bf14ce0419c3bfa42afeca2f4dc0c3db93b922c191f6967f"
+sdist_sha256 = "a972d4b0ae73b0bbca1b5a56f0053b2a57a99f9b6f5f8437205c8a0d1f1d5f12"
+latest_observed = "0.9.53"
+latest_source_version = "https://pypi.org/project/graphifyy/0.9.53/"
+latest_release = "https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.53"
+latest_checked_on = "2026-08-31"
+version_decision = "retain_pin_pending_isolated_compatibility_test"
+support_status = "optional_pinned_candidate_requires_external_acceptance"
 install_method = "uv_tool"
 install_order = 40
 skill_install_order = 50
 skill_install_scope = "project"
-skill_install_template = "graphify install --project --platform {agent_platform}"
+skill_install_templates = [
+  "graphify install --project --platform agents",
+  "graphify install --project --platform codex",
+]
 verify_commands = ["graphify --version"]
 replaceable = true
 
@@ -85,13 +147,31 @@ version = "0.8.0"
 extras = ["browser"]
 package_spec = "notebooklm-py[browser]==0.8.0"
 source = "https://pypi.org/project/notebooklm-py/"
+source_version = "https://pypi.org/project/notebooklm-py/0.8.0/"
 upstream = "https://github.com/teng-lin/notebooklm-py"
+upstream_release = "https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.0"
+upstream_tag = "v0.8.0"
+upstream_commit = "8fb61cb125be9f59dfe163561e355922967c604a"
+license_spdx = "MIT"
+license_url = "https://github.com/teng-lin/notebooklm-py/blob/v0.8.0/LICENSE"
+wheel_sha256 = "2e3947e023494e4f561c3a86155058cfb541c5ae79da2aaeb13817f5e67bc9f1"
+sdist_sha256 = "897a3b14ef9046080f377959de6c863c544ca21f106458f21243650d3d9a3579"
+latest_observed = "0.8.1"
+latest_source_version = "https://pypi.org/project/notebooklm-py/0.8.1/"
+latest_release = "https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.1"
+latest_checked_on = "2026-08-31"
+version_decision = "retain_pin_pending_isolated_compatibility_test"
+support_status = "optional_pinned_candidate_requires_external_acceptance"
 install_method = "uv_tool"
 install_order = 41
 skill_install_order = 51
 skill_install_scope = "project"
-skill_install_template = "notebooklm skill install --scope project --target {skill_target}"
-verify_commands = ["notebooklm --version", "notebooklm auth check --test --json"]
+skill_install_templates = [
+  "notebooklm skill install --scope project --target agents",
+  "notebooklm skill install --scope project --target claude",
+]
+local_verify_commands = ["notebooklm --version", "notebooklm skill status --scope project --target all"]
+remote_verify_commands = ["notebooklm auth check --test --json", "notebooklm list --json"]
 requires_user_login = true
 replaceable = true
 unofficial_api = true

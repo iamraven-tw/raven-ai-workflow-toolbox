@@ -7,10 +7,12 @@
 - 專案：https://github.com/Graphify-Labs/graphify
 - 作者／維護者：Graphify Labs、Safi Shamsi 與貢獻者
 - 本專案中的用途：本地知識圖譜、跨文件關聯、群聚分析、查詢與互動式 HTML 視覺化
-- 整合方式：可替換的預設後端；由 AI Agent 依 `install.manifest.toml` 安裝固定版本；上游通用技能不複製到本倉庫
+- 整合方式：可替換的預設後端；使用者同意後才由 AI Agent 依 `install.manifest.toml` 安裝固定版本；上游通用技能不複製到本倉庫
+- 候選固定版本：`graphifyy==0.9.35`；[PyPI 版本頁](https://pypi.org/project/graphifyy/0.9.35/)；[上游發行頁](https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.35)
 - 授權：目前產品主體採 Apache License 2.0；NOTICE 說明部分重新授權前的內容仍保留 MIT 條款
-- 上游 NOTICE：https://github.com/Graphify-Labs/graphify/blob/v8/NOTICE
-- 上游 LICENSE：https://github.com/Graphify-Labs/graphify/blob/v8/LICENSE
+- 固定版本 NOTICE：https://github.com/Graphify-Labs/graphify/blob/v0.9.35/NOTICE
+- 固定版本 LICENSE：https://github.com/Graphify-Labs/graphify/blob/v0.9.35/LICENSE
+- 固定版本 MIT 歷史條款：https://github.com/Graphify-Labs/graphify/blob/v0.9.35/LICENSE-MIT
 
 若未來把 Graphify 程式碼或衍生內容納入本倉庫，必須保留適用的 LICENSE、NOTICE、著作權與修改聲明。
 
@@ -19,9 +21,10 @@
 - 專案：https://github.com/teng-lin/notebooklm-py
 - 作者／維護者：Teng Lin 與貢獻者
 - 本專案中的用途：建立及管理 Notebook、加入來源、查詢資料與取得引用
-- 整合方式：可替換的預設後端；由 AI Agent 依 `install.manifest.toml` 安裝固定版本；上游通用技能不複製到本倉庫
+- 整合方式：可替換的預設後端；使用者同意後才由 AI Agent 依 `install.manifest.toml` 安裝固定版本；上游通用技能不複製到本倉庫
+- 候選固定版本：`notebooklm-py[browser]==0.8.0`；[PyPI 版本頁](https://pypi.org/project/notebooklm-py/0.8.0/)；[上游發行頁](https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.0)
 - 授權：MIT License
-- 上游 LICENSE：https://github.com/teng-lin/notebooklm-py/blob/main/LICENSE
+- 固定版本 LICENSE：https://github.com/teng-lin/notebooklm-py/blob/v0.8.0/LICENSE
 
 `notebooklm-py` 是非官方社群專案，使用可能隨時變動的未公開 Google 介面。本專案不代表 Google，也不保證外部介面持續相容。
 
