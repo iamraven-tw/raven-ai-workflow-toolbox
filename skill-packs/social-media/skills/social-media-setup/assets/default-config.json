@@ -1,0 +1,24 @@
+{
+  "schema_version": 3,
+  "strategy": {
+    "status": "not_configured",
+    "primary_goal": null,
+    "audience_summary": null,
+    "content_pillars": [],
+    "platform_roles": {
+      "youtube": null,
+      "instagram": null,
+      "facebook": null,
+      "threads": null,
+      "substack": null
+    },
+    "strategy_source": "sources/strategy/social-media-strategy-and-insights.md"
+  },
+  "integrations": {
+    "youtube": {"selected": false, "requested_capabilities": [], "authorization_profile": "not_selected", "requested_permissions": [], "declined_permissions": [], "preferred_interface": "not_selected", "status": "not_configured", "verification": {"api_app": "not_started", "user_auth": "not_started", "platform_read": "not_started", "remote_write": "not_requested"}, "last_verified_at": null},
+    "instagram": {"selected": false, "requested_capabilities": [], "authorization_profile": "not_selected", "requested_permissions": [], "declined_permissions": [], "preferred_interface": "not_selected", "status": "not_configured", "verification": {"api_app": "not_started", "user_auth": "not_started", "platform_read": "not_started", "remote_write": "not_requested"}, "last_verified_at": null},
+    "facebook": {"selected": false, "requested_capabilities": [], "authorization_profile": "not_selected", "requested_permissions": [], "declined_permissions": [], "preferred_interface": "not_selected", "status": "not_configured", "verification": {"api_app": "not_started", "user_auth": "not_started", "platform_read": "not_started", "remote_write": "not_requested"}, "last_verified_at": null},
+    "threads": {"selected": false, "requested_capabilities": [], "authorization_profile": "not_selected", "requested_permissions": [], "declined_permissions": [], "preferred_interface": "not_selected", "status": "not_configured", "verification": {"api_app": "not_started", "user_auth": "not_started", "platform_read": "not_started", "remote_write": "not_requested"}, "last_verified_at": null},
+    "substack": {"selected": false, "requested_capabilities": [], "authorization_profile": "not_selected", "requested_permissions": [], "declined_permissions": [], "preferred_interface": "not_selected", "status": "not_configured", "verification": {"api_app": "not_started", "user_auth": "not_started", "platform_read": "not_started", "remote_write": "not_requested"}, "last_verified_at": null}
+  }
+}

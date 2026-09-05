@@ -1,0 +1,7 @@
+interface:
+  display_name: "社群媒體工作流設定"
+  short_description: "初始化策略、平台 API、OAuth 與本機安全憑證"
+  default_prompt: "使用 $social-media-setup 檢查目前社群設定。選取平台時預設提出技能包已支援管理功能所需的完整核心權限，逐項說明並讓我在 OAuth 前刪減；若選取 Meta 任一平台，請一併詢問是否設定 Facebook、Instagram 與 Threads。由 AI 完成可安全代辦的 App、OAuth 設定與讀回驗證；未另行指定時，把憑證存入作業系統原生憑證庫，並在外部操作及一般設定寫入前分別預覽。"
+
+policy:
+  allow_implicit_invocation: true

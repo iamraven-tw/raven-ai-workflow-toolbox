@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "非敏感 OAuth 執行狀態",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "platform", "connection", "status", "revision", "parts", "attempt", "updated_at", "contains_credentials"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "platform": {"enum": ["facebook", "youtube"]},
+    "connection": {"type": "string", "pattern": "^[a-z][a-z0-9-]{0,19}$"},
+    "status": {"enum": ["not_configured", "configured", "authorizing", "exchanging", "refreshing", "saving", "ready", "reauth_required", "permission_mismatch", "target_mismatch", "expired", "invalid_callback", "cancelled", "timeout", "read_failed", "rate_limited", "remote_result_unknown", "storage_incomplete", "refresh_required"]},
+    "revision": {"type": ["string", "null"], "pattern": "^[0-9a-f]{16}$"},
+    "attempt": {"type": ["string", "null"], "pattern": "^[0-9a-f]{16}$"},
+    "parts": {"type": "integer", "minimum": 0, "maximum": 128},
+    "updated_at": {"type": "integer", "minimum": 0},
+    "contains_credentials": {"const": false}
+  }
+}

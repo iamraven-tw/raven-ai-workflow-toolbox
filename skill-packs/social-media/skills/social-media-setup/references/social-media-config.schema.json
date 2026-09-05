@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-workflow-toolbox/social-media-config.schema.json",
+  "title": "社群媒體一般設定",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "strategy", "integrations"],
+  "properties": {
+    "schema_version": {"const": 3},
+    "strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "primary_goal", "audience_summary", "content_pillars", "platform_roles", "strategy_source"],
+      "properties": {
+        "status": {"enum": ["not_configured", "partial", "configured"]},
+        "primary_goal": {"type": ["string", "null"], "maxLength": 500},
+        "audience_summary": {"type": ["string", "null"], "maxLength": 1000},
+        "content_pillars": {"type": "array", "maxItems": 20, "items": {"type": "string", "minLength": 1, "maxLength": 200}, "uniqueItems": true},
+        "platform_roles": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["youtube", "instagram", "facebook", "threads", "substack"],
+          "properties": {
+            "youtube": {"type": ["string", "null"], "maxLength": 500},
+            "instagram": {"type": ["string", "null"], "maxLength": 500},
+            "facebook": {"type": ["string", "null"], "maxLength": 500},
+            "threads": {"type": ["string", "null"], "maxLength": 500},
+            "substack": {"type": ["string", "null"], "maxLength": 500}
+          }
+        },
+        "strategy_source": {"type": "string", "pattern": "^(?!/)(?!.*\\.\\.).+\\.md$", "maxLength": 300}
+      }
+    },
+    "integrations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["youtube", "instagram", "facebook", "threads", "substack"],
+      "properties": {
+        "youtube": {"$ref": "#/$defs/integration"},
+        "instagram": {"$ref": "#/$defs/integration"},
+        "facebook": {"$ref": "#/$defs/integration"},
+        "threads": {"$ref": "#/$defs/integration"},
+        "substack": {"$ref": "#/$defs/integration"}
+      }
+    }
+  },
+  "$defs": {
+    "integration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selected", "requested_capabilities", "authorization_profile", "requested_permissions", "declined_permissions", "preferred_interface", "status", "verification", "last_verified_at"],
+      "properties": {
+        "selected": {"type": "boolean"},
+        "requested_capabilities": {"type": "array", "uniqueItems": true, "items": {"enum": ["account_read", "publish", "public_comments", "analytics", "direct_messages"]}},
+        "authorization_profile": {"enum": ["not_selected", "full_management", "custom"]},
+        "requested_permissions": {"type": "array", "maxItems": 100, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 300, "pattern": "^\\S(?:.*\\S)?$"}},
+        "declined_permissions": {"type": "array", "maxItems": 100, "uniqueItems": true, "items": {"type": "string", "minLength": 1, "maxLength": 300, "pattern": "^\\S(?:.*\\S)?$"}},
+        "preferred_interface": {"enum": ["not_selected", "official_api", "official_connector", "reliable_cli", "controlled_browser", "computer_use", "manual"]},
+        "status": {"enum": ["not_configured", "planned", "requires_user_action", "locally_prepared", "partially_verified", "verified"]},
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["api_app", "user_auth", "platform_read", "remote_write"],
+          "properties": {
+            "api_app": {"enum": ["not_applicable", "not_started", "planned", "requires_user_action", "configured", "verified", "failed", "unknown"]},
+            "user_auth": {"enum": ["not_applicable", "not_started", "planned", "requires_user_action", "verified", "failed", "unknown"]},
+            "platform_read": {"enum": ["not_started", "planned", "requires_user_action", "verified", "empty", "permission_denied", "failed", "unknown"]},
+            "remote_write": {"enum": ["not_requested", "not_authorized", "not_tested", "requires_user_action", "verified", "failed", "unknown"]}
+          }
+        },
+        "last_verified_at": {"type": ["string", "null"], "format": "date-time"}
+      }
+    }
+  }
+}

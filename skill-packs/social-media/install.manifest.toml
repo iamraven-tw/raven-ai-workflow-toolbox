@@ -1,0 +1,298 @@
+schema_version = 1
+manifest_type = "social-media-install"
+project_id = "social-media"
+display_name = "社群媒體管理工作流"
+entrypoint = "INSTALL.md"
+checked_on = "2026-09-05"
+status = "local_candidate_first_skill"
+installable = true
+requires_network = false
+support_level = "first_skill_installable_candidate_not_formally_supported"
+license_spdx = "Apache-2.0"
+
+[runtime]
+local_strategy_requires_network = false
+platform_capability_refresh_requires_network = true
+external_account_actions_require_explicit_authorization = true
+
+[installation]
+candidate_version = "0.1.0"
+manager = "scripts/manage_install.py"
+manager_requires_python = ">=3.11"
+manager_network_access = false
+state_schema_version = 1
+conflict_policy = "stop_without_overwrite"
+managed_entries = ["social-media-setup"]
+
+[workspace]
+configuration_manager = "skills/social-media-setup/scripts/manage_workspace.py"
+configuration_schema = "skills/social-media-setup/references/social-media-config.schema.json"
+configuration_schema_version = 3
+state_schema = "skills/social-media-setup/references/setup-state.schema.json"
+template_path = "skills/social-media-setup/assets/default-config.json"
+configuration_target = "<workspace>/social-media/config.json"
+state_target = "<workspace>/.local/social-media/setup-state.json"
+credential_policy = "never_store_in_skill_template_general_config_or_setup_state"
+
+[credential_storage]
+helper = "skills/social-media-setup/scripts/credential_store.py"
+registry_schema = "skills/social-media-setup/references/credential-references.schema.json"
+registry_schema_version = 2
+terminal_helper = "skills/social-media-setup/scripts/credential_terminal.py"
+registry_target = "<workspace>/.local/social-media/credential-references.json"
+default_macos_backend = "macos-keychain"
+default_windows_backend = "windows-credential-manager"
+unsupported_os_policy = "stop_without_plaintext_fallback"
+interactive_input = "visible_terminal_hidden_prompt"
+secret_cli_output = false
+
+[acceptance_policy]
+live_acceptance = "deferred_until_all_toolboxes_complete"
+default_tests = "fictional_local_only"
+native_test_opt_in = "SOCIAL_NATIVE_ACCEPTANCE=1"
+
+[oauth_runtime]
+entrypoint = "skills/social-media-setup/scripts/oauth_callback.py"
+engine = "skills/social-media-setup/scripts/oauth_runtime.py"
+transport = "skills/social-media-setup/scripts/oauth_http.py"
+state_schema = "skills/social-media-setup/references/oauth-state.schema.json"
+routes = ["facebook", "youtube"]
+facebook_flow = "web_server_https_code_exchange_selected_page_token"
+youtube_flow = "desktop_loopback_pkce_code_exchange_refresh"
+status = "implemented_fictional_tests_live_deferred"
+
+[implementation_gaps]
+instagram_threads_oauth_adapters = "not_implemented_do_not_reuse_facebook_runtime"
+messenger_webhook_and_message_actions = "not_implemented_in_setup_requires_community_skill_and_authorized_infrastructure"
+
+[registrations.agents_workspace]
+clients = ["codex", "google-antigravity-desktop", "google-antigravity-cli"]
+scope = "workspace"
+path = "<workspace>/.agents/skills"
+
+[registrations.claude_workspace]
+clients = ["claude-code"]
+scope = "workspace"
+path = "<workspace>/.claude/skills"
+
+[registrations.codex_user]
+clients = ["codex"]
+scope = "user"
+path = "$HOME/.agents/skills"
+
+[registrations.claude_user]
+clients = ["claude-code"]
+scope = "user"
+path = "$HOME/.claude/skills"
+
+[registrations.antigravity_desktop_user]
+clients = ["google-antigravity-desktop"]
+scope = "user"
+path = "$HOME/.gemini/config/skills"
+
+[registrations.antigravity_cli_user]
+clients = ["google-antigravity-cli"]
+scope = "user"
+path = "$HOME/.gemini/antigravity-cli/skills"
+
+[[skills]]
+id = "social-media-setup"
+source_path = "skills/social-media-setup"
+required = true
+install_order = 10
+status = "local_candidate"
+
+[[planned_skills]]
+id = "social-content-planning"
+status = "not_implemented"
+sequence = 2
+
+[[planned_skills]]
+id = "social-content-writing"
+status = "not_implemented"
+sequence = 3
+
+[[planned_skills]]
+id = "social-image-production"
+status = "not_implemented"
+sequence = 4
+
+[[planned_skills]]
+id = "social-content-publishing"
+status = "not_implemented"
+sequence = 5
+
+[[planned_skills]]
+id = "social-community-management"
+status = "not_implemented"
+sequence = 6
+
+[[planned_skills]]
+id = "social-performance-analysis"
+status = "not_implemented"
+sequence = 7
+
+[[readiness_gates]]
+id = "static_structure_and_documents"
+status = "complete_local"
+
+[[readiness_gates]]
+id = "local_skill_discovery"
+status = "complete_codex_0_144_1_other_clients_not_tested"
+
+[[readiness_gates]]
+id = "api_packages_installable"
+status = "not_applicable_no_third_party_api_packages_in_first_skill"
+
+[[readiness_gates]]
+id = "local_credential_storage"
+status = "implementation_and_fictional_backend_tests_complete_macos_windows_live_not_performed"
+
+[[readiness_gates]]
+id = "oauth_runtime_fictional"
+status = "facebook_pages_youtube_passed_no_live_evidence"
+
+[[readiness_gates]]
+id = "user_login_and_oauth"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "platform_read"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "test_publish"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "second_computer_acceptance"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "formal_public_support"
+status = "not_supported"
+
+[[official_references]]
+id = "facebook-manual-oauth"
+url = "https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "facebook-long-lived-token"
+url = "https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "facebook-login-security"
+url = "https://developers.facebook.com/docs/facebook-login/security/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "google-desktop-oauth"
+url = "https://developers.google.com/identity/protocols/oauth2/native-app"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "youtube-data-api-overview"
+url = "https://developers.google.com/youtube/v3/getting-started"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "google-oauth-scope-list"
+url = "https://developers.google.com/identity/protocols/oauth2/scopes"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "youtube-api-policies"
+url = "https://developers.google.com/youtube/terms/developer-policies"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "meta-app-review"
+url = "https://developers.facebook.com/docs/app-review/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "meta-permissions"
+url = "https://developers.facebook.com/docs/permissions/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "meta-create-app"
+url = "https://developers.facebook.com/docs/development/create-an-app/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "facebook-page-token-readback"
+url = "https://www.postman.com/meta/facebook/request/bqfxwbp/get-access-tokens-of-pages-you-manage"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "meta-messenger-platform"
+url = "https://www.postman.com/meta/messenger-platform-api/documentation/iyp204x/messenger-platform-api"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "meta-marketing-api"
+url = "https://www.postman.com/meta/facebook-marketing-api/overview"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "instagram-platform"
+url = "https://www.postman.com/meta/instagram/overview"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "instagram-login"
+url = "https://www.postman.com/meta/instagram/folder/6raa77c/instagram-api-with-instagram-login"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "threads-official-workspace"
+url = "https://www.postman.com/meta/threads/overview"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "threads-api-documentation"
+url = "https://www.postman.com/meta/threads/documentation/dht3nzz/threads-api"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "apple-keychain-items"
+url = "https://developer.apple.com/documentation/security/keychain-items"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "apple-generic-password"
+url = "https://developer.apple.com/documentation/security/ksecclassgenericpassword"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "microsoft-credwritew"
+url = "https://learn.microsoft.com/en-us/windows/win32/api/wincred/nf-wincred-credwritew"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "microsoft-credreadw"
+url = "https://learn.microsoft.com/en-us/windows/win32/api/wincred/nf-wincred-credreadw"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "microsoft-credentialw"
+url = "https://learn.microsoft.com/en-us/windows/win32/api/wincred/ns-wincred-credentialw"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "python-getpass"
+url = "https://docs.python.org/3/library/getpass.html"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "substack-api-terms"
+url = "https://substack.com/api-tos"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "substack-ai-assistant-mcp"
+url = "https://support.substack.com/hc/en-us/articles/50834026608916-How-to-connect-Substack-to-your-AI-Assistant"
+checked_on = "2026-09-05"
