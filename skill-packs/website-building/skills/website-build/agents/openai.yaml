@@ -1,0 +1,7 @@
+interface:
+  display_name: "官網建置"
+  short_description: "從起始範本建立 Astro 專案、填入設定、產生佔位素材、建置並自動檢查"
+  default_prompt: "使用 $website-build 依 website/config.json 建立網站專案。先用 plan 列出目標目錄、可選頁面與佔位素材讓我確認一次，然後建立專案、安裝固定版本套件、建置、啟動預覽並自動截圖檢查。不要登入 Cloudflare、不要部署。"
+
+policy:
+  allow_implicit_invocation: true

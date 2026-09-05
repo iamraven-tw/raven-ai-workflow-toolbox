@@ -1,0 +1,83 @@
+---
+// 夜間工作室首頁：像軟體產品頁。置中大標、版本徽章、下方一個「終端機面板」列出服務指令；
+// 右側暗色器材照片；功能格附等寬標籤與狀態點；信任做成系統狀態列。
+import { site } from '../../../site.config.mjs';
+import { ctaHref, ctaAttrs } from '../../lib/nav';
+const slug = (text: string) => text.replace(/\s+/g, '-').toLowerCase();
+const escape = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const terminal = site.offerings
+  .map((offering) => `<span style="color:#7170ff">$</span> run <span style="color:#f7f8f8">${escape(slug(offering.name))}</span>\n  <span style="color:#8a8f98">${escape(offering.summary)}</span>\n  <span style="color:#27a644">✓ ready</span>`)
+  .join('\n\n');
+---
+
+<section class="t-container text-center" style="padding-block: 112px 56px;">
+  <span class="t-tag"><span class="mr-2 inline-block h-1.5 w-1.5 rounded-full" style="background:#27a644;"></span>{site.name} · 現正接案</span>
+  <h1 class="t-h1 mx-auto mt-8 max-w-4xl">{site.positioning}</h1>
+  <p class="t-lead mx-auto mt-7 max-w-2xl">{site.audience}</p>
+  <div class="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+    <a href={ctaHref} class="t-btn" {...ctaAttrs}>{site.cta.label}</a>
+    <a href="/services" class="t-btn-secondary">查看所有功能</a>
+  </div>
+</section>
+
+<section class="t-container pb-24">
+  <div class="grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+    <div class="t-media overflow-hidden" style="background: var(--ns-panel);">
+      <div class="flex items-center gap-1.5 border-b px-4 py-3" style="border-color: var(--ns-border-subtle);">
+        <span class="h-2.5 w-2.5 rounded-full" style="background:#3e3e44;"></span><span class="h-2.5 w-2.5 rounded-full" style="background:#3e3e44;"></span><span class="h-2.5 w-2.5 rounded-full" style="background:#3e3e44;"></span>
+        <span class="ml-3 text-[12px]" style="font-family: var(--ns-mono); color: var(--ns-text-4);">{slug(site.name)} — session</span>
+      </div>
+      <pre class="overflow-x-auto p-6 text-[13.5px] leading-[1.9]" style="font-family: var(--ns-mono); color: var(--ns-text-2);"><code set:html={terminal} /></pre>
+    </div>
+    <img src="/images/samples/dark-desk.jpg" alt="" width="1200" height="800" class="t-media h-full w-full" style="object-fit: cover; min-height: 280px; filter: saturate(0.6) contrast(1.05);" />
+  </div>
+</section>
+
+<section class="t-section-alt">
+  <div class="t-container t-section">
+    <p class="t-eyebrow">Features</p>
+    <h2 class="t-h2 mt-4 max-w-3xl">三個模組，各自獨立，也能串起來</h2>
+    <div class="t-grid-3 mt-12">
+      {site.offerings.map((offering, index) => (
+        <article class="t-card">
+          <div class="flex items-center justify-between">
+            <span class="t-eyebrow" style="color: var(--ns-text-4);">module-{String(index + 1).padStart(2, '0')}</span>
+            <span class="t-tag" style="font-size: 11px;">stable</span>
+          </div>
+          <h3 class="t-card-title mt-6">{offering.name}</h3>
+          <p class="t-muted mt-3 text-[15px]" style="letter-spacing: -0.01em;">{offering.summary}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+{site.trustSignals.length > 0 && (
+  <section class="t-container t-section">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+      <img src="/images/samples/dark-flatlay.jpg" alt="" width="1200" height="800" class="t-media w-full" style="aspect-ratio: 4 / 3; object-fit: cover; filter: saturate(0.5);" />
+      <div>
+        <p class="t-eyebrow">System status</p>
+        <h2 class="t-h2 mt-4">全部綠燈</h2>
+        <ul class="mt-8 divide-y" style="border-color: var(--ns-border-subtle);">
+          {site.trustSignals.map((signal) => (
+            <li class="flex items-center justify-between gap-6 py-4" style="border-color: var(--ns-border-subtle);">
+              <span style="color: var(--ns-text);">{signal}</span>
+              <span class="shrink-0 text-[12px]" style="font-family: var(--ns-mono); color: #27a644;">● operational</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="t-container pb-24">
+  <div class="rounded-[12px] p-px" style="background: linear-gradient(135deg, rgba(113,112,255,0.6), rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.05) 60%, rgba(113,112,255,0.6));">
+    <div class="rounded-[11px] px-8 py-14 text-center md:px-16" style="background: var(--ns-panel);">
+      <h2 class="t-h2 mx-auto max-w-2xl">準備好開始了嗎？</h2>
+      <p class="t-lead mx-auto mt-5 max-w-xl">一封信說明你的情況，我會告訴你值不值得做。</p>
+      <a href={ctaHref} class="t-btn mt-9" {...ctaAttrs}>{site.cta.label}</a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,27 @@
+{
+  "name": "solo-site-starter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "AI Workflow Toolbox 官網打造技能包的去識別化 Astro 起始範本。品牌、文案與圖片皆為虛構佔位，請由 website-build 依 website/config.json 產生。",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/rss": "4.0.17",
+    "@astrojs/sitemap": "3.7.1",
+    "@tailwindcss/typography": "0.5.19",
+    "astro": "6.0.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.2.2",
+    "tailwindcss": "4.2.2"
+  }
+}

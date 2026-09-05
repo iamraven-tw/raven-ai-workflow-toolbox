@@ -1,0 +1,21 @@
+---
+// 遊樂場：全黑頁尾、白色文字、等寬大寫小標。
+import { site } from '../../../site.config.mjs';
+import { footerLinks } from '../../lib/nav';
+const year = new Date().getFullYear();
+---
+
+<footer style="background: #000; color: #fff;">
+  <div class="t-container grid gap-10 py-16 md:grid-cols-2">
+    <div>
+      <p class="t-eyebrow" style="color: rgba(255,255,255,0.6);">{site.name}</p>
+      <p class="mt-4 text-[26px]" style="font-weight: 300; letter-spacing: -0.01em; line-height: 1.35;">{site.positioning}</p>
+    </div>
+    <nav class="flex flex-wrap gap-x-8 gap-y-3 text-[16px] md:justify-end" aria-label="頁尾導覽">
+      {footerLinks.map((link) => (
+        <a href={link.href} style="color: #fff; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px;">{link.label}</a>
+      ))}
+    </nav>
+  </div>
+  <div class="t-container pb-8 text-[12px]" style="font-family: var(--pg-mono); letter-spacing: 0.6px; text-transform: uppercase; color: rgba(255,255,255,0.6);">© {year} {site.name}</div>
+</footer>

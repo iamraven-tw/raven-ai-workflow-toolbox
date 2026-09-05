@@ -1,0 +1,24 @@
+---
+// 作品集：卡片網格，內容為佔位。啟用條件：pages.optional 含 portfolio。
+import BaseLayout from '@theme/BaseLayout.astro';
+import { site } from '../../site.config.mjs';
+import { ctaHref, ctaAttrs } from '../lib/nav';
+const items = [1, 2, 3];
+---
+
+<BaseLayout title="作品集" description={`${site.name} 的作品`} canonical="/portfolio">
+  <section class="t-container t-section">
+    <p class="t-eyebrow">作品集</p>
+    <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">作品集</h1>
+    <div class="t-grid-3 mt-14">
+      {items.map((item) => (
+        <article class="t-card">
+          <img src="/images/placeholders/hero.svg" alt="" width="960" height="720" class="t-media w-full" />
+          <h2 class="t-card-title mt-5">作品 {item}（佔位）</h2>
+          <p class="t-muted mt-2">一句話說明這件作品解決了什麼問題。</p>
+        </article>
+      ))}
+    </div>
+    <a href={ctaHref} class="t-btn mt-14" {...ctaAttrs}>{site.cta.label}</a>
+  </section>
+</BaseLayout>

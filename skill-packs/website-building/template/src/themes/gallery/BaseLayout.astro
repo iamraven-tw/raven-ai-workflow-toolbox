@@ -1,0 +1,54 @@
+---
+// 留白畫廊主題的全站版面。
+import '../../styles/global.css';
+import './theme.css';
+import Header from './Header.astro';
+import Footer from './Footer.astro';
+import { site } from '../../../site.config.mjs';
+import theme from './theme.json';
+
+interface Props { title: string; description?: string; ogImage?: string; canonical?: string; }
+const { title, description = site.positioning, ogImage = '/og-image.png', canonical } = Astro.props;
+const fullTitle = title === site.name ? site.name : `${title} | ${site.name}`;
+const origin = site.url.replace(/\/$/, '');
+const canonicalUrl = canonical ? `${origin}${canonical}` : undefined;
+const robots = site.indexing === 'index' ? 'index, follow' : 'noindex, nofollow';
+// 主題字型：site.fonts 為 google 時載入 theme.json 指定的 Google Fonts；system 時完全不發外部請求。
+const fontsHref = site.fonts === 'google' ? theme.google_fonts.href : null;
+---
+
+<!doctype html>
+<html lang={site.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{fullTitle}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${origin}${ogImage}`} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${origin}${ogImage}`} />
+    {fontsHref && <link rel="preconnect" href="https://fonts.googleapis.com" />}
+    {fontsHref && <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />}
+    {fontsHref && <link rel="stylesheet" href={fontsHref} />}
+  </head>
+  <body class="min-h-screen antialiased">
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] t-btn">跳至主要內容</a>
+    <Header />
+    <main id="main-content"><slot /></main>
+    <Footer />
+  </body>
+</html>

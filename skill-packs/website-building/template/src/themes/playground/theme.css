@@ -1,0 +1,65 @@
+/*
+  主題：遊樂場（依 Figma 設計指引實作）
+  規則摘要：介面層只有 #000000 與 #ffffff；色彩只出現在 Hero 的多色漸層（電光綠、亮黃、深紫、桃紅）；
+  按鈕一律藥丸（50px）或圓形（50%），焦點框 dashed 2px；內文輕字重 300–400、字距略負；
+  等寬大寫小標帶正字距；大標 64–86px 字重 400、字距 -2%；卡片無邊框、圓角 8px。
+*/
+:root {
+  --pg-black: #000000;
+  --pg-white: #ffffff;
+  --pg-glass-dark: rgba(0, 0, 0, 0.08);
+  --pg-glass-light: rgba(255, 255, 255, 0.16);
+  --pg-gradient: linear-gradient(120deg, #0acf83 0%, #ffd400 30%, #a259ff 65%, #ff4fa3 100%);
+  --pg-sans: "Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "SF Pro Display", system-ui, sans-serif;
+  --pg-mono: "SF Mono", ui-monospace, Menlo, monospace;
+}
+body {
+  background: var(--pg-white);
+  color: var(--pg-black);
+  font-family: var(--pg-sans);
+  font-size: 16px;
+  font-weight: 300;
+  line-height: 1.45;
+  letter-spacing: -0.009em;
+  font-kerning: normal;
+}
+*:focus-visible { outline: 2px dashed var(--pg-black); outline-offset: 3px; }
+.t-container { max-width: 1280px; margin-inline: auto; padding-inline: 24px; }
+.t-section { padding-block: 104px; }
+@media (max-width: 767px) { .t-section { padding-block: 56px; } }
+.t-section-alt { background: #f0f0f0; }
+.t-hero-gradient { background: var(--pg-gradient); color: var(--pg-white); }
+.t-eyebrow { font-family: var(--pg-mono); font-size: 13px; font-weight: 400; letter-spacing: 0.6px; text-transform: uppercase; color: var(--pg-black); }
+.t-hero-gradient .t-eyebrow { color: var(--pg-white); }
+.t-h1, .t-h2, .t-h3, .t-card-title { color: var(--pg-black); }
+.t-h1 { font-size: clamp(44px, 7vw, 86px); line-height: 1; letter-spacing: -0.02em; font-weight: 400; }
+.t-h2 { font-size: clamp(34px, 5vw, 64px); line-height: 1.1; letter-spacing: -0.015em; font-weight: 400; }
+.t-h3 { font-size: 26px; line-height: 1.35; letter-spacing: -0.01em; font-weight: 500; }
+.t-card-title { font-size: 24px; line-height: 1.45; font-weight: 700; letter-spacing: 0; }
+.t-lead { font-size: 20px; line-height: 1.4; letter-spacing: -0.007em; font-weight: 300; }
+.t-muted { color: rgba(0, 0, 0, 0.64); }
+.t-hero-gradient .t-h1, .t-hero-gradient .t-lead, .t-hero-gradient .t-muted { color: var(--pg-white); }
+.t-card { background: var(--pg-white); border-radius: 8px; padding: 28px; box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06); }
+.t-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--pg-black); color: var(--pg-white); font-size: 16px; font-weight: 400; padding: 10px 20px 11px; border-radius: 50px; text-decoration: none; letter-spacing: -0.009em; transition: transform 120ms; }
+.t-btn:hover { transform: translateY(-1px); }
+.t-btn-secondary { display: inline-flex; align-items: center; justify-content: center; background: var(--pg-glass-dark); color: var(--pg-black); font-size: 16px; font-weight: 400; padding: 10px 20px 11px; border-radius: 50px; text-decoration: none; letter-spacing: -0.009em; }
+.t-btn-secondary:hover { background: rgba(0,0,0,0.14); }
+.t-hero-gradient .t-btn { background: var(--pg-white); color: var(--pg-black); }
+.t-hero-gradient .t-btn-secondary { background: var(--pg-glass-light); color: var(--pg-white); }
+.t-link { color: var(--pg-black); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.t-tag { display: inline-block; font-family: var(--pg-mono); font-size: 12px; letter-spacing: 0.6px; text-transform: uppercase; color: var(--pg-black); border: 1px solid var(--pg-black); border-radius: 50px; padding: 3px 10px; }
+.t-divider { border: 0; border-top: 1px solid var(--pg-black); }
+.t-grid-3 { display: grid; gap: 24px; }
+.t-grid-2 { display: grid; gap: 24px; }
+@media (min-width: 640px) { .t-grid-3, .t-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .t-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.t-list-item { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--pg-black); border-radius: 50px; padding: 14px 24px; text-decoration: none; color: var(--pg-black); font-weight: 400; }
+.t-list-item:hover { background: var(--pg-black); color: var(--pg-white); }
+.t-note { border: 2px dashed var(--pg-black); border-radius: 8px; padding: 18px 22px; font-size: 15px; }
+.t-details { border: 1px solid var(--pg-black); border-radius: 8px; padding: 18px 22px; }
+.t-details summary { cursor: pointer; font-weight: 500; }
+.t-media { border-radius: 8px; background: #f0f0f0; }
+.t-prose { --tw-prose-body: var(--pg-black); --tw-prose-headings: var(--pg-black); --tw-prose-links: var(--pg-black); --tw-prose-bold: var(--pg-black); --tw-prose-quotes: var(--pg-black); --tw-prose-quote-borders: var(--pg-black); --tw-prose-code: var(--pg-black); --tw-prose-pre-bg: var(--pg-black); --tw-prose-pre-code: var(--pg-white); --tw-prose-bullets: var(--pg-black); --tw-prose-hr: var(--pg-black); font-weight: 300; }
+.t-prose h2, .t-prose h3 { font-weight: 500; letter-spacing: -0.01em; }
+.t-prose strong { font-weight: 700; }
+.t-prose code::before, .t-prose code::after { content: none; }

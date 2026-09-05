@@ -1,0 +1,24 @@
+---
+// 價目：依 offerings 列出方案，價格欄位為佔位。啟用條件：pages.optional 含 pricing。
+import BaseLayout from '@theme/BaseLayout.astro';
+import { site } from '../../site.config.mjs';
+import { ctaHref, ctaAttrs } from '../lib/nav';
+---
+
+<BaseLayout title="價目" description={`${site.name} 的服務方案與價格`} canonical="/pricing">
+  <section class="t-container t-section">
+    <p class="t-eyebrow">價目</p>
+    <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">方案與價格</h1>
+    <p class="t-lead mt-6">價格為佔位，請由使用者提供實際數字後再公開。</p>
+    <div class="t-grid-3 mt-14">
+      {site.offerings.map((offering) => (
+        <article class="t-card flex flex-col">
+          <h2 class="t-card-title">{offering.name}</h2>
+          <p class="t-muted mt-3 flex-1">{offering.summary}</p>
+          <p class="t-h2 mt-8">請洽詢</p>
+          <a href={ctaHref} class="t-btn mt-6" {...ctaAttrs}>{site.cta.label}</a>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

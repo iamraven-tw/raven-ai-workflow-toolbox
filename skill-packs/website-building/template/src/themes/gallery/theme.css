@@ -1,0 +1,68 @@
+/*
+  主題：留白畫廊（依 Vercel 設計指引實作）
+  規則摘要：#ffffff 底、#171717 文字、灰階 #4d4d4d／#666／#ebebeb／#fafafa；
+  邊框一律用 box-shadow 0 0 0 1px rgba(0,0,0,0.08) 畫，不用 border；
+  卡片陰影堆疊：ring + 0 2px 2px + 0 8px 8px -8px + 內圈 #fafafa；
+  標題字重 600、48px 時字距 -2.4px（改用 -0.05em 等比）；字重只用 400／500／600；
+  區塊之間用 1px #171717 全寬線；等寬大寫小標；藥丸只給徽章。
+*/
+:root {
+  --gl-bg: #ffffff;
+  --gl-ink: #171717;
+  --gl-gray-600: #4d4d4d;
+  --gl-gray-500: #666666;
+  --gl-gray-400: #808080;
+  --gl-gray-100: #ebebeb;
+  --gl-gray-50: #fafafa;
+  --gl-link: #0072f5;
+  --gl-badge-bg: #ebf5ff;
+  --gl-badge-text: #0068d6;
+  --gl-ring: rgba(0, 0, 0, 0.08) 0 0 0 1px;
+  --gl-card: rgba(0,0,0,0.08) 0 0 0 1px, rgba(0,0,0,0.04) 0 2px 2px, rgba(0,0,0,0.04) 0 8px 8px -8px, #fafafa 0 0 0 1px;
+  --gl-sans: "Geist", "Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, system-ui, sans-serif;
+  --gl-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+body {
+  background: var(--gl-bg);
+  color: var(--gl-ink);
+  font-family: var(--gl-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  font-feature-settings: "liga";
+}
+.t-container { max-width: 1200px; margin-inline: auto; padding-inline: 24px; }
+.t-section { padding-block: 112px; }
+@media (max-width: 767px) { .t-section { padding-block: 56px; } }
+.t-section-alt { border-top: 1px solid var(--gl-ink); }
+.t-rule { border-top: 1px solid var(--gl-ink); }
+.t-eyebrow { font-family: var(--gl-mono); font-size: 12px; font-weight: 500; letter-spacing: 0.02em; text-transform: uppercase; color: var(--gl-gray-500); }
+.t-h1, .t-h2, .t-h3, .t-card-title { color: var(--gl-ink); font-weight: 600; }
+.t-h1 { font-size: clamp(40px, 5.5vw, 64px); line-height: 1.05; letter-spacing: -0.05em; }
+.t-h2 { font-size: clamp(30px, 3.5vw, 40px); line-height: 1.2; letter-spacing: -0.045em; }
+.t-h3 { font-size: 24px; line-height: 1.33; letter-spacing: -0.04em; }
+.t-card-title { font-size: 24px; line-height: 1.33; letter-spacing: -0.04em; }
+.t-lead { font-size: 20px; line-height: 1.8; color: var(--gl-gray-600); }
+.t-muted { color: var(--gl-gray-600); }
+.t-card { background: #fff; border-radius: 8px; padding: 28px; box-shadow: var(--gl-card); }
+.t-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: var(--gl-ink); color: #fff; font-size: 14px; font-weight: 500; padding: 10px 16px; border-radius: 6px; text-decoration: none; transition: background-color 150ms; }
+.t-btn:hover { background: #333333; }
+.t-btn-secondary { display: inline-flex; align-items: center; justify-content: center; background: #fff; color: var(--gl-ink); font-size: 14px; font-weight: 500; padding: 10px 16px; border-radius: 6px; box-shadow: rgb(235,235,235) 0 0 0 1px; text-decoration: none; transition: background-color 150ms; }
+.t-btn-secondary:hover { background: var(--gl-gray-50); }
+.t-link { color: var(--gl-link); text-decoration: underline; text-underline-offset: 3px; }
+.t-tag { display: inline-block; font-size: 12px; font-weight: 500; color: var(--gl-badge-text); background: var(--gl-badge-bg); border-radius: 9999px; padding: 2px 10px; }
+.t-divider { border: 0; border-top: 1px solid var(--gl-gray-100); }
+.t-grid-3 { display: grid; gap: 24px; }
+.t-grid-2 { display: grid; gap: 24px; }
+@media (min-width: 640px) { .t-grid-3, .t-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .t-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.t-list-item { display: flex; align-items: center; justify-content: space-between; background: #fff; border-radius: 8px; padding: 16px 20px; box-shadow: var(--gl-ring); text-decoration: none; color: var(--gl-ink); font-weight: 500; font-size: 14px; }
+.t-list-item:hover { box-shadow: var(--gl-card); }
+.t-note { border-radius: 8px; padding: 16px 20px; color: var(--gl-gray-600); font-size: 14px; box-shadow: var(--gl-ring); background: var(--gl-gray-50); }
+.t-details { border-radius: 8px; padding: 16px 20px; box-shadow: var(--gl-ring); }
+.t-details summary { cursor: pointer; font-weight: 500; }
+.t-media { border-radius: 12px; box-shadow: rgb(235,235,235) 0 0 0 1px; background: var(--gl-gray-50); }
+.t-prose { --tw-prose-body: var(--gl-gray-600); --tw-prose-headings: var(--gl-ink); --tw-prose-links: var(--gl-link); --tw-prose-bold: var(--gl-ink); --tw-prose-quotes: var(--gl-ink); --tw-prose-quote-borders: var(--gl-ink); --tw-prose-code: var(--gl-ink); --tw-prose-pre-bg: var(--gl-gray-50); --tw-prose-pre-code: var(--gl-ink); --tw-prose-bullets: var(--gl-gray-400); --tw-prose-hr: var(--gl-gray-100); }
+.t-prose h2, .t-prose h3 { letter-spacing: -0.04em; font-weight: 600; }
+.t-prose pre { box-shadow: var(--gl-ring); }
+.t-prose code { font-family: var(--gl-mono); }
+.t-prose code::before, .t-prose code::after { content: none; }

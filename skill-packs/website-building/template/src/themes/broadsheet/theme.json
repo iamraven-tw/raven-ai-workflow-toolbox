@@ -1,0 +1,27 @@
+{
+  "id": "broadsheet",
+  "name": "報刊編輯",
+  "tonality": "editorial_press",
+  "order": 60,
+  "description": "紙白底、墨黑字、零圓角；用細線與 2px 黑框組版，不用卡片與陰影；等寬大寫的眉標、巨大的襯線標題、黑色橫幅式區塊標題，像一份插了電的報紙。",
+  "fits": "媒體、評論、電子報、以文章為主的網站",
+  "source_guide": "wired",
+  "source_repository": "https://github.com/nexu-io/open-design",
+  "source_license": "Apache-2.0",
+  "placeholder_colors": {
+    "bg": "#ffffff",
+    "surface_alt": "#f2f2f2",
+    "accent": "#000000",
+    "accent_soft": "#e2e8f0",
+    "on_accent": "#ffffff"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Cactus+Classical+Serif&family=Noto+Serif+TC:wght@400;700&family=Inter:wght@400;700&family=Courier+Prime:wght@400;700&display=swap",
+    "families": [
+      "Cactus Classical Serif",
+      "Noto Serif TC",
+      "Inter",
+      "Courier Prime"
+    ]
+  }
+}

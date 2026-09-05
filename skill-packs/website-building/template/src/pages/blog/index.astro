@@ -1,0 +1,15 @@
+---
+// 文章列表：取資料、排序，版面交給主題的 BlogIndex。
+import BaseLayout from '@theme/BaseLayout.astro';
+import BlogIndex from '@theme/BlogIndex.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../../../site.config.mjs';
+
+const posts = (await getCollection('posts'))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .map((post) => ({ slug: post.id, title: post.data.title, date: post.data.date, description: post.data.description, tags: post.data.tags, coverImage: post.data.coverImage }));
+---
+
+<BaseLayout title="文章" description={`${site.name} 的文章與筆記`} canonical="/blog">
+  <BlogIndex posts={posts} />
+</BaseLayout>

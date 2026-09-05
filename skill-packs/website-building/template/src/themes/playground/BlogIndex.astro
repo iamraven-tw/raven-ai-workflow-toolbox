@@ -1,0 +1,25 @@
+---
+// 遊樂場文章列表：大字標題、每篇一條帶黑線的橫列，日期用等寬大寫，hover 反白。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; }
+const { posts } = Astro.props;
+---
+
+<section class="t-container" style="padding-block: 104px;">
+  <p class="t-eyebrow">Blog</p>
+  <h1 class="t-h1 mt-6" style="font-size: clamp(44px, 6vw, 72px);">文章</h1>
+  <p class="t-lead mt-6 max-w-2xl">記錄工作方法、案例與想法。這句是佔位文案，請依實際情況改寫。</p>
+  <div class="mt-14 border-t" style="border-color: #000;">
+    {posts.map((post) => (
+      <a href={`/blog/${post.slug}/`} class="group grid gap-3 border-b py-7 md:grid-cols-[140px_minmax(0,1fr)_auto] md:items-center" style="border-color: #000; text-decoration: none; color: #000;">
+        <time datetime={post.date} class="t-eyebrow">{post.date}</time>
+        <div>
+          <h2 class="t-h3">{post.title}</h2>
+          <p class="mt-2 text-[16px]" style="font-weight: 300;">{post.description}</p>
+        </div>
+        <div class="flex flex-wrap gap-2">{post.tags && post.tags.map((tag) => <span class="t-tag">{tag}</span>)}</div>
+      </a>
+    ))}
+  </div>
+  {posts.length === 0 && <p class="mt-10" style="font-weight: 300;">還沒有文章。</p>}
+</section>

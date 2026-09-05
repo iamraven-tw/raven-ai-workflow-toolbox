@@ -1,0 +1,10 @@
+---
+// 首頁：只負責取資料與掛主題；版面全部由目前主題的 Home 決定。
+import BaseLayout from '@theme/BaseLayout.astro';
+import Home from '@theme/Home.astro';
+import { site } from '../../site.config.mjs';
+---
+
+<BaseLayout title={site.name} description={site.positioning} canonical="/">
+  <Home />
+</BaseLayout>

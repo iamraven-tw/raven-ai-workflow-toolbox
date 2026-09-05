@@ -1,0 +1,30 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* 全站共用的最小樣式。所有視覺決定都在各主題的 theme.css；這裡不放顏色與字型。 */
+html {
+  scroll-behavior: smooth;
+}
+
+.t-prose {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.t-prose img,
+.t-prose video,
+.t-prose iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+.t-prose pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.t-prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}

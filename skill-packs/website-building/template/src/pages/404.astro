@@ -1,0 +1,18 @@
+---
+// 404：回首頁與看文章兩個出口。
+import BaseLayout from '@theme/BaseLayout.astro';
+---
+
+<BaseLayout title="找不到頁面" description="這個頁面不存在，可能已經被移動、刪除，或網址輸入錯誤。">
+  <section class="t-container t-section">
+    <div class="mx-auto flex min-h-[50vh] max-w-2xl flex-col items-start justify-center">
+      <p class="t-eyebrow">404</p>
+      <h1 class="t-h1 mt-4">找不到這個頁面</h1>
+      <p class="t-lead mt-6">你要找的內容可能還沒上線，或是網址打錯了。</p>
+      <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+        <a href="/" class="t-btn">回首頁</a>
+        <a href="/blog" class="t-btn-secondary">看文章</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

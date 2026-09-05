@@ -1,0 +1,110 @@
+---
+name: website-design-preview
+description: "為一人公司官網挑選視覺風格。當使用者走到選風格的步驟、想看看網站可以長什麼樣子、想換風格，或說「給我幾個風格看看」時使用。範本內建六個主題，各依一份公開設計指引完整實作（版面、字型、間距、元件都不同，不是換色）。Agent 產生本機畫廊網頁，用真正建置出來的頁面展示、換上使用者自己的站名與文案、主動截圖並標示建議；使用者只回一個編號。選定後寫入 website/design.json，建站或重建時整站換主題。不需要 Node，不需要網路，不部署。"
+---
+
+# 官網風格挑選
+
+這是官網打造工作流的第三個技能。目標是把「選風格」變成看圖選號：Agent 先把六個主題真正建出來的樣子秀給使用者，人只回一個編號。
+
+## 六個主題
+
+主題實體在範本 `template/src/themes/<id>/`，每個都有自己的 theme.css、BaseLayout、Header、Footer、Home、BlogIndex、BlogPost。目錄與設計指引來源見 `references/style-catalog.md`。
+
+| 編號 | id | 名稱 | 調性 | 依據的設計指引 |
+|---|---|---|---|---|
+| 1 | `bookshop` | 紙本書店 | 溫暖書卷 | claude |
+| 2 | `nightshift` | 夜間工作室 | 暗黑沉浸 | linear-app |
+| 3 | `gallery` | 留白畫廊 | 極簡純淨 | vercel |
+| 4 | `showroom` | 黑白展場 | 攝影展廳 | apple |
+| 5 | `playground` | 遊樂場 | 鮮豔活力 | figma |
+| 6 | `broadsheet` | 報刊編輯 | 雜誌印刷 | wired |
+
+## 責任
+
+- 讀取 `website/config.json` 取得站名、定位、受眾、服務、信任依據與行動呼籲，讓畫廊呈現使用者自己的內容；設定不存在時用虛構預設，並明說。
+- 依設定檔的 `design.tonality` 決定建議主題；沒有調性時依使用者描述或受眾用目錄規則推薦一套。
+- 用 `scripts/style_gallery.py render` 產生本機畫廊：畫廊用 iframe 載入 `assets/previews/` 內六個主題真正建置出來的首頁、文章列表與文章頁（維護者已用 Node 匯出），並把虛構文案替換成使用者的內容。
+- **主動展示**：用用戶端的瀏覽器工具開啟畫廊並截圖，把截圖放進對話；建議的一套標示「建議」。使用者想細看哪一套，再開該主題的全尺寸預覽截圖。沒有瀏覽器工具時，給使用者畫廊檔案路徑請他用瀏覽器打開，這是唯一的例外人類步驟。
+- 使用者回覆編號、名稱或「用建議的」後，用 `select --confirm-write` 寫入 `website/design.json`，再依 `website-setup` 的寫入流程更新設定檔的 `design` 欄位。
+- 分層回報並交接：尚未建站就交給 `website-build`；已建站就說明改主題重建即可，內容與頁面不動。
+
+本技能不建立專案、不安裝套件、不建置、不部署。六個主題以外的需求（指定品牌設計系統、其他設計指引、Google Fonts）屬於擴充，見 `references/extended-sources.md`。
+
+## 輸入
+
+- `website/config.json`（可選但建議）。
+- 使用者對風格的任何描述，例如「想要暗色的」「像雜誌」「不要太花」。
+- 範本主題描述檔 `template/src/themes/*/theme.json` 與匯出預覽 `assets/previews/manifest.json`。
+
+不讀取任何憑證、環境變數或瀏覽器資料。
+
+## 啟動流程
+
+這是多階段技能。開始執行前，用 Mermaid 向使用者呈現本次採用的分支與停止位置。
+
+1. 唯讀檢查設定檔與既有的 `website/design.json`。已有選定主題時，先摘要目前主題，問這次是要換還是要看別的。
+2. 決定建議：有 `design.tonality` 就用它；使用者有描述就依描述對應到調性；都沒有就依受眾用目錄規則推薦，無法判斷時預設 `clean_minimal`。
+3. `style_gallery.py render --workspace-root <workspace> --recommend <tonality>`。輸出寫在 `.local/website/style-gallery/`，只是本機檢視用，不進 git、不部署。
+4. 展示：畫廊用 iframe 載入預覽，因此要用 `python3 -m http.server` 之類的本機靜態伺服器提供該目錄，再用瀏覽器工具開 `index.html` 截整頁圖給使用者；使用者想細看哪一套，再開 `previews/<id>/home.html` 截圖。不要只用文字描述六個主題。
+5. 收到選擇。使用者說「用建議的」就用第 2 步的建議；回編號就對應 `list` 的順序；回名稱就比對名稱或 id。無法唯一對應時只問一句確認。
+6. `style_gallery.py select --workspace-root <workspace> --theme <id> --confirm-write`。已有不同主題時要加 `--replace`，且要先告知使用者會換掉。
+7. 把 `select` 回傳的 `config_patch` 併入候選設定，依 `website-setup` 的 `manage_workspace.py preview` 與 `apply --confirm-write` 流程寫入 `design` 欄位。這一步可與第 5 步的選擇合併成同一次確認，前提是預覽內容只有 `design` 欄位變動。
+8. 回報並交接。
+
+命令旗標不是對話核准。使用者沒有明確選擇前不得執行 `select`。
+
+## 展示原則
+
+- 畫廊每一格都是該主題真正用 Astro 建置出來的首頁，不是示意圖。文案替換只做精確字串替換，版面不變。
+- 帶入使用者自己的站名與文案，不用假資料，除非設定檔還沒有內容。
+- 建議只有一套，理由一句話。不替使用者做決定，也不重複勸說。
+- 使用者要求「再多幾個」「有沒有更暗的」時，先在六個主題內回答；都不合才進入擴充流程，並說明需要另立主題與設計指引來源。
+
+## 寫入範圍
+
+- `.local/website/style-gallery/`：畫廊與預覽網頁，可隨時重新產生，不含秘密。
+- `website/design.json`：選定主題的 id、名稱、調性與來源，不含秘密。
+- `website/config.json` 的 `design` 欄位：只透過 `website-setup` 的預覽與確認流程。
+
+不得寫入技能目錄、範本目錄、公開 Toolbox、網站專案目錄或任何外部服務。已建好的網站要換主題時，交由 `website-build` 改 `site.config.mjs` 的 `theme` 並重建，不直接改主題檔。
+
+## 維護者：更新預覽
+
+範本主題有任何修改後，維護者在有 Node 的機器執行 `scripts/export_previews.py`：它會複製範本、`npm ci`、六個主題各建置一次、每次跑 `check_site.py`，再把 CSS、腳本與圖片內嵌成單檔 HTML 寫進 `assets/previews/`。使用者端不需要 Node。
+
+## 執行錯誤最小回填
+
+實際執行出錯，或可觀察行為與本技能規則衝突時，原任務優先：
+
+1. 先保存使用者已做的選擇。
+2. 若 `references/troubleshooting.md` 已存在，只讀與目前症狀相關的段落；不存在時不要先建立空檔。
+3. 只有能證明錯誤來自本技能、修正限於同一個由使用者管理的技能來源、不新增依賴或外部授權，且重跑原失敗步驟通過時，才立即回填：流程更新本 `SKILL.md`，主題錯誤更新範本的對應主題目錄並重新匯出預覽，特定環境或例外才建立或更新 `references/troubleshooting.md`。
+4. 只做一次小修正、一次針對性重測，再執行本技能最快的既有格式／契約驗證，隨即回到原任務。
+5. 一次修正仍失敗、需要新增主題、需要跨技能改造，或修正本身需要新的外部動作時，停止回填並簡短回報技能缺口。
+
+不得修改已安裝快取、內建技能、外掛或第三方來源。真實品牌色、Logo、字型檔與一次性使用者選擇不得進入公開技能或範本主題。回填不授權 commit、push、發布或部署。
+
+## 輸出與交接
+
+每次輸出至少包含：
+
+- 畫廊路徑與截圖，建議的主題與一句話理由。
+- 使用者選定的主題 id、名稱、調性，以及 `design.json` 的路徑與雜湊。
+- 設定檔 `design` 欄位的預覽與寫入結果。
+- 各層狀態：本機設定、主題選定已完成；建置、登入、部署未開始。
+- 下一個唯一建議動作：尚未建站交給 `website-build`；已建站則由 `website-build` 換主題重建。
+
+## 停止條件
+
+- 工作區無法唯一判定。
+- 主題描述檔損壞、六大調性缺少任何一套，或匯出預覽缺少任何主題。
+- 使用者的選擇無法唯一對應，且一次確認後仍不明。
+- 既有 `design.json` 是不同主題，使用者未同意替換。
+- 使用者要求六個主題以外的風格，但尚未授權新增主題或外部來源。
+
+停止時保留既有選擇與畫廊，不自動替換。
+
+## 驗證
+
+公開候選版以虛構工作區驗證：六個主題檔案齊全且覆蓋六大調性、每個主題都有匯出預覽且已內嵌資源、`list` 順序穩定、`render` 替換使用者內容並標示建議、`select` 需要旗標、不同主題需 `--replace`、`design.json` 可被 `scaffold_site.py` 自動讀取、路徑 symlink 停止。截圖展示由 Agent 在實際執行時完成，虛構測試不涵蓋。

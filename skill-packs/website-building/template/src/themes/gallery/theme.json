@@ -1,0 +1,26 @@
+{
+  "id": "gallery",
+  "name": "留白畫廊",
+  "tonality": "clean_minimal",
+  "order": 30,
+  "description": "純白畫布、#171717 文字、全站無色彩；邊框用零位移的陰影畫出來，大標題字距極度緊縮，區塊之間只靠一條黑線和大量留白分隔。",
+  "fits": "設計、顧問、專業服務、想強調可信與清楚",
+  "source_guide": "vercel",
+  "source_repository": "https://github.com/nexu-io/open-design",
+  "source_license": "Apache-2.0",
+  "placeholder_colors": {
+    "bg": "#ffffff",
+    "surface_alt": "#fafafa",
+    "accent": "#171717",
+    "accent_soft": "#ebebeb",
+    "on_accent": "#ffffff"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;700&display=swap",
+    "families": [
+      "Geist",
+      "Geist Mono",
+      "Noto Sans TC"
+    ]
+  }
+}

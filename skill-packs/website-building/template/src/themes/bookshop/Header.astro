@@ -1,0 +1,27 @@
+---
+// 紙本書店：暖色黏性導覽，站名用襯線，CTA 為赤陶按鈕。
+import { site } from '../../../site.config.mjs';
+import { navLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+---
+
+<header class="sticky top-0 z-50 border-b" style="background: rgba(245,244,237,0.92); backdrop-filter: blur(8px); border-color: var(--bk-border);">
+  <nav class="t-container flex items-center justify-between py-4" aria-label="主要導覽">
+    <a href="/" class="text-2xl" style="font-family: var(--bk-serif); font-weight: 500; color: var(--bk-ink); text-decoration: none;">{site.name}</a>
+    <div class="hidden items-center gap-7 md:flex">
+      {navLinks.map((link) => (
+        <a href={link.href} class="text-[17px]" style="color: var(--bk-olive); text-decoration: none;">{link.label}</a>
+      ))}
+      <a href={ctaHref} class="t-btn" style="padding: 8px 16px;" {...ctaAttrs}>{site.cta.label}</a>
+    </div>
+    <button id="mobile-menu-button" class="p-2 md:hidden" style="color: var(--bk-olive);" aria-label="開啟選單" aria-expanded="false" aria-controls="mobile-menu">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" /></svg>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="hidden border-t px-6 pb-5 md:hidden" style="border-color: var(--bk-border); background: var(--bk-parchment);" role="navigation" aria-label="行動版導覽">
+    {navLinks.map((link) => (
+      <a href={link.href} class="block py-3 text-[17px]" style="color: var(--bk-olive); text-decoration: none;">{link.label}</a>
+    ))}
+    <a href={ctaHref} class="t-btn mt-3 w-full" {...ctaAttrs}>{site.cta.label}</a>
+  </div>
+</header>
+<script src="../../lib/menu.ts"></script>

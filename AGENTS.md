@@ -37,6 +37,15 @@
 - 一人公司設定是 AI 知識庫的一部分；公開版只提供 `not_configured` 空白範本。
 - 修改套件後執行其 `tests/validate_repository.py`，並使用技能驗證器檢查所有 `skills/<name>/SKILL.md`。
 
+## 官網打造
+
+- `skill-packs/website-building/` 交給 AI Agent 全程執行；人類只做 `docs/human-touchpoints.md` 列出的接觸點。技能不得新增清單以外的人類步驟，需要時先更新該清單與 ADR 0003。
+- 商業資訊只在 `website-setup` 問一次，之後的技能從 `website/config.json` 讀取；每個技能先給完整預設方案再批次確認。
+- 託管固定 Cloudflare Workers 靜態資產免費方案；套件不保存任何 Cloudflare API Token，只用 Wrangler 自己的 OAuth 登入狀態。
+- 範本內建六個主題，每個都依一份可追溯的公開設計指引完整實作（版面、字型、間距、元件都不同），不得只做同一版面換顏色；主題用意象命名，指引來源記錄在 `theme.json` 與第三方聲明。走到選風格的步驟時 Agent 必須主動用畫廊展示真正建置出來的頁面，不用文字描述取代。修改任一主題後必須重新執行 `export_previews.py`。
+- `template/` 是自有的 Astro 起始範本，只能含虛構品牌與示範素材；依賴鎖定確切版本並附 lockfile，不得提交 `node_modules/`、`dist/` 或 `.astro/`。
+- 修改套件後執行其 `tests/validate_package.py` 與 `python3 -m unittest skill-packs.website-building.tests.test_install_lifecycle skill-packs.website-building.tests.test_workspace_config skill-packs.website-building.tests.test_scaffold_site skill-packs.website-building.tests.test_check_site skill-packs.website-building.tests.test_style_gallery`；改動範本後另以 `WEBSITE_NODE_ACCEPTANCE=1` 跑真實建置。
+
 ## 程式與驗證
 
 - 新增程式優先使用 Python 或 TypeScript，並加入繁體中文註解。

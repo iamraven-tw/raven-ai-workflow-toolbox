@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "business": {
+    "status": "not_configured",
+    "site_name": null,
+    "one_line_positioning": null,
+    "audience_summary": null,
+    "offerings": [],
+    "trust_signals": [],
+    "primary_call_to_action": {
+      "kind": "not_selected",
+      "label": null,
+      "target": null
+    },
+    "contact_channels": [],
+    "language": "zh-TW",
+    "profile_source": "sources/strategy/solopreneur-profile.md"
+  },
+  "pages": {
+    "required": [
+      "home",
+      "about",
+      "services",
+      "blog",
+      "contact",
+      "not_found"
+    ],
+    "optional": []
+  },
+  "design": {
+    "status": "not_selected",
+    "tonality": "not_selected",
+    "style_source": "not_selected",
+    "style_id": null,
+    "fonts": "google"
+  },
+  "hosting": {
+    "provider": "cloudflare_workers_static",
+    "plan": "free",
+    "deploy_route": "wrangler_local",
+    "worker_name": null,
+    "workers_dev": {
+      "enabled": true,
+      "subdomain_status": "not_started"
+    },
+    "custom_domain": {
+      "wanted": "undecided",
+      "current_state": "none",
+      "acquisition_route": "not_selected",
+      "domain": null
+    }
+  },
+  "verification": {
+    "local_build": "not_started",
+    "automated_page_checks": "not_started",
+    "wrangler_login": "not_started",
+    "workers_dev_deploy": "not_started",
+    "custom_domain": "not_applicable",
+    "public_index": "noindex"
+  }
+}

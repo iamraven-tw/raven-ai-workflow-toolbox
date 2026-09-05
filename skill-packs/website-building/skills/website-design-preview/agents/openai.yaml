@@ -1,0 +1,7 @@
+interface:
+  display_name: "官網風格挑選"
+  short_description: "產生本機風格畫廊，用真正建置出來的頁面展示六個主題讓使用者挑一個"
+  default_prompt: "使用 $website-design-preview 產生風格畫廊並直接展示給我看。先依我的設定推薦一套並標示建議，我回覆編號或名稱後把選定主題寫入 website/design.json。不要建置、不要部署。"
+
+policy:
+  allow_implicit_invocation: true

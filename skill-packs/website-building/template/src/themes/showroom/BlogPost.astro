@@ -1,0 +1,29 @@
+---
+// 黑白展場文章頁：置中標題、窄欄內文、目錄收在文章上方的小字列。
+import BaseLayout from './BaseLayout.astro';
+interface TocItem { depth: number; slug: string; text: string; }
+interface Props { title: string; date: string; description: string; slug: string; coverImage?: string; tags?: string[]; toc?: TocItem[]; }
+const { title, date, description, slug, coverImage, tags, toc = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage ?? '/og-image.png'} canonical={`/blog/${slug}/`}>
+  <article>
+    <header class="t-container pt-24 text-center">
+      <div class="flex flex-wrap items-center justify-center gap-2 text-[12px]" style="color: var(--sr-gray);">
+        <time datetime={date}>{date}</time>
+        {tags && tags.map((tag) => <span class="t-tag">{tag}</span>)}
+      </div>
+      <h1 class="t-h1 mx-auto mt-5 max-w-4xl" style="font-size: clamp(32px, 4.5vw, 56px);">{title}</h1>
+      <p class="t-lead mx-auto mt-5 max-w-2xl">{description}</p>
+    </header>
+    {coverImage && <img src={coverImage} alt={title} class="t-media mx-auto mt-12 w-full max-w-5xl" />}
+    <div class="t-container mt-14 pb-24">
+      {toc.length > 0 && (
+        <nav class="mx-auto mb-10 flex max-w-3xl flex-wrap gap-x-5 gap-y-2 border-b pb-6 text-[14px]" style="border-color: var(--sr-border);" aria-label="文章目錄">
+          {toc.filter((item) => item.depth === 2).map((item) => <a href={`#${item.slug}`} class="t-link">{item.text}</a>)}
+        </nav>
+      )}
+      <div class="t-prose prose prose-lg mx-auto w-full max-w-3xl"><slot /></div>
+    </div>
+  </article>
+</BaseLayout>

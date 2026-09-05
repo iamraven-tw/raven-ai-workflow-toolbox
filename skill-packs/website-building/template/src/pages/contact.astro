@@ -1,0 +1,25 @@
+---
+// 聯絡：聯絡管道與主要行動呼籲。表單類整合屬第二版，這裡只放連結。
+import BaseLayout from '@theme/BaseLayout.astro';
+import { site } from '../../site.config.mjs';
+---
+
+<BaseLayout title="聯絡" description={`聯絡 ${site.name}`} canonical="/contact">
+  <section class="t-container t-section">
+    <div class="max-w-3xl">
+      <p class="t-eyebrow">聯絡</p>
+      <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">聯絡我</h1>
+      <p class="t-lead mt-6">選一個你方便的方式，我通常會在兩個工作天內回覆。這句是佔位文案，請依實際情況改寫。</p>
+      <ul class="mt-12 grid gap-4 sm:grid-cols-2">
+        {site.contacts.map((channel) => (
+          <li>
+            <a href={channel.target} class="t-list-item" {...(channel.kind === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>
+              <span>{channel.label}</span><span aria-hidden="true">→</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      {site.cta.kind === 'form_later' && <p class="t-note mt-10">聯絡表單會在第二版加入；目前請直接使用上方的聯絡方式。</p>}
+    </div>
+  </section>
+</BaseLayout>

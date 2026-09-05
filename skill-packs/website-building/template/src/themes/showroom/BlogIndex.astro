@@ -1,0 +1,30 @@
+---
+// 黑白展場文章列表：淺灰底、白色大圓角卡片、圖片優先（無封面時用佔位色塊）、置中標題。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; }
+const { posts } = Astro.props;
+---
+
+<section class="t-section-alt">
+  <div class="t-container" style="padding-block: 96px;">
+    <h1 class="t-h1 text-center" style="font-size: clamp(36px, 5vw, 56px);">文章</h1>
+    <p class="t-lead mx-auto mt-4 max-w-2xl text-center">記錄工作方法、案例與想法。這句是佔位文案，請依實際情況改寫。</p>
+    <div class="t-grid-2 mt-14">
+      {posts.map((post) => (
+        <article class="t-card overflow-hidden" style="padding: 0;">
+          <img src={post.coverImage ?? '/images/samples/phone-edge.jpg'} alt="" width="1200" height="800" style="aspect-ratio: 16 / 9; object-fit: cover; width: 100%; display: block;" />
+          <div class="p-7">
+            <div class="flex flex-wrap items-center gap-2 text-[12px]" style="color: var(--sr-gray);">
+              <time datetime={post.date}>{post.date}</time>
+              {post.tags && post.tags.map((tag) => <span class="t-tag">{tag}</span>)}
+            </div>
+            <a href={`/blog/${post.slug}/`} class="t-card-title mt-3 block" style="text-decoration: none;">{post.title}</a>
+            <p class="t-muted mt-2 text-[15px]">{post.description}</p>
+            <a href={`/blog/${post.slug}/`} class="t-btn-secondary mt-3 text-[15px]" style="padding-left: 0;">閱讀</a>
+          </div>
+        </article>
+      ))}
+    </div>
+    {posts.length === 0 && <p class="t-muted mt-10 text-center">還沒有文章。</p>}
+  </div>
+</section>

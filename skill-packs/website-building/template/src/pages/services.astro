@@ -1,0 +1,32 @@
+---
+// 服務或產品：每項名稱、說明與行動呼籲。
+import BaseLayout from '@theme/BaseLayout.astro';
+import { site } from '../../site.config.mjs';
+import { ctaHref, ctaAttrs } from '../lib/nav';
+---
+
+<BaseLayout title="服務" description={`${site.name} 提供的服務與產品`} canonical="/services">
+  <section class="t-container t-section">
+    <p class="t-eyebrow">服務</p>
+    <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">服務與產品</h1>
+    <p class="t-lead mt-6 max-w-2xl">{site.positioning}</p>
+    <div class="t-grid-3 mt-14">
+      {site.offerings.map((offering, index) => (
+        <article class="t-card">
+          <p class="t-eyebrow">{String(index + 1).padStart(2, '0')}</p>
+          <h2 class="t-card-title mt-4">{offering.name}</h2>
+          <p class="t-muted mt-3">{offering.summary}</p>
+        </article>
+      ))}
+    </div>
+    {site.trustSignals.length > 0 && (
+      <ul class="mt-16 grid gap-4 md:grid-cols-2">
+        {site.trustSignals.map((signal) => <li class="t-list-item">{signal}</li>)}
+      </ul>
+    )}
+    <div class="mt-16 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+      <a href={ctaHref} class="t-btn" {...ctaAttrs}>{site.cta.label}</a>
+      <a href="/contact" class="t-btn-secondary">所有聯絡方式</a>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,28 @@
+---
+// 案例：問題、做法、成果三段式，內容為佔位。啟用條件：pages.optional 含 case_studies。
+import BaseLayout from '@theme/BaseLayout.astro';
+import { site } from '../../site.config.mjs';
+const cases = [
+  { title: '案例一（佔位）', problem: '客戶原本遇到的問題。', approach: '採取的做法。', result: '可觀察到的成果，沒有數字就不要編。' },
+  { title: '案例二（佔位）', problem: '客戶原本遇到的問題。', approach: '採取的做法。', result: '可觀察到的成果。' },
+];
+---
+
+<BaseLayout title="案例" description={`${site.name} 的合作案例`} canonical="/case-studies">
+  <section class="t-container t-section">
+    <p class="t-eyebrow">案例</p>
+    <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">案例</h1>
+    <div class="mt-14 space-y-8">
+      {cases.map((item) => (
+        <article class="t-card">
+          <h2 class="t-card-title">{item.title}</h2>
+          <dl class="mt-6 grid gap-6 md:grid-cols-3">
+            <div><dt class="t-eyebrow">問題</dt><dd class="t-muted mt-2">{item.problem}</dd></div>
+            <div><dt class="t-eyebrow">做法</dt><dd class="t-muted mt-2">{item.approach}</dd></div>
+            <div><dt class="t-eyebrow">成果</dt><dd class="t-muted mt-2">{item.result}</dd></div>
+          </dl>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

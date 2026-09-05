@@ -1,0 +1,16 @@
+---
+// 電子報：說明與訂閱入口。實際訂閱表單屬第二版整合，這裡只放外部連結佔位。
+import BaseLayout from '@theme/BaseLayout.astro';
+import { site } from '../../site.config.mjs';
+---
+
+<BaseLayout title="電子報" description={`訂閱 ${site.name} 的電子報`} canonical="/newsletter">
+  <section class="t-container t-section">
+    <div class="max-w-3xl">
+      <p class="t-eyebrow">電子報</p>
+      <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">電子報</h1>
+      <p class="t-lead mt-6">說明電子報寫什麼、多久寄一次。這句是佔位文案。</p>
+      <p class="t-note mt-10">訂閱表單與電子報服務串接會在第二版加入；目前請把訂閱頁連結放在這裡。</p>
+    </div>
+  </section>
+</BaseLayout>

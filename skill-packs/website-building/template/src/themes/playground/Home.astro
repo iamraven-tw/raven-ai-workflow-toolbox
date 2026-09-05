@@ -1,0 +1,76 @@
+---
+// 遊樂場首頁：多色漸層 Hero 上漂浮著旋轉的貼紙標籤；一條跑馬燈；
+// 服務是四色便當格（bento），每格一個顏色、夾兩張彩色照片；信任做成對話泡泡；黑色結尾。
+import { site } from '../../../site.config.mjs';
+import { ctaHref, ctaAttrs } from '../../lib/nav';
+const panelColors = ['#0acf83', '#ffd400', '#a259ff', '#ff4fa3'];
+const panelInk = ['#0b3d2a', '#4a3b00', '#ffffff', '#ffffff'];
+const stickerRotations = ['-6deg', '4deg', '-3deg'];
+const ticker = [...site.offerings.map((offering) => offering.name), ...site.trustSignals, site.name];
+---
+
+<section class="t-hero-gradient relative overflow-hidden">
+  <div class="t-container relative flex flex-col items-start pb-28 pt-24 md:pb-36 md:pt-32">
+    <p class="t-eyebrow">{site.name}</p>
+    <h1 class="t-h1 mt-6 max-w-5xl">{site.positioning}</h1>
+    <p class="t-lead mt-8 max-w-2xl">{site.audience}</p>
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href={ctaHref} class="t-btn" {...ctaAttrs}>{site.cta.label}</a>
+      <a href="/services" class="t-btn-secondary">看服務內容</a>
+    </div>
+  </div>
+  <div class="pointer-events-none absolute right-6 top-20 hidden flex-col items-end gap-5 lg:flex" aria-hidden="true">
+    {site.offerings.map((offering, index) => (
+      <span class="inline-block rounded-[50px] bg-white px-6 py-3 text-[18px] font-medium text-black" style={`transform: rotate(${stickerRotations[index % 3]}); box-shadow: 0 10px 30px rgba(0,0,0,0.15);`}>{offering.name}</span>
+    ))}
+  </div>
+</section>
+
+<div class="overflow-hidden border-y py-4" style="border-color: #000; background: #fff;" aria-hidden="true">
+  <div class="pg-marquee flex w-max gap-12 whitespace-nowrap" style="font-family: var(--pg-mono); font-size: 14px; letter-spacing: 0.6px; text-transform: uppercase;">
+    {[...ticker, ...ticker, ...ticker].map((item) => <span>{item} <span class="mx-4">✦</span></span>)}
+  </div>
+</div>
+<style>
+  .pg-marquee { animation: pg-scroll 40s linear infinite; }
+  @keyframes pg-scroll { from { transform: translateX(0); } to { transform: translateX(-33.333%); } }
+  @media (prefers-reduced-motion: reduce) { .pg-marquee { animation: none; } }
+</style>
+
+<section class="t-container t-section">
+  <h2 class="t-h2 max-w-4xl">選一格開始玩。</h2>
+  <div class="mt-12 grid gap-4 md:grid-cols-3 md:grid-rows-2">
+    {site.offerings.map((offering, index) => (
+      <article class={`flex flex-col justify-between rounded-[8px] p-8 ${index === 0 ? 'md:row-span-2' : ''}`} style={`background: ${panelColors[index % 4]}; color: ${panelInk[index % 4]}; min-height: 220px;`}>
+        <p class="t-eyebrow" style={`color: ${panelInk[index % 4]}; opacity: .8;`}>{String(index + 1).padStart(2, '0')}</p>
+        <div>
+          <h3 class="t-card-title" style={`color: ${panelInk[index % 4]};`}>{offering.name}</h3>
+          <p class="mt-3 text-[17px]" style="font-weight: 400; line-height: 1.45;">{offering.summary}</p>
+        </div>
+      </article>
+    ))}
+    <img src="/images/samples/creative-desk.jpg" alt="" width="1200" height="800" class="t-media h-full min-h-[220px] w-full" style="object-fit: cover;" />
+    <img src="/images/samples/raspberries.jpg" alt="" width="1200" height="800" class="t-media h-full min-h-[220px] w-full" style="object-fit: cover;" />
+  </div>
+</section>
+
+{site.trustSignals.length > 0 && (
+  <section class="t-section-alt">
+    <div class="t-container t-section">
+      <p class="t-eyebrow">大家怎麼說</p>
+      <div class="mt-8 flex flex-col gap-6 md:flex-row md:flex-wrap">
+        {site.trustSignals.map((signal, index) => (
+          <p class="relative max-w-md rounded-[24px] bg-white px-7 py-5 text-[22px]" style={`font-weight: 400; line-height: 1.35; border: 2px solid #000; transform: rotate(${index % 2 === 0 ? '-1.5deg' : '1.5deg'});`}>{signal}</p>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="t-container t-section">
+  <div class="rounded-[8px] px-8 py-16 text-center md:px-16 md:py-24" style="background: #000; color: #fff;">
+    <h2 class="t-h2 mx-auto max-w-3xl" style="color: #fff;">準備好開始了嗎？</h2>
+    <p class="t-lead mx-auto mt-6 max-w-xl" style="color: rgba(255,255,255,0.72);">一封信說明你的情況，我會告訴你值不值得做。</p>
+    <a href={ctaHref} class="t-btn mt-10" style="background: #fff; color: #000;" {...ctaAttrs}>{site.cta.label}</a>
+  </div>
+</section>

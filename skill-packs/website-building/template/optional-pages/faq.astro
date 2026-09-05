@@ -1,0 +1,27 @@
+---
+// 常見問題：原生 details 元素，不需要 JavaScript。啟用條件：pages.optional 含 faq。
+import BaseLayout from '@theme/BaseLayout.astro';
+import { site } from '../../site.config.mjs';
+const faqs = [
+  { question: '合作流程是什麼？（佔位）', answer: '先聯絡、再會談、最後報價與排程。' },
+  { question: '需要準備什麼？（佔位）', answer: '目前的做法、想解決的問題與可投入的時間。' },
+  { question: '多久可以完成？（佔位）', answer: '視範圍而定，會談後給出明確時程。' },
+];
+---
+
+<BaseLayout title="常見問題" description={`關於 ${site.name} 服務的常見問題`} canonical="/faq">
+  <section class="t-container t-section">
+    <div class="max-w-3xl">
+      <p class="t-eyebrow">常見問題</p>
+      <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">常見問題</h1>
+      <div class="mt-12 space-y-3">
+        {faqs.map((item) => (
+          <details class="t-details">
+            <summary>{item.question}</summary>
+            <p class="t-muted mt-3">{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

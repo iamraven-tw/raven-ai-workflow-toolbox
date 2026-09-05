@@ -1,0 +1,435 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-workflow-toolbox/website-config.schema.json",
+  "title": "官網一般設定",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "business",
+    "pages",
+    "design",
+    "hosting",
+    "verification"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "business": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "site_name",
+        "one_line_positioning",
+        "audience_summary",
+        "offerings",
+        "trust_signals",
+        "primary_call_to_action",
+        "contact_channels",
+        "language",
+        "profile_source"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_configured",
+            "partial",
+            "configured"
+          ]
+        },
+        "site_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 100
+        },
+        "one_line_positioning": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 300
+        },
+        "audience_summary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 1000
+        },
+        "offerings": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/offering"
+          }
+        },
+        "trust_signals": {
+          "type": "array",
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "primary_call_to_action": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "label",
+            "target"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "not_selected",
+                "mailto",
+                "external_link",
+                "form_later"
+              ]
+            },
+            "label": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 60
+            },
+            "target": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "maxLength": 500
+            }
+          }
+        },
+        "contact_channels": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/$defs/contact_channel"
+          }
+        },
+        "language": {
+          "enum": [
+            "zh-TW",
+            "en"
+          ]
+        },
+        "profile_source": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^(?!/)(?!.*\\.\\.).+\\.md$",
+          "maxLength": 300
+        }
+      }
+    },
+    "pages": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "optional"
+      ],
+      "properties": {
+        "required": {
+          "const": [
+            "home",
+            "about",
+            "services",
+            "blog",
+            "contact",
+            "not_found"
+          ]
+        },
+        "optional": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "portfolio",
+              "case_studies",
+              "pricing",
+              "faq",
+              "newsletter"
+            ]
+          }
+        }
+      }
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "tonality",
+        "style_source",
+        "style_id",
+        "fonts"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "not_selected",
+            "recommended",
+            "previewed",
+            "confirmed"
+          ]
+        },
+        "tonality": {
+          "enum": [
+            "not_selected",
+            "warm_literary",
+            "dark_immersive",
+            "clean_minimal",
+            "photo_showroom",
+            "colorful_energetic",
+            "editorial_press"
+          ]
+        },
+        "style_source": {
+          "enum": [
+            "not_selected",
+            "bundled",
+            "open_design",
+            "daisyui",
+            "neutral_default"
+          ]
+        },
+        "style_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$"
+        },
+        "fonts": {
+          "enum": [
+            "google",
+            "system"
+          ]
+        }
+      }
+    },
+    "hosting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "plan",
+        "deploy_route",
+        "worker_name",
+        "workers_dev",
+        "custom_domain"
+      ],
+      "properties": {
+        "provider": {
+          "const": "cloudflare_workers_static"
+        },
+        "plan": {
+          "const": "free"
+        },
+        "deploy_route": {
+          "enum": [
+            "wrangler_local",
+            "workers_builds_git"
+          ]
+        },
+        "worker_name": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-z0-9][a-z0-9-]{0,62}$"
+        },
+        "workers_dev": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "subdomain_status"
+          ],
+          "properties": {
+            "enabled": {
+              "const": true
+            },
+            "subdomain_status": {
+              "enum": [
+                "not_started",
+                "requires_user_action",
+                "active"
+              ]
+            }
+          }
+        },
+        "custom_domain": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "wanted",
+            "current_state",
+            "acquisition_route",
+            "domain"
+          ],
+          "properties": {
+            "wanted": {
+              "enum": [
+                "undecided",
+                "no",
+                "yes"
+              ]
+            },
+            "current_state": {
+              "enum": [
+                "none",
+                "to_purchase",
+                "existing_on_cloudflare",
+                "existing_dns_elsewhere"
+              ]
+            },
+            "acquisition_route": {
+              "enum": [
+                "not_selected",
+                "cloudflare_registrar",
+                "external_registrar",
+                "existing"
+              ]
+            },
+            "domain": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z]{2,63}$"
+            }
+          }
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_build",
+        "automated_page_checks",
+        "wrangler_login",
+        "workers_dev_deploy",
+        "custom_domain",
+        "public_index"
+      ],
+      "properties": {
+        "local_build": {
+          "enum": [
+            "not_started",
+            "passed",
+            "failed"
+          ]
+        },
+        "automated_page_checks": {
+          "enum": [
+            "not_started",
+            "passed",
+            "failed"
+          ]
+        },
+        "wrangler_login": {
+          "enum": [
+            "not_started",
+            "requires_user_action",
+            "verified",
+            "failed",
+            "unknown"
+          ]
+        },
+        "workers_dev_deploy": {
+          "enum": [
+            "not_started",
+            "not_authorized",
+            "requires_user_action",
+            "deployed_readback_verified",
+            "failed",
+            "unknown"
+          ]
+        },
+        "custom_domain": {
+          "enum": [
+            "not_applicable",
+            "not_started",
+            "requires_user_action",
+            "verified",
+            "failed",
+            "unknown"
+          ]
+        },
+        "public_index": {
+          "enum": [
+            "noindex",
+            "index_authorized",
+            "index_verified"
+          ]
+        }
+      }
+    }
+  },
+  "$defs": {
+    "offering": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "summary"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        }
+      }
+    },
+    "contact_channel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "label",
+        "target"
+      ],
+      "properties": {
+        "kind": {
+          "enum": [
+            "email",
+            "messaging_link",
+            "social_profile",
+            "external_page"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "target": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      }
+    }
+  }
+}

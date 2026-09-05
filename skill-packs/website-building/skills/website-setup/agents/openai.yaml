@@ -1,0 +1,7 @@
+interface:
+  display_name: "官網打造設定"
+  short_description: "一次訪談後產生官網頁面、風格、託管與網域的預設方案"
+  default_prompt: "使用 $website-setup 檢查目前官網設定。先讀取工作區既有的一人公司設定與社群設定當預設值，只把缺少的商業資訊一次問完；然後產生頁面清單、風格推薦、託管方案與網域路線的完整預設方案，讓我一次批次確認或說「全部用預設」。寫入一般設定前先預覽。不要建立專案、不要登入 Cloudflare、不要部署。"
+
+policy:
+  allow_implicit_invocation: true

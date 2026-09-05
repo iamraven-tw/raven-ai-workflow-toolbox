@@ -1,0 +1,29 @@
+---
+// 報刊編輯文章列表：黑色橫幅標題、多欄報紙式故事格，眉標＋襯線標題＋導言，細線分隔，沒有卡片。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; }
+const { posts } = Astro.props;
+---
+
+<section class="t-container t-section">
+  <p class="t-eyebrow">文章</p>
+  <h1 class="t-h1 mt-3">全部報導</h1>
+  <p class="t-lead mt-4 max-w-2xl">記錄工作方法、案例與想法。這句是佔位文案，請依實際情況改寫。</p>
+</section>
+<section class="t-container pb-12">
+  <span class="t-ribbon">最新</span>
+  <div class="t-grid-3 pt-6">
+    {posts.map((post) => (
+      <article class="t-card pb-8">
+        {post.coverImage && <img src={post.coverImage} alt="" width="1200" height="800" class="t-media mb-4 w-full" style="aspect-ratio: 16 / 9; object-fit: cover; filter: grayscale(1);" />}
+        <div class="flex flex-wrap items-center gap-2">
+          {post.tags && post.tags.map((tag) => <span class="t-eyebrow">{tag}</span>)}
+        </div>
+        <a href={`/blog/${post.slug}/`} class="t-card-title mt-2 block" style="text-decoration: none;">{post.title}</a>
+        <p class="mt-3">{post.description}</p>
+        <time datetime={post.date} class="mt-3 block" style="font-family: var(--bs-mono); font-size: 12px; letter-spacing: 1.1px; text-transform: uppercase; color: #757575;">{post.date}</time>
+      </article>
+    ))}
+  </div>
+  {posts.length === 0 && <p class="mt-10 t-muted">還沒有文章。</p>}
+</section>

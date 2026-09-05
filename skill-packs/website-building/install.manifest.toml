@@ -1,0 +1,430 @@
+schema_version = 1
+manifest_type = "website-building-install"
+project_id = "website-building"
+display_name = "官網打造工作流"
+entrypoint = "INSTALL.md"
+checked_on = "2026-09-05"
+status = "local_candidate_partial_pack"
+installable = true
+requires_network = false
+support_level = "partial_pack_installable_candidate_not_formally_supported"
+license_spdx = "Apache-2.0"
+decision_record = "../../docs/decisions/0003-website-building-workflow.md"
+
+[agent_execution]
+default_mode = "agent_executes_human_authorizes"
+human_touchpoints = "docs/human-touchpoints.md"
+single_intake = true
+batch_confirmation = true
+accept_all_defaults_phrase = "全部用預設"
+external_actions_require_preview_authorization_readback = true
+
+[runtime]
+local_setup_requires_network = false
+template_install_requires_network = true
+style_download_requires_network = true
+cloudflare_actions_require_network = true
+external_account_actions_require_explicit_authorization = true
+
+[installation]
+candidate_version = "0.3.0"
+manager = "scripts/manage_install.py"
+manager_requires_python = ">=3.11"
+manager_network_access = false
+state_schema_version = 1
+conflict_policy = "stop_without_overwrite"
+managed_entries = ["website-setup", "website-design-preview", "website-build"]
+
+[workspace]
+configuration_manager = "skills/website-setup/scripts/manage_workspace.py"
+configuration_schema = "skills/website-setup/references/website-config.schema.json"
+configuration_schema_version = 1
+state_schema = "skills/website-setup/references/setup-state.schema.json"
+template_path = "skills/website-setup/assets/default-config.json"
+configuration_target = "<workspace>/website/config.json"
+state_target = "<workspace>/.local/website/setup-state.json"
+credential_policy = "never_store_in_skill_template_general_config_or_setup_state"
+optional_default_sources = [
+  "sources/strategy/solopreneur-profile.md",
+  "social-media/config.json",
+]
+
+[hosting]
+provider = "cloudflare_workers_static_assets"
+plan = "free"
+default_deploy_route = "wrangler_local"
+optional_deploy_route = "workers_builds_git"
+default_public_hostname = "workers.dev_subdomain"
+api_token_policy = "never_stored_by_pack_wrangler_oauth_login_only"
+domain_routes = ["none_use_workers_dev", "cloudflare_registrar", "external_registrar_add_site", "existing_on_cloudflare"]
+boundary_document = "docs/cloudflare-boundary.md"
+
+[style_sources]
+bundled_themes = "template/src/themes"
+bundled_theme_count = 6
+bundled_theme_model = "one_complete_theme_per_tonality_not_color_swap"
+bundled_license_spdx = "Apache-2.0"
+default_path = "bundled_themes_local_gallery_no_network"
+gallery_script = "skills/website-design-preview/scripts/style_gallery.py"
+gallery_previews = "skills/website-design-preview/assets/previews"
+gallery_export_script = "skills/website-design-preview/scripts/export_previews.py"
+gallery_target = "<workspace>/.local/website/style-gallery/index.html"
+design_target = "<workspace>/website/design.json"
+guide_library = "nexu-io/open-design"
+guide_library_commit = "50e305dff2b64d9dc0220e5dfa5d8c98ba4364e3"
+guide_library_license = "Apache-2.0"
+guides_used = ["claude", "linear-app", "vercel", "apple", "figma", "wired"]
+format_specification = "google-labs-code/design.md"
+extended_sources_policy = "optional_after_explicit_authorization_and_pinning"
+presentation = "six_tonalities_no_brand_name_defaults"
+inclusion_threshold_license = "osi_approved"
+inclusion_threshold_stars = 10000
+inclusion_threshold_or = "major_vendor_publication"
+inclusion_threshold_activity_days = 90
+inclusion_threshold_pinning = "fixed_commit_or_version"
+inclusion_threshold_assets = "no_brand_images_or_font_files"
+
+[template]
+path = "template/"
+name = "solo-site-starter"
+license_spdx = "Apache-2.0"
+lockfile = "template/package-lock.json"
+install_command = "npm ci"
+build_command = "npm run build"
+node_engine = ">=20.0.0"
+optional_pages = ["portfolio", "case_studies", "pricing", "faq", "newsletter"]
+themes = ["bookshop", "nightshift", "gallery", "showroom", "playground", "broadsheet"]
+theme_switch = "site.config.mjs theme field; astro.config.mjs maps @theme alias"
+fonts_default = "google"
+fonts_off_switch = "site.config.mjs fonts = 'system'"
+fonts_privacy_note = "google mode requests fonts.googleapis.com and fonts.gstatic.com; documented in template README and data boundaries"
+sample_photos_dir = "template/public/images/samples"
+sample_photos_manifest = "template/public/images/samples/photos.json"
+sample_photos_license = "Unsplash License"
+sample_photos_license_url = "https://unsplash.com/license"
+sample_photos_source_service = "https://picsum.photos"
+sample_photos_replace_before_launch = true
+scaffold_script = "skills/website-build/scripts/scaffold_site.py"
+check_script = "skills/website-build/scripts/check_site.py"
+fictional_brand = true
+
+[acceptance_policy]
+live_acceptance = "deferred_until_all_toolboxes_complete"
+default_tests = "fictional_local_only"
+node_build_test_opt_in = "WEBSITE_NODE_ACCEPTANCE=1"
+
+[registrations.agents_workspace]
+clients = ["codex", "google-antigravity-desktop", "google-antigravity-cli"]
+scope = "workspace"
+path = "<workspace>/.agents/skills"
+
+[registrations.claude_workspace]
+clients = ["claude-code"]
+scope = "workspace"
+path = "<workspace>/.claude/skills"
+
+[registrations.codex_user]
+clients = ["codex"]
+scope = "user"
+path = "$HOME/.agents/skills"
+
+[registrations.claude_user]
+clients = ["claude-code"]
+scope = "user"
+path = "$HOME/.claude/skills"
+
+[registrations.antigravity_desktop_user]
+clients = ["google-antigravity-desktop"]
+scope = "user"
+path = "$HOME/.gemini/config/skills"
+
+[registrations.antigravity_cli_user]
+clients = ["google-antigravity-cli"]
+scope = "user"
+path = "$HOME/.gemini/antigravity-cli/skills"
+
+[[skills]]
+id = "website-setup"
+source_path = "skills/website-setup"
+required = true
+install_order = 10
+status = "local_candidate"
+
+[[skills]]
+id = "website-design-preview"
+source_path = "skills/website-design-preview"
+required = true
+install_order = 15
+status = "local_candidate"
+
+[[skills]]
+id = "website-build"
+source_path = "skills/website-build"
+required = true
+install_order = 20
+status = "local_candidate"
+
+[[planned_skills]]
+id = "website-content-writing"
+status = "not_implemented"
+sequence = 2
+first_release = true
+
+[[planned_skills]]
+id = "website-deploy"
+status = "not_implemented"
+sequence = 5
+first_release = true
+
+[[planned_skills]]
+id = "website-service-integration"
+status = "not_implemented"
+sequence = 6
+first_release = false
+
+[[planned_skills]]
+id = "website-operations"
+status = "not_implemented"
+sequence = 7
+first_release = false
+
+[[dependencies]]
+id = "astro"
+role = "static_site_framework"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/astro/6.0.8"
+pinned_version = "6.0.8"
+license = "MIT"
+consumer_skill = "website-build"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
+
+[[dependencies]]
+id = "tailwindcss"
+role = "styling"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/tailwindcss/4.2.2"
+pinned_version = "4.2.2"
+license = "MIT"
+consumer_skill = "website-build"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
+
+[[dependencies]]
+id = "tailwindcss-vite"
+role = "tailwind_vite_plugin"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/@tailwindcss%2fvite/4.2.2"
+pinned_version = "4.2.2"
+license = "MIT"
+consumer_skill = "website-build"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
+
+[[dependencies]]
+id = "tailwindcss-typography"
+role = "article_typography"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/@tailwindcss%2ftypography/0.5.19"
+pinned_version = "0.5.19"
+license = "MIT"
+consumer_skill = "website-build"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
+
+[[dependencies]]
+id = "astrojs-sitemap"
+role = "sitemap_generation"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/@astrojs%2fsitemap/3.7.1"
+pinned_version = "3.7.1"
+license = "MIT"
+consumer_skill = "website-build"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
+
+[[dependencies]]
+id = "astrojs-rss"
+role = "rss_feed"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/@astrojs%2frss/4.0.17"
+pinned_version = "4.0.17"
+license = "MIT"
+consumer_skill = "website-build"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
+
+[[planned_dependencies]]
+id = "wrangler"
+role = "cloudflare_cli_login_and_deploy"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/wrangler"
+observed_version = "4.129.0"
+license = "MIT OR Apache-2.0"
+consumer_skill = "website-deploy"
+status = "reference_only_not_installed_by_first_skill"
+
+[[planned_dependencies]]
+id = "google-design-md"
+role = "design_md_format_specification_and_lint"
+source_type = "public_git_repository_and_npm_package"
+source = "https://github.com/google-labs-code/design.md"
+observed_stars = 27737
+license = "Apache-2.0"
+consumer_skill = "website-design-preview"
+status = "reference_only_commit_not_yet_pinned"
+
+[[dependencies]]
+id = "open-design-design-guides"
+role = "design_guides_followed_when_authoring_the_six_bundled_themes"
+source_type = "public_git_repository"
+source = "https://github.com/nexu-io/open-design"
+pinned_version = "50e305dff2b64d9dc0220e5dfa5d8c98ba4364e3"
+license = "Apache-2.0"
+consumer_skill = "website-design-preview"
+installed_by = "not_installed_guides_were_read_by_maintainer_themes_are_own_implementation"
+bundle_source = false
+status = "attribution_recorded_in_theme_json_and_third_party_notices"
+
+[[planned_dependencies]]
+id = "daisyui"
+role = "optional_tailwind_theme_fallback"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/daisyui"
+observed_stars = 42295
+license = "MIT"
+consumer_skill = "website-build"
+required = false
+status = "reference_only_not_installed_by_first_skill"
+
+[[planned_dependencies]]
+id = "playwright"
+role = "optional_headless_page_checks_when_client_has_no_browser_tool"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/playwright"
+license = "Apache-2.0"
+consumer_skill = "website-build"
+required = false
+status = "reference_only_version_not_yet_pinned"
+
+[[readiness_gates]]
+id = "static_structure_and_documents"
+status = "complete_local"
+
+[[readiness_gates]]
+id = "local_skill_discovery"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "template_node_build"
+status = "complete_local_macos_node22_npm_ci_astro_build_check_site_passed_second_computer_not_performed"
+
+[[readiness_gates]]
+id = "automated_page_checks"
+status = "check_site_static_checks_and_maintainer_browser_screenshots_complete_local_second_computer_not_performed"
+
+[[readiness_gates]]
+id = "wrangler_login"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "workers_dev_deploy"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "custom_domain"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "second_computer_acceptance"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "formal_public_support"
+status = "not_supported"
+
+[[external_facts_to_confirm]]
+id = "cloudflare_registrar_tld_list"
+question = "Cloudflare Registrar 是否支援 .tw 與 .com.tw"
+blocking_skill = "website-deploy"
+
+[[external_facts_to_confirm]]
+id = "wrangler_oauth_zone_scope"
+question = "Wrangler OAuth 登入是否包含建立 zone 的權限；本套件假設不包含"
+blocking_skill = "website-deploy"
+
+[[external_facts_to_confirm]]
+id = "workers_dev_subdomain_first_activation"
+question = "帳號 workers.dev 子網域首次啟用能否由 wrangler deploy 互動完成"
+blocking_skill = "website-deploy"
+
+[[official_references]]
+id = "cloudflare-workers-static-assets"
+url = "https://developers.cloudflare.com/workers/static-assets/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "cloudflare-workers-dev"
+url = "https://developers.cloudflare.com/workers/configuration/routing/workers-dev/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "cloudflare-workers-custom-domains"
+url = "https://developers.cloudflare.com/workers/configuration/routing/custom-domains/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "cloudflare-wrangler-commands"
+url = "https://developers.cloudflare.com/workers/wrangler/commands/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "cloudflare-registrar-tlds"
+url = "https://developers.cloudflare.com/registrar/top-level-domains/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "cloudflare-workers-pricing"
+url = "https://developers.cloudflare.com/workers/platform/pricing/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "astro-docs"
+url = "https://docs.astro.build/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "tailwindcss-docs"
+url = "https://tailwindcss.com/docs"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "npm-ci"
+url = "https://docs.npmjs.com/cli/v10/commands/npm-ci"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "unsplash-license"
+url = "https://unsplash.com/license"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "google-fonts-cjk"
+url = "https://fonts.google.com/?subset=chinese-traditional"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "google-design-md"
+url = "https://github.com/google-labs-code/design.md"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "open-design-design-systems"
+url = "https://github.com/nexu-io/open-design/tree/main/design-systems"
+checked_on = "2026-09-05"

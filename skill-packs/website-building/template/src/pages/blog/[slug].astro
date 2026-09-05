@@ -1,0 +1,18 @@
+---
+// 單篇文章：動態路由，版面交給主題的 BlogPost。
+import BlogPost from '@theme/BlogPost.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const toc = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
+---
+
+<BlogPost title={post.data.title} date={post.data.date} description={post.data.description} slug={post.id} coverImage={post.data.coverImage} tags={post.data.tags} toc={toc}>
+  <Content />
+</BlogPost>

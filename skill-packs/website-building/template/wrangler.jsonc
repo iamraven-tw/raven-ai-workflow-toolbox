@@ -1,0 +1,11 @@
+{
+  // 靜態站點部署設定：只上傳 astro build 產出的 dist/。
+  // 不使用 SSR adapter、不綁定 KV／D1／R2，維持免費方案。
+  // name 由 website-build 依 website/config.json 的 hosting.worker_name 填入；
+  // 自訂網域的 routes 由 website-deploy 在取得授權後加入。
+  "name": "solo-site-starter",
+  "compatibility_date": "2026-04-12",
+  "assets": {
+    "directory": "./dist"
+  }
+}

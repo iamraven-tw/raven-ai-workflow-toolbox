@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-workflow-toolbox/website-setup-state.schema.json",
+  "title": "官網設定非敏感狀態",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "config_sha256", "applied_at", "contains_credentials"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "applied_at": {"type": "string", "format": "date-time"},
+    "contains_credentials": {"const": false}
+  }
+}

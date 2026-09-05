@@ -1,0 +1,69 @@
+/*
+  主題：報刊編輯（依 WIRED 設計指引實作）
+  規則摘要：#ffffff 紙白、#000000 純墨（橫幅、線、框）、#1a1a1a 標題與內文、#757575 說明字；
+  唯一色彩 #057dbc 只給連結 hover；圓角一律 0（圓形只給圖示按鈕，藥丸只給行內標籤）；
+  按鈕 2px 黑框、hover 反白；沒有卡片沒有陰影，用 1px 細線與 2px 粗線分隔；
+  襯線大標行高約 1.0、字距 -0.5px；內文襯線 16px 行高 1.5；等寬大寫眉標字距 0.9–1.2px；
+  黑色橫幅區塊標題；深色只出現在頁尾。
+*/
+:root {
+  --bs-ink: #000000;
+  --bs-text: #1a1a1a;
+  --bs-paper: #ffffff;
+  --bs-caption: #757575;
+  --bs-disabled: #999999;
+  --bs-hairline: #e2e8f0;
+  --bs-rule: #000000;
+  --bs-blue: #057dbc;
+  --bs-display: "Playfair Display", "Noto Serif TC", "Songti TC", "PMingLiU", Georgia, "Times New Roman", serif;
+  --bs-body: "Source Serif 4", "Noto Serif TC", "Songti TC", Georgia, "Times New Roman", serif;
+  --bs-ui: "Inter", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Helvetica, Arial, sans-serif;
+  --bs-mono: "Courier New", Courier, ui-monospace, Menlo, monospace;
+}
+body {
+  background: var(--bs-paper);
+  color: var(--bs-text);
+  font-family: var(--bs-body);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0.09px;
+}
+.t-container { max-width: 1280px; margin-inline: auto; padding-inline: 24px; }
+.t-section { padding-block: 48px; }
+@media (max-width: 767px) { .t-section { padding-block: 32px; } }
+.t-section-alt { border-top: 2px solid var(--bs-rule); }
+.t-ribbon { background: var(--bs-ink); color: var(--bs-paper); font-family: var(--bs-mono); font-size: 12px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; padding: 10px 16px; display: block; }
+.t-eyebrow { font-family: var(--bs-mono); font-size: 13px; letter-spacing: 0.92px; text-transform: uppercase; color: var(--bs-text); }
+.t-h1, .t-h2 { font-family: var(--bs-display); font-weight: 400; color: var(--bs-text); }
+.t-h1 { font-size: clamp(40px, 6vw, 72px); line-height: 1.02; letter-spacing: -0.5px; }
+.t-h2 { font-size: clamp(28px, 3.2vw, 40px); line-height: 1.08; letter-spacing: -0.3px; }
+.t-h3 { font-family: var(--bs-ui); font-size: 20px; font-weight: 700; line-height: 1.2; letter-spacing: -0.28px; color: var(--bs-text); }
+.t-card-title { font-family: var(--bs-display); font-size: 26px; line-height: 1.1; font-weight: 400; color: var(--bs-text); }
+.t-lead { font-family: var(--bs-body); font-size: 19px; line-height: 1.47; letter-spacing: 0.108px; color: var(--bs-text); }
+.t-muted { color: var(--bs-caption); }
+.t-card { background: var(--bs-paper); border-top: 1px solid var(--bs-rule); padding: 20px 0 0; border-radius: 0; }
+.t-btn { display: inline-flex; align-items: center; justify-content: center; background: var(--bs-paper); color: var(--bs-ink); font-family: var(--bs-ui); font-size: 16px; font-weight: 700; letter-spacing: 0.3px; padding: 12px 24px; border: 2px solid var(--bs-ink); border-radius: 0; text-decoration: none; transition: background-color 150ms, color 150ms; }
+.t-btn:hover { background: var(--bs-ink); color: var(--bs-paper); }
+.t-btn-secondary { display: inline-flex; align-items: center; justify-content: center; background: var(--bs-ink); color: var(--bs-paper); font-family: var(--bs-ui); font-size: 16px; font-weight: 700; letter-spacing: 0.3px; padding: 12px 24px; border: 2px solid var(--bs-ink); border-radius: 0; text-decoration: none; transition: background-color 150ms, color 150ms; }
+.t-btn-secondary:hover { background: var(--bs-paper); color: var(--bs-ink); }
+.t-link { color: var(--bs-text); text-decoration: underline; text-underline-offset: 2px; }
+.t-link:hover { color: var(--bs-blue); }
+.t-tag { display: inline-block; font-family: var(--bs-mono); font-size: 11px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; background: var(--bs-ink); color: var(--bs-paper); border-radius: 1920px; padding: 2px 9px; }
+.t-divider { border: 0; border-top: 1px solid var(--bs-rule); }
+.t-hairline { border: 0; border-top: 1px solid var(--bs-hairline); }
+.t-grid-3 { display: grid; gap: 0; }
+.t-grid-2 { display: grid; gap: 0; }
+@media (min-width: 640px) { .t-grid-3, .t-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; } }
+@media (min-width: 1024px) { .t-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.t-list-item { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--bs-rule); padding: 14px 0; text-decoration: none; color: var(--bs-text); font-family: var(--bs-ui); font-weight: 700; letter-spacing: 0.3px; }
+.t-list-item:hover { color: var(--bs-blue); }
+.t-note { border: 2px solid var(--bs-ink); padding: 16px 20px; font-family: var(--bs-ui); font-size: 14px; }
+.t-details { border-top: 1px solid var(--bs-rule); padding: 16px 0; }
+.t-details summary { cursor: pointer; font-family: var(--bs-ui); font-weight: 700; letter-spacing: -0.144px; }
+.t-media { border-radius: 0; background: #f2f2f2; display: block; }
+.t-prose { --tw-prose-body: var(--bs-text); --tw-prose-headings: var(--bs-text); --tw-prose-links: var(--bs-text); --tw-prose-bold: var(--bs-text); --tw-prose-quotes: var(--bs-text); --tw-prose-quote-borders: var(--bs-ink); --tw-prose-code: var(--bs-text); --tw-prose-pre-bg: var(--bs-text); --tw-prose-pre-code: var(--bs-paper); --tw-prose-bullets: var(--bs-ink); --tw-prose-hr: var(--bs-rule); font-family: var(--bs-body); }
+.t-prose h2, .t-prose h3 { font-family: var(--bs-ui); font-weight: 700; letter-spacing: -0.28px; }
+.t-prose a:hover { color: var(--bs-blue); }
+.t-prose pre, .t-prose img { border-radius: 0; }
+.t-prose code { font-family: var(--bs-mono); }
+.t-prose code::before, .t-prose code::after { content: none; }

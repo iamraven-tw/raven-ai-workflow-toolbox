@@ -1,0 +1,30 @@
+---
+// 報刊編輯文章頁：眉標、巨大襯線標題、襯線導言、署名列；內文襯線；目錄放在左側細線欄。
+import BaseLayout from './BaseLayout.astro';
+interface TocItem { depth: number; slug: string; text: string; }
+interface Props { title: string; date: string; description: string; slug: string; coverImage?: string; tags?: string[]; toc?: TocItem[]; }
+const { title, date, description, slug, coverImage, tags, toc = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage ?? '/og-image.png'} canonical={`/blog/${slug}/`}>
+  <article class="t-container t-section">
+    <header class="mx-auto max-w-4xl">
+      <div class="flex flex-wrap items-center gap-3">{tags && tags.map((tag) => <span class="t-eyebrow">{tag}</span>)}</div>
+      <h1 class="t-h1 mt-3">{title}</h1>
+      <p class="t-lead mt-5">{description}</p>
+      <p class="mt-5 border-b-2 pb-4" style="border-color: #000; font-family: var(--bs-mono); font-size: 12px; letter-spacing: 1.1px; text-transform: uppercase; color: #757575;"><time datetime={date}>{date}</time></p>
+    </header>
+    {coverImage && <img src={coverImage} alt={title} class="t-media mx-auto mt-8 w-full max-w-5xl" style="aspect-ratio: 16 / 9; object-fit: cover;" />}
+    <div class="mx-auto mt-10 grid max-w-5xl gap-10 lg:grid-cols-[200px_minmax(0,1fr)]">
+      {toc.length > 0 ? (
+        <aside class="border-t pt-4 lg:sticky lg:top-6 lg:self-start lg:border-t-0 lg:border-r lg:pr-6 lg:pt-0" style="border-color: #000;">
+          <p class="t-eyebrow">目錄</p>
+          <ul class="mt-3 space-y-2">
+            {toc.map((item) => <li class={item.depth === 3 ? 'pl-3' : ''}><a href={`#${item.slug}`} class="t-link" style="font-family: var(--bs-ui); font-size: 14px; text-decoration: none;">{item.text}</a></li>)}
+          </ul>
+        </aside>
+      ) : <div></div>}
+      <div class="t-prose prose prose-lg w-full max-w-3xl"><slot /></div>
+    </div>
+  </article>
+</BaseLayout>

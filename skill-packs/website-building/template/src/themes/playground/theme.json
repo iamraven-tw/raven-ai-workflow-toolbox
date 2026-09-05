@@ -1,0 +1,26 @@
+{
+  "id": "playground",
+  "name": "遊樂場",
+  "tonality": "colorful_energetic",
+  "order": 50,
+  "description": "介面只有黑與白，色彩全部爆發在多色漸層的 Hero 上；藥丸與圓形按鈕、虛線焦點框、輕字重內文、等寬大寫小標，像設計工具的遊樂場。",
+  "fits": "創意工作室、活動、課程、面向年輕受眾",
+  "source_guide": "figma",
+  "source_repository": "https://github.com/nexu-io/open-design",
+  "source_license": "Apache-2.0",
+  "placeholder_colors": {
+    "bg": "#ffffff",
+    "surface_alt": "#f0f0f0",
+    "accent": "#000000",
+    "accent_soft": "#e6ffb0",
+    "on_accent": "#ffffff"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Huninn&family=Inter:wght@300;400;500;700&family=Space+Mono&display=swap",
+    "families": [
+      "Huninn",
+      "Inter",
+      "Space Mono"
+    ]
+  }
+}
