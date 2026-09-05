@@ -131,12 +131,30 @@ class NodeBuildAcceptanceTests(unittest.TestCase):
             )
             payload["pages"]["optional"] = ["portfolio", "case_studies", "pricing", "faq", "newsletter"]
             config.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+            # 文案層：一份最小 copy.json 與一篇文章，確認 site.copy.mjs 與文章替換在真實建置下可用
+            copy_json = {
+                "schema_version": 1, "status": "draft", "language": "zh-TW", "facts_snapshot": [], "contains_credentials": False,
+                "home": {k: {"text": None, "source": "placeholder"} for k in ("eyebrow", "title", "lead", "primary_cta", "secondary_cta", "offerings_eyebrow", "offerings_heading", "offerings_intro", "trust_eyebrow", "trust_heading", "closing_eyebrow", "closing_heading", "closing_lead")},
+                "about": {"title": {"text": "關於虛構工作室", "source": "ai_suggestion"}, "intro": {"text": None, "source": "placeholder"}, "sections": [{"heading": {"text": "我怎麼工作", "source": "ai_suggestion"}, "body": {"text": "先釐清目標再動手。", "source": "ai_suggestion"}}], "cta_heading": {"text": None, "source": "placeholder"}},
+                "services": {"title": {"text": None, "source": "placeholder"}, "intro": {"text": None, "source": "placeholder"}, "closing_note": {"text": None, "source": "placeholder"}},
+                "contact": {"title": {"text": None, "source": "placeholder"}, "intro": {"text": "選一個方便的方式。", "source": "ai_suggestion"}, "form_note": {"text": None, "source": "placeholder"}},
+                "blog": {"title": {"text": None, "source": "placeholder"}, "intro": {"text": None, "source": "placeholder"}, "empty_note": {"text": None, "source": "placeholder"}},
+                "not_found": {"title": {"text": None, "source": "placeholder"}, "lead": {"text": None, "source": "placeholder"}},
+                "posts": [{"slug": "first-post", "file": "first-post.md", "source": "ai_suggestion"}],
+            }
+            copy_json["home"]["title"] = {"text": "虛構的新標題", "source": "ai_suggestion"}
+            (root / "copy.json").write_text(json.dumps(copy_json, ensure_ascii=False), encoding="utf-8")
+            (root / "posts").mkdir()
+            (root / "posts/first-post.md").write_text("---\ntitle: \"虛構的第一篇\"\ndate: \"2026-01-02\"\ndescription: \"虛構描述\"\ntags: [\"虛構\"]\n---\n\n## 開始\n\n" + "這是虛構文章的內文。" * 12 + "\n", encoding="utf-8")
             target = root / "site"
             scaffold = subprocess.run(
                 ["python3", str(SCAFFOLD), "scaffold", "--config", str(config), "--target", str(target), "--confirm-write"],
                 capture_output=True, text=True,
             )
             self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
+            self.assertTrue(json.loads(scaffold.stdout)["copy_layer"]["applied"])
+            self.assertTrue((target / "src/content/posts/first-post.md").is_file())
+            self.assertFalse((target / "src/content/posts/hello-world.md").exists())
             install = subprocess.run(["npm", "ci", "--no-audit", "--no-fund"], cwd=target, capture_output=True, text=True)
             self.assertEqual(install.returncode, 0, install.stderr[-2000:])
             build = subprocess.run(["npm", "run", "build"], cwd=target, capture_output=True, text=True)
@@ -145,6 +163,9 @@ class NodeBuildAcceptanceTests(unittest.TestCase):
                 ["python3", str(CHECK), "--dist", str(target / "dist"), "--config", str(config)], capture_output=True, text=True
             )
             self.assertEqual(check.returncode, 0, check.stdout)
+            home_html = (target / "dist/index.html").read_text(encoding="utf-8")
+            self.assertIn("虛構的新標題", home_html)
+            self.assertTrue((target / "dist/blog/first-post/index.html").is_file())
 
 
 if __name__ == "__main__":

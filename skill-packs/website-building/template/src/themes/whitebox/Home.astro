@@ -1,0 +1,137 @@
+---
+// 白盒子首頁：滿版照片首屏（加引號的超大標題、年份角標、白色大按鈕、右下小卡）→ 淡色巨字背景的關於（照片＋兩段文字）
+// → 細線事實卡 → 錯落的文章格 → 編號可展開的服務列 → 超大標題的合作方式 → 文字跑馬燈。
+import { getCollection } from 'astro:content';
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { ctaHref, ctaAttrs } from '../../lib/nav';
+
+const posts = (await getCollection('posts'))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 4);
+const fallbackCovers = ['/images/samples/clean-desk.jpg', '/images/samples/mono-desk.jpg', '/images/samples/phone-edge.jpg', '/images/samples/keyboard-coffee.jpg'];
+const heroCard = posts[0];
+const year = new Date().getFullYear();
+const aboutBody = copy.about.sections.find((section) => section.body)?.body ?? site.audience;
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<section class="wb-hero">
+  <div class="wb-hero__bg" aria-hidden="true"><img src="/images/samples/clean-desk.jpg" alt="" width="1200" height="800" fetchpriority="high" data-parallax="-0.12" style="scale: 1.15;" /></div>
+  <div class="wb-lines" aria-hidden="true"></div>
+  <div class="t-container relative z-10 w-full pb-10 pt-40">
+    <div class="flex items-start justify-between gap-8">
+      <h1 class="wb-hero__title" data-split="chars" data-split-step="30">「{copy.home.title ?? site.positioning}」</h1>
+      <span class="wb-year hidden shrink-0 pt-4 md:inline" data-reveal="fade" data-reveal-delay="600">[{year}]</span>
+    </div>
+    <p class="mt-8 max-w-lg text-[15px] leading-7" style="color: rgba(255,255,255,0.85);" data-reveal="up" data-reveal-delay="500">{copy.home.lead ?? site.audience}</p>
+    <div class="mt-10 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <a href={ctaHref} class="t-btn" data-magnet="14,14" data-reveal="up" data-reveal-delay="650" {...ctaAttrs}><span data-magnet-target>{copy.home.primary_cta ?? site.cta.label}</span></a>
+      <div class="md:justify-self-end" data-reveal="right" data-reveal-delay="750">
+        <p class="wb-year mb-3 text-right">01</p>
+        {heroCard ? (
+          <a href={`/blog/${heroCard.id}/`} class="wb-hero-card">
+            <img src={heroCard.data.coverImage ?? fallbackCovers[0]} alt="" width="1200" height="900" />
+            <span><strong>{heroCard.data.title}</strong><small>{heroCard.data.description}</small><small class="mt-2 font-semibold uppercase" style="letter-spacing: 0.1em; color: var(--wb-black);">閱讀 →</small></span>
+          </a>
+        ) : (
+          <a href="/services" class="wb-hero-card">
+            <img src="/images/samples/mono-desk.jpg" alt="" width="1200" height="800" />
+            <span><strong>{site.offerings[0]?.name}</strong><small>{site.offerings[0]?.summary}</small></span>
+          </a>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="relative overflow-hidden">
+  <div class="wb-ghost" aria-hidden="true">{site.name}</div>
+  <div class="t-container t-section relative">
+    <div class="flex justify-end"><a href="/about" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">{copy.about.title ?? '關於'}</a></div>
+    <div class="mt-16 grid gap-10 lg:grid-cols-[minmax(0,4fr)_minmax(0,4fr)_minmax(0,4fr)] lg:items-start">
+      <div class="order-3 lg:order-1 lg:pt-24" data-reveal="up" data-reveal-delay="200">
+        <a href="/about" class="t-btn" data-magnet="12,12"><span data-magnet-target>{copy.about.cta_heading ?? '更多關於'}</span></a>
+      </div>
+      <div class="t-media order-1 aspect-[4/3] lg:order-2" data-reveal="scale">
+        <img src="/images/samples/mono-desk.jpg" alt="" width="1200" height="800" class="h-full w-full object-cover" style="filter: saturate(0.4); scale: 1.1;" data-parallax="-0.08" loading="lazy" />
+      </div>
+      <div class="order-2 space-y-5 text-[15px] leading-7 lg:order-3" data-reveal="up" data-reveal-delay="120">
+        <p style="color: var(--wb-black);">{copy.about.intro ?? copy.home.offerings_intro ?? '先弄清楚問題值不值得解，再決定做法；每一步都交付你能自己維護的成果。'}</p>
+        <p style="color: var(--wb-grey);">{aboutBody}</p>
+      </div>
+    </div>
+    {site.trustSignals.length > 0 && (
+      <div class="mt-20 grid gap-6 sm:grid-cols-2 lg:grid-cols-4" data-reveal-stagger="120">
+        {site.trustSignals.map((signal, index) => (
+          <div class="wb-fact">
+            <p class="text-[13px]" style="color: var(--wb-grey);">{copy.home.trust_eyebrow ?? '事實'}</p>
+            <p class="wb-fact__num">{pad(index)}</p>
+            <p class="mt-4 text-[14px] leading-6" style="color: var(--wb-grey);">{signal}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+{posts.length > 0 && (
+  <section class="t-container t-section" style="padding-top: 0;">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <h2 class="t-h2" data-split="words" data-split-step="60">{copy.blog.title ?? '最近寫的'}</h2>
+      <a href="/blog" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">全部文章</a>
+    </div>
+    <div class="wb-works mt-16" data-reveal-stagger="160" data-reveal-variant="up">
+      {posts.map((post, index) => (
+        <a href={`/blog/${post.id}/`} class="wb-work">
+          <div class="t-media"><img src={post.data.coverImage ?? fallbackCovers[index % fallbackCovers.length]} alt="" width="1200" height="900" loading="lazy" /></div>
+          <h3>{post.data.title}</h3>
+          <p class="text-[13px]" style="color: var(--wb-grey);">{post.data.date}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+)}
+
+<section class="relative overflow-hidden">
+  <div class="wb-ghost" aria-hidden="true">{copy.home.offerings_eyebrow ?? 'Services'}</div>
+  <div class="t-container t-section relative">
+    <div class="flex justify-end"><a href="/services" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">{copy.home.offerings_eyebrow ?? '服務'}</a></div>
+    <h2 class="t-h2 mt-12 max-w-4xl" data-split="words" data-split-step="60">{copy.home.offerings_heading ?? '三件我能幫上的事'}</h2>
+    <div class="mt-14" data-reveal-stagger="120" data-reveal-variant="fade">
+      {site.offerings.map((offering, index) => (
+        <details class="wb-row" open={index === 0}>
+          <summary>
+            <span class="wb-row__idx">({pad(index)})</span>
+            <span class="wb-row__name">{offering.name}</span>
+            <span class="hidden gap-2 md:flex"><span class="t-tag">{copy.services.title ?? '服務'}</span><span class="t-tag">{site.cta.label}</span></span>
+            <span class="wb-row__plus" aria-hidden="true">+</span>
+          </summary>
+          <div class="wb-row__body">{offering.summary}<div class="mt-5"><a href={ctaHref} class="t-btn-secondary" {...ctaAttrs}>{site.cta.label}</a></div></div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="t-container t-section" style="padding-top: 0;">
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:items-start">
+    <div>
+      <span class="t-eyebrow" data-reveal="fade">{copy.home.trust_eyebrow ?? '怎麼合作'}</span>
+      <p class="mt-10 max-w-xs text-[14px] leading-6" style="color: var(--wb-grey);" data-reveal="up">{copy.home.lead ?? site.audience}</p>
+      <div class="t-media mt-6 aspect-[4/3] max-w-xs" data-reveal="scale"><img src="/images/samples/vintage-camera.jpg" alt="" width="1200" height="800" class="h-full w-full object-cover" style="filter: saturate(0.3);" loading="lazy" /></div>
+    </div>
+    <div>
+      <h2 class="t-h2" data-split="words" data-split-step="60">{copy.home.trust_heading ?? '先聽，再設計，然後交給你使用'}</h2>
+      <a href={ctaHref} class="t-btn mt-10" data-magnet="14,14" data-reveal="up" {...ctaAttrs}><span data-magnet-target>{copy.home.primary_cta ?? site.cta.label}</span></a>
+    </div>
+  </div>
+</section>
+
+<div class="wb-ticker" data-marquee="22000" aria-hidden="true">
+  <div class="t-marquee">
+    <div class="t-marquee-track">
+      {[0, 1, 2, 3].map(() => <span>{site.cta.label}<em>{site.name}</em><i></i></span>)}
+    </div>
+  </div>
+</div>

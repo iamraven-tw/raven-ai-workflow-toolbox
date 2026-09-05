@@ -1,0 +1,24 @@
+{
+  "id": "weekly",
+  "name": "週刊",
+  "tonality": "editorial_press",
+  "order": 60,
+  "description": "報紙灰的紙底、米白卡片、深橄欖頁尾、褐色小標。首屏是三欄雜誌版：左邊置中的襯線標題與導言、中間一張微微傾斜的封面照片、右邊三則側欄。接著一句會輪播的引言、最近文章的雜誌格、對談卡、排行榜配深色訂閱盒。字型是襯線體。",
+  "fits": "寫作者、評論、電子報、以文章與觀點為主的一人媒體",
+  "source_kind": "layout_reference",
+  "source_guide": "layout-reference:slow-news-magazine",
+  "source_references": ["https://themagazinenews.pages.dev/"],
+  "source_license": "reference_only_no_code_copied",
+  "source_note": "只參考公開示範頁的版面手法與動畫類型（報頭雙層導覽、三欄雜誌首屏、傾斜封面、引言輪播、雜誌格、對談卡、排行榜、深色訂閱盒）。程式碼、文案、圖片與字型檔皆未複製，全部自行實作；動畫用 Motion（MIT）。",
+  "placeholder_colors": {
+    "bg": "#e6e4e3",
+    "surface_alt": "#fbfaf7",
+    "accent": "#876533",
+    "accent_soft": "#2a2814",
+    "on_accent": "#ffffff"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Serif+TC:wght@400;600;700&display=swap",
+    "families": ["Playfair Display", "Noto Serif TC"]
+  }
+}

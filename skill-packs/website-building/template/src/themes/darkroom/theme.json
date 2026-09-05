@@ -1,0 +1,24 @@
+{
+  "id": "darkroom",
+  "name": "暗房",
+  "tonality": "dark_immersive",
+  "order": 20,
+  "description": "全黑畫布上只有白與灰，沒有第二個顏色。首屏是佔滿整個畫面的巨型標題，游標經過會沿路留下照片；服務做成 01、02、03 的長列表配右側黏住的照片；頁尾把站名放大到超出畫面。全站有進場、跑馬燈、視差與懸停動畫。",
+  "fits": "品牌、設計、影像、想讓人一眼記住的一人工作室",
+  "source_kind": "layout_reference",
+  "source_guide": "layout-reference:dark-branding-studio",
+  "source_references": ["https://craift.pages.dev/"],
+  "source_license": "reference_only_no_code_copied",
+  "source_note": "只參考公開示範頁的版面手法與動畫類型（黑底巨字、編號服務清單、游標拖尾、疊照片、頁尾巨字）。程式碼、文案、圖片與字型檔皆未複製，全部自行實作；動畫用 Motion（MIT）。",
+  "placeholder_colors": {
+    "bg": "#0a0a0a",
+    "surface_alt": "#141414",
+    "accent": "#f5f5f5",
+    "accent_soft": "#262626",
+    "on_accent": "#0a0a0a"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap",
+    "families": ["Archivo", "Noto Sans TC"]
+  }
+}

@@ -1,0 +1,130 @@
+---
+// 暗房首頁：黑底巨字首屏（游標留下照片拖尾）→ 服務與信任依據的跑馬燈 → 一句大敘述加信任列
+// → 編號 01／02／03 的服務長列表配右側黏住的照片 → 最新文章列 → 疊照片與結尾邀請。
+import { getCollection } from 'astro:content';
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { ctaHref, ctaAttrs } from '../../lib/nav';
+
+const posts = (await getCollection('posts'))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+const trail = ['/images/samples/dark-desk.jpg', '/images/samples/mono-desk.jpg', '/images/samples/vintage-camera.jpg', '/images/samples/keyboard-coffee.jpg', '/images/samples/dark-flatlay.jpg', '/images/samples/phone-edge.jpg'].join(',');
+const ticker = [...site.offerings.map((offering) => offering.name), ...site.trustSignals];
+const title = copy.home.title ?? site.positioning;
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<section class="dr-hero" data-trail data-trail-images={trail}>
+  <div class="dr-hero__blobs" aria-hidden="true"></div>
+  <div class="dr-hero__layer" data-trail-layer aria-hidden="true"></div>
+  <div class="dr-hero__fade" aria-hidden="true"></div>
+  <div class="t-container relative z-10 text-center">
+    <p class="dr-kicker" data-reveal="fade"><span aria-hidden="true">✦</span>{copy.home.eyebrow ?? site.name}<span aria-hidden="true">✦</span></p>
+    <h1 class="dr-title mx-auto"><span class="dr-line-mask"><span class="block" data-reveal="clip" data-reveal-delay="120">{title}</span></span></h1>
+    <p class="t-lead mx-auto mt-8 max-w-xl" data-reveal="up" data-reveal-delay="420">{copy.home.lead ?? site.audience}</p>
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-3" data-reveal="up" data-reveal-delay="560">
+      <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+      <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>
+    </div>
+  </div>
+  <div class="dr-hero-bar">
+    <div class="flex flex-wrap items-center gap-2">
+      {site.contacts.map((channel) => (
+        <a href={channel.target} class="dr-pill" style="padding: 8px 12px;" {...(channel.kind === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>{channel.label}</a>
+      ))}
+    </div>
+    <span class="t-eyebrow hidden sm:inline" aria-hidden="true">往下捲動 ↓</span>
+  </div>
+</section>
+
+<div class="dr-ticker" data-marquee="26000" aria-hidden="true">
+  <div class="t-marquee">
+    <div class="t-marquee-track">
+      {ticker.map((item) => <span>✦&nbsp;&nbsp;{item}</span>)}
+    </div>
+  </div>
+</div>
+
+<section class="t-container t-section">
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:items-start">
+    <h2 class="dr-statement" data-reveal="up">
+      {copy.home.offerings_intro ?? copy.about.intro ?? '不做花俏的事，只做能交付、能維護、能說清楚的工作。'}
+      <em>{copy.home.trust_heading ?? '每一項都有明確的範圍與交付方式。'}</em>
+    </h2>
+    <div data-reveal="up" data-reveal-delay="150">
+      <p class="t-muted text-[15px] leading-7">目前提供：{site.offerings.map((offering) => offering.name).join('、')}。</p>
+      <a href="/about" class="dr-arrow-link mt-6">更多關於 {site.name} ↗</a>
+    </div>
+  </div>
+  {site.trustSignals.length > 0 && (
+    <div class="mt-16" data-reveal-stagger="120">
+      {site.trustSignals.map((signal, index) => (
+        <div class="dr-row">
+          <span class="t-eyebrow">{copy.home.trust_eyebrow ?? '事實'} {pad(index)}</span>
+          <span class="dr-row__value">{signal}</span>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
+
+<section class="t-container t-section" style="padding-top: 0;">
+  <div class="mb-10">
+    <p class="t-eyebrow" data-reveal="fade">{copy.home.offerings_eyebrow ?? '服務'}</p>
+    <h2 class="t-h2 mt-4" data-reveal="up">{copy.home.offerings_heading ?? '三件事，各自成章'}</h2>
+  </div>
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,6fr)_minmax(0,5fr)]">
+    <div>
+      {site.offerings.map((offering, index) => (
+        <article class="dr-service" data-reveal="up">
+          <span class="dr-service__num" aria-hidden="true">{pad(index)}</span>
+          <div>
+            <h3 class="dr-service__name">{offering.name}</h3>
+            <p class="mt-5 max-w-md text-[15px] leading-7">{offering.summary}</p>
+            <a href={ctaHref} class="dr-arrow-link mt-6" {...ctaAttrs}>{site.cta.label} ↗</a>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="hidden lg:block">
+      <div class="t-media sticky top-28 aspect-[4/5]" data-reveal="scale">
+        <img src="/images/samples/dark-flatlay.jpg" alt="" width="1200" height="800" class="h-full w-full object-cover" style="filter: saturate(0.2) contrast(1.05); scale: 1.12;" data-parallax="-0.12" />
+      </div>
+    </div>
+  </div>
+</section>
+
+{posts.length > 0 && (
+  <section class="t-section-alt">
+    <div class="t-container t-section">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p class="t-eyebrow" data-reveal="fade">文章</p>
+          <h2 class="t-h2 mt-4" data-reveal="up">{copy.blog.title ?? '最近寫的'}</h2>
+        </div>
+        <a href="/blog" class="dr-arrow-link" data-reveal="fade">全部文章 ↗</a>
+      </div>
+      <div class="mt-12" data-reveal-stagger="100">
+        {posts.map((post, index) => (
+          <a href={`/blog/${post.id}/`} class="dr-post">
+            <span class="t-eyebrow">{pad(index)}</span>
+            <span class="dr-post__title">{post.data.title}</span>
+            <time datetime={post.data.date} class="t-eyebrow">{post.data.date}</time>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="t-container t-section text-center">
+  <div class="dr-stack" data-reveal="scale">
+    <img src="/images/samples/mono-desk.jpg" alt="" width="1200" height="800" />
+    <img src="/images/samples/vintage-camera.jpg" alt="" width="1200" height="800" />
+    <img src="/images/samples/dark-desk.jpg" alt="" width="1200" height="800" />
+  </div>
+  <h2 class="t-h2 mx-auto mt-14 max-w-3xl" data-reveal="up">{copy.home.closing_heading ?? '一起把它做出來'}</h2>
+  <p class="t-lead mx-auto mt-6 max-w-xl" data-reveal="up" data-reveal-delay="120">{copy.home.closing_lead ?? '一封信說明你的情況，我會告訴你值不值得做。'}</p>
+  <a href={ctaHref} class="t-btn mt-10" data-reveal="up" data-reveal-delay="220" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+</section>

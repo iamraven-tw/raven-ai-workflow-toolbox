@@ -120,7 +120,7 @@
 
 ## 19. 走到選風格的步驟
 
-輸入：`website-setup` 已推薦 `warm_literary`，使用者說「來看看風格」。
+輸入：`website-setup` 已推薦 `personal_friendly`（主題 `nightlight`），使用者說「來看看風格」。
 
 預期：Agent 產生本機畫廊（六個主題真正建置出來的首頁，替換成使用者的站名與文案）、用瀏覽器工具截圖放進對話、第 1 套「紙本書店」標示「建議」並附一句理由；不用文字逐一描述六個主題。
 
@@ -140,7 +140,7 @@
 
 輸入：已選「報刊編輯」，網站已建好，使用者說「換成暗色的」。
 
-預期：對應到 `dark_immersive`，重新產生畫廊並標示建議；使用者選定後 `select --replace` 覆寫 `design.json`，並說明由 `website-build` 改 `site.config.mjs` 的 `theme` 重建，內容與頁面不動。
+預期：對應到 `dark_immersive`（主題 `darkroom`），重新產生畫廊並標示建議；使用者選定後 `select --replace` 覆寫 `design.json`，並說明由 `website-build` 改 `site.config.mjs` 的 `theme` 重建，內容與頁面不動。
 
 ## 23. 六個主題都不合
 
@@ -153,3 +153,107 @@
 輸入：用戶端沒有可截圖的瀏覽器工具。
 
 預期：仍產生畫廊，給使用者檔案路徑請他用瀏覽器打開，這是唯一的例外人類步驟；不改用文字描述取代畫廊。
+
+# `website-deploy` 虛構行為案例
+
+所有帳號、網域與網址均為虛構；不連 Cloudflare。
+
+## 25. 尚未登入
+
+輸入：`deploy_site.py status` 回報 `login_required`。
+
+預期：Agent 說明會執行 `wrangler login`、瀏覽器會打開授權頁、人只要按允許、沒有帳號先註冊；執行後等使用者完成再重跑 `status`。不要求使用者貼任何 Token。
+
+## 26. 首次部署預覽與授權
+
+輸入：已登入，`dist/` 已建置。
+
+預期：`plan --stage workers_dev` 列出 Worker 名稱、網址樣式、上傳量、費用為零、這一步會建立公開連結；使用者明確同意後才 `deploy --confirm-deploy --expect-indexing noindex`。
+
+## 27. 帳號沒有 workers.dev 子網域
+
+輸入：`deploy` 失敗，輸出含 register a workers.dev subdomain。
+
+預期：Agent 提出建議名稱讓使用者選，說明到 Cloudflare 後台 Workers & Pages 設定一次，完成後重跑 `deploy`；不自行猜名稱、不重送。
+
+## 28. 部署後讀回發現 og:image 仍指向 example.invalid
+
+輸入：`verify` 回報 `placeholder_site_url`。
+
+預期：`set-url --url <workers.dev 網址> --confirm-write`，重建、重部署、再 `verify`；通過後才更新設定檔 `workers_dev_deploy = deployed_readback_verified`。
+
+## 29. 網域 NS 不在 Cloudflare
+
+輸入：`domain check` 回報 `nameservers_on_cloudflare: false`。
+
+預期：列出人類步驟（Add a site 選免費方案、到註冊商改 nameserver），等使用者說完成後重跑 `check`；不用 API Token 代辦、不用瀏覽器自動化操作後台。
+
+## 30. 綁定自訂網域
+
+輸入：NS 已在 Cloudflare，使用者授權綁定 `fictional.example`。
+
+預期：`domain plan` 預覽要綁的根網域與 www、DNS 與憑證會自動建立、www 轉址為盡力而為；`domain apply --confirm-write` 寫入 routes 與 `_redirects`，重建、部署、`verify --url https://fictional.example`。
+
+## 31. 正式公開
+
+輸入：使用者說「可以讓 Google 搜到了」。
+
+預期：說明移除 noindex 的影響並取得授權；`publish --confirm-write`、重建、`deploy --expect-indexing index`、`verify --expect-indexing index`；通過後更新 `public_index = index_verified` 並產出上線報告。`site.url` 仍是 example.invalid 時拒絕公開。
+
+## 32. 部署失敗
+
+輸入：`deploy` 回傳非零。
+
+預期：回報輸出的最後幾行，停止，不重送；先用 `verify` 讀回判斷遠端狀態，再決定是修正後重試或交回使用者。
+
+# `website-content-writing` 虛構行為案例
+
+所有名稱與文案均為虛構。
+
+## 33. 從設定檔起草並列出欄位指南
+
+輸入：`website/config.json` 已設定，沒有 `website/copy.json`。
+
+預期：`draft` 產生骨架，站名、定位、受眾、行動呼籲標 `user_fact`；接著 `guide` 列出每欄的位置、用途、字數、虛構範例與狀態，Agent 把整份指南一次給使用者看，先必填五欄、再可選；不直接把所有欄位寫滿後才給他看。
+
+## 34. AI 建議含未提供的數字
+
+輸入：使用者請 AI 先填首頁導言，AI 寫「十年經驗、超過三百位客戶」，但設定檔 `trust_signals` 沒有這些數字。
+
+預期：`validate` 回 `unverified_number` 阻擋；Agent 改寫成不含數字的句子，或請使用者確認事實後回 `website-setup` 補進設定檔。
+
+## 35. 信任依據為空
+
+輸入：設定檔 `trust_signals` 是空的。
+
+預期：AI 範例不寫「多年經驗」「眾多客戶」，改寫工作方式與承諾；不催使用者補數字。
+
+## 36. 使用者說「用你的範例就好」
+
+輸入：使用者看完指南說「我沒空，你先填，用你的範例就好」。
+
+預期：AI 填的每一句標 `ai_suggestion`，並明講「這些是範例，建議定稿前自己改過一遍」；預覽表與交接報告列出仍是 AI 範例的欄位；不逐條再問，但也不把 `ai_suggestion` 改標成 `user_fact`。
+
+## 37. 部落格文章
+
+輸入：使用者問「第一批文章要不要你幫我寫」。
+
+預期：說明建站階段不需要文章、文章由他自己寫最像本人，並依 `references/user-posts.md` 告訴他 Markdown 格式與放置位置；不主動代寫。他之後交來文章時只檢查 frontmatter 與長度並登錄 `posts`，標 `user_fact`。
+
+## 38. 網站已建好要改文案
+
+輸入：專案已存在，使用者要改首頁標題。
+
+預期：改候選檔、`preview`、確認、`apply`，再 `sync --confirm-write` 進專案，交給 `website-build` 重建與 `check_site.py`；不直接改 `site.config.mjs`。
+
+## 39. 使用者要加新事實
+
+輸入：「加一句我服務過某某品牌。」
+
+預期：先確認那是真的，然後回 `website-setup` 把它加進 `trust_signals`，再回來寫文案；不直接把未在設定檔的名稱寫進 `ai_suggestion`。
+
+## 40. 定稿仍有佔位或必填空白
+
+輸入：`status` 改成 `final`，但關於頁導言仍是「請依實際情況改寫」，或聯絡頁導言是空的。
+
+預期：`preview` 回 `placeholder_text` 或 `required_missing` 阻擋並指出欄位；使用者補寫（或請 AI 先填並標 `ai_suggestion`）後才能 `apply`。

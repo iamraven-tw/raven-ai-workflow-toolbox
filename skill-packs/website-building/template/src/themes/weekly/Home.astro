@@ -1,0 +1,149 @@
+---
+// 週刊首頁：三欄雜誌首屏（左：主標與導言；中：傾斜封面；右：服務當側欄）→ 會輪播的引言（信任依據）
+// → 最近文章的雜誌格 → 對談卡（關於頁段落）→ 排行榜（服務）配右側深色行動盒。
+import { getCollection } from 'astro:content';
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { ctaHref, ctaAttrs } from '../../lib/nav';
+
+const posts = (await getCollection('posts'))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 5);
+const [lead, ...rest] = posts;
+const fallbackCovers = ['/images/samples/cafe-table.jpg', '/images/samples/writing-hand.jpg', '/images/samples/raspberries.jpg', '/images/samples/keyboard-coffee.jpg', '/images/samples/clean-desk.jpg'];
+const thumbs = ['/images/samples/writing-hand.jpg', '/images/samples/cafe-table.jpg', '/images/samples/open-book.jpg', '/images/samples/raspberries.jpg'];
+const quotes = site.trustSignals.length > 0 ? site.trustSignals : [copy.home.trust_heading ?? site.positioning];
+const conversations = copy.about.sections
+  .map((section, index) => ({ heading: section.heading, body: section.body ?? (index === 0 ? site.audience : null) }))
+  .filter((section) => section.body)
+  .slice(0, 3);
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+const today = new Date().toISOString().slice(0, 10);
+---
+
+<section class="t-container">
+  <div class="wk-hero">
+    <article class="wk-hero-left order-2 lg:order-1" data-reveal="up">
+      <a href="/about" class="wk-lead-link">
+        <span class="t-tag">{copy.home.eyebrow ?? '本期'}</span>
+        <h1 class="t-h1 mt-4">{copy.home.title ?? site.positioning}</h1>
+        <p class="t-lead mt-5">{copy.home.lead ?? site.audience}</p>
+        <div class="wk-meta justify-center"><span>{site.name}</span><i></i><time datetime={today}>{today}</time></div>
+      </a>
+      <div class="mt-7 flex flex-wrap justify-center gap-3">
+        <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+        <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '服務'}</a>
+      </div>
+    </article>
+    <a href="/about" class="wk-cover order-1 lg:order-2" data-reveal="scale" data-reveal-delay="120" aria-label="關於">
+      <img src="/images/samples/open-book.jpg" alt="" width="1200" height="800" fetchpriority="high" />
+    </a>
+    <aside class="order-3" data-reveal="up" data-reveal-delay="220">
+      {site.offerings.map((offering, index) => (
+        <article class="wk-side">
+          <a href="/services" style="text-decoration: none; color: inherit;">
+            <span class="t-tag">{copy.home.offerings_eyebrow ?? '服務'} {pad(index)}</span>
+            <h3>{offering.name}</h3>
+            <p class="wk-meta" style="display: block; font-family: var(--wk-body); font-size: 13px; line-height: 1.6;">{offering.summary}</p>
+          </a>
+        </article>
+      ))}
+    </aside>
+  </div>
+</section>
+
+<section class="t-container">
+  <div class="wk-quote" data-rotator data-reveal="fade" style="border-top: 1px solid var(--wk-line); border-bottom: 1px solid var(--wk-line);">
+    {quotes.map((quote) => (
+      <div class="t-rotator-item">
+        <blockquote>「{quote}」</blockquote>
+        <cite>— {copy.home.trust_eyebrow ?? site.name}</cite>
+      </div>
+    ))}
+    {quotes.length > 1 && (
+      <div class="wk-quote__controls">
+        <button type="button" data-rotator-prev aria-label="上一則">←</button>
+        <span data-rotator-count>1 / {quotes.length}</span>
+        <button type="button" data-rotator-next aria-label="下一則">→</button>
+      </div>
+    )}
+  </div>
+</section>
+
+{lead && (
+  <section class="t-container t-section">
+    <div class="flex items-end justify-between gap-6" style="border-bottom: 1px solid var(--wk-line); padding-bottom: 14px;">
+      <h2 class="t-h2" data-reveal="up">{copy.blog.title ?? '最近寫的'}</h2>
+      <a href="/blog" class="t-tag" data-reveal="fade" style="text-decoration: none;">全部 →</a>
+    </div>
+    <div class={`mt-10 grid gap-8 ${rest.length > 0 ? 'lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : ''}`}>
+      {rest.length > 0 && (
+        <div class="grid gap-8 sm:grid-cols-2" data-reveal-stagger="120">
+          {rest.map((post, index) => (
+            <a href={`/blog/${post.id}/`} class="wk-story">
+              <div class="t-media"><img src={post.data.coverImage ?? fallbackCovers[index % fallbackCovers.length]} alt="" width="1200" height="900" loading="lazy" /></div>
+              <span class="t-tag mt-4 block">{post.data.tags?.[0] ?? '文章'}</span>
+              <h3>{post.data.title}</h3>
+              <div class="wk-meta"><time datetime={post.data.date}>{post.data.date}</time></div>
+            </a>
+          ))}
+        </div>
+      )}
+      <a href={`/blog/${lead.id}/`} class={`wk-story wk-story--big ${rest.length === 0 ? 'mx-auto max-w-3xl' : ''}`} data-reveal="up">
+        <div class="t-media"><img src={lead.data.coverImage ?? fallbackCovers[0]} alt="" width="1200" height="900" /></div>
+        <span class="t-tag mt-5 block">{lead.data.tags?.[0] ?? '文章'}</span>
+        <h3>{lead.data.title}</h3>
+        <p class="t-lead mt-3">{lead.data.description}</p>
+        <div class="wk-meta"><time datetime={lead.data.date}>{lead.data.date}</time></div>
+      </a>
+    </div>
+  </section>
+)}
+
+{conversations.length > 0 && (
+  <section class="t-section-alt">
+    <div class="t-container t-section">
+      <h2 class="t-h2" data-reveal="up">{copy.about.title ?? '關於'}</h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-stagger="140">
+        {conversations.map((section, index) => (
+          <article class="wk-conv">
+            <span class="wk-conv__avatar" aria-hidden="true">{index === 0 ? <img src="/images/samples/portrait.jpg" alt="" width="900" height="1200" class="h-full w-full object-cover" loading="lazy" /> : section.heading.slice(0, 1)}</span>
+            <blockquote>「{section.body}」</blockquote>
+            <div><p class="text-[14px] font-semibold" style="font-family: var(--wk-sans);">{section.heading}</p><p class="t-tag mt-1">{site.name}</p></div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="t-container t-section">
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+    <div>
+      <div class="flex items-end justify-between gap-6" style="border-bottom: 1px solid var(--wk-line); padding-bottom: 14px;">
+        <h2 class="t-h2" data-reveal="up">{copy.home.offerings_heading ?? '這一期的服務'}</h2>
+        <span class="t-tag" data-reveal="fade">{copy.home.offerings_eyebrow ?? '排行'}</span>
+      </div>
+      <div data-reveal-stagger="110">
+        {site.offerings.map((offering, index) => (
+          <a href="/services" class="wk-rank">
+            <span class="wk-rank__num">{pad(index)}</span>
+            <img src={thumbs[index % thumbs.length]} alt="" width="1200" height="800" loading="lazy" />
+            <div>
+              <span class="t-tag">{copy.services.title ?? '服務'}</span>
+              <h3>{offering.name}</h3>
+              <p class="t-muted text-[13px] leading-6">{offering.summary}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+    <div class="wk-dark-box self-start" data-reveal="up" data-reveal-delay="160">
+      <p class="t-eyebrow">{copy.home.closing_eyebrow ?? '寫信給我'}</p>
+      <h3 class="mt-5">{copy.home.closing_heading ?? '一封信。說清楚你的情況。沒有雜訊。'}</h3>
+      <p class="mt-5 text-[15px] leading-7" style="color: #d9d2c0;">{copy.home.closing_lead ?? '我會告訴你值不值得做，以及大概怎麼做。'}</p>
+      <a href={ctaHref} class="t-btn mt-7" style="background: #c9b27e; color: var(--wk-dark);" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+      <p class="mt-4 text-[12px]" style="font-family: var(--wk-sans); color: #a89f86;">{site.contacts.map((channel) => channel.label).join(' · ')}</p>
+    </div>
+  </div>
+</section>

@@ -109,29 +109,29 @@ class ScaffoldTests(unittest.TestCase):
         icon = (self.target / "public/apple-touch-icon.png").read_bytes()
         self.assertEqual(int.from_bytes(icon[16:20], "big"), 180)
         self.assertIn("虛構", (self.target / "public/favicon.svg").read_text(encoding="utf-8"))
-        self.assertIn("theme: 'bookshop'", (self.target / "site.config.mjs").read_text(encoding="utf-8"))
+        self.assertIn("theme: 'whitebox'", (self.target / "site.config.mjs").read_text(encoding="utf-8"))
         for name in ("hero.svg", "avatar.svg", "offering-1.svg", "offering-2.svg", "offering-3.svg"):
             self.assertTrue((self.target / "public/images/placeholders" / name).is_file())
 
     def test_theme_selection_changes_config_and_placeholder_colors(self) -> None:
         """指定主題時站點設定、tsconfig 與佔位素材顏色都跟著主題。"""
 
-        result = self.command("scaffold", "--config", str(self.config), "--target", str(self.target), "--theme", "broadsheet", "--confirm-write")
+        result = self.command("scaffold", "--config", str(self.config), "--target", str(self.target), "--theme", "weekly", "--confirm-write")
         self.assertEqual(result.returncode, 0, result.stderr)
         payload = json.loads(result.stdout)
-        self.assertEqual(payload["theme"], "broadsheet")
-        self.assertEqual(payload["theme_name"], "報刊編輯")
-        self.assertIn("theme: 'broadsheet'", (self.target / "site.config.mjs").read_text(encoding="utf-8"))
-        self.assertIn("#000000", (self.target / "public/favicon.svg").read_text(encoding="utf-8"))
-        for theme in ("bookshop", "nightshift", "gallery", "showroom", "playground", "broadsheet"):
+        self.assertEqual(payload["theme"], "weekly")
+        self.assertEqual(payload["theme_name"], "週刊")
+        self.assertIn("theme: 'weekly'", (self.target / "site.config.mjs").read_text(encoding="utf-8"))
+        self.assertIn("#876533", (self.target / "public/favicon.svg").read_text(encoding="utf-8"))
+        for theme in ("nightlight", "darkroom", "whitebox", "daylight", "sunrise", "weekly"):
             self.assertTrue((self.target / "src/themes" / theme / "theme.css").is_file())
 
         design = self.root / "config-dir" ; design.mkdir()
         (design / "config.json").write_text(self.config.read_text(encoding="utf-8"), encoding="utf-8")
-        (design / "design.json").write_text(json.dumps({"schema_version": 1, "theme": "showroom"}), encoding="utf-8")
+        (design / "design.json").write_text(json.dumps({"schema_version": 1, "theme": "daylight"}), encoding="utf-8")
         plan = self.command("plan", "--config", str(design / "config.json"), "--target", str(self.root / "site-b"))
         self.assertEqual(plan.returncode, 0, plan.stderr)
-        self.assertEqual(json.loads(plan.stdout)["theme"], "showroom")
+        self.assertEqual(json.loads(plan.stdout)["theme"], "daylight")
 
     def test_rejects_unconfigured_business_secrets_and_non_empty_target(self) -> None:
         """未設定、含秘密或目標非空都停止。"""

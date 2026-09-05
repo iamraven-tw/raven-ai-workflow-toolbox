@@ -31,9 +31,17 @@
 - 不用瀏覽器自動化替使用者操作 Cloudflare 後台。
 - 不代辦「Add a site」。Wrangler OAuth 沒有建立 zone 的權限，改用 API Token 也要人進後台建立，人類步驟沒有減少。
 
+## 2026-09-05 已由官方文件確認
+
+- Custom Domain 需要帳號內已啟用的 zone，主機名不得已有 CNAME；`wrangler.jsonc` 的 `routes` 加 `custom_domain: true` 後，部署時由 Cloudflare 自動建立 DNS 記錄與 Advanced Certificate。
+- Custom Domain 要求主機名完全一致，根網域與 `www` 要各自綁定；官方的轉址做法是後台轉址規則加代理的佔位 DNS 記錄。本套件改為兩個主機名都綁定，`_redirects` 轉址盡力而為。
+- Worker 名稱是 `workers.dev` 的 DNS 標籤：63 字元以內、小寫字母數字連字號、不以連字號開頭或結尾；帳號子網域在後台 Workers & Pages 設定。
+- 靜態資產支援 `public/_redirects`，上限 2000 靜態與 100 動態規則。
+
 ## 實作時必須確認的外部事實
 
 - Cloudflare Registrar 支援的頂級網域清單，特別是 `.tw` 與 `.com.tw`。官方頁面為動態載入，2026-09-05 未能機器確認。
-- Wrangler OAuth 登入的權限範圍是否包含建立 zone；本套件假設不包含。
-- 帳號 `workers.dev` 子網域首次啟用是否能由 `wrangler deploy` 互動完成。
+- Wrangler OAuth 登入的權限範圍是否包含建立 zone；本套件假設不包含。`deploy_site.py status` 會讀回實際權限並回報 `zone_edit`。
+- 帳號 `workers.dev` 子網域首次啟用是否能由 `wrangler deploy` 互動完成；官方文件只寫後台設定，技能流程已同時支援兩種情況。
+- `_redirects` 的主機名規則在 Workers 靜態資產是否生效；不生效時 `www` 仍由第二個 custom domain 提供內容。
 - 免費方案的請求數與靜態資產限制，以及是否影響一人公司形象站的日常流量。

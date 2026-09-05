@@ -28,3 +28,51 @@ html {
   width: 100%;
   overflow-x: auto;
 }
+
+/* 共用動畫層（src/lib/motion.ts）需要的最小規則。html.js-motion 由 BaseLayout 的行內腳本加上，
+   沒有 JavaScript 時不會加，內容照常顯示。 */
+html.js-motion [data-reveal]:not(.is-in),
+html.js-motion [data-reveal-stagger]:not(.is-in) > * {
+  opacity: 0;
+}
+.t-split-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.t-split-item { display: inline-block; }
+html.js-motion [data-split].is-split:not(.is-in) .t-split-item { opacity: 0; }
+.t-rotator-item[hidden] { display: none; }
+.t-marquee {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.t-marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  animation: t-marquee var(--marquee-duration, 30s) linear infinite;
+}
+.t-marquee:hover .t-marquee-track {
+  animation-play-state: paused;
+}
+@keyframes t-marquee {
+  to { transform: translateX(-100%); }
+}
+.t-trail-img {
+  position: absolute;
+  width: clamp(96px, 11vw, 190px);
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 18px;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-marquee-track { animation: none; }
+  html { scroll-behavior: auto; }
+}

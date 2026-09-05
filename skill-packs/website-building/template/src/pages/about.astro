@@ -1,8 +1,15 @@
 ---
-// 關於：共用結構，外觀由主題的 .t-* 類別決定。文案由 website-content-writing 補齊。
+// 關於：共用結構，外觀由主題的 .t-* 類別決定；文字由 site.copy.mjs 提供，null 時用預設。
 import BaseLayout from '@theme/BaseLayout.astro';
 import { site } from '../../site.config.mjs';
+import { copy } from '../../site.copy.mjs';
 import { ctaHref, ctaAttrs } from '../lib/nav';
+const title = copy.about.title ?? `關於 ${site.name}`;
+const intro = copy.about.intro ?? site.positioning;
+const sections = copy.about.sections.map((section, index) => ({
+  heading: section.heading,
+  body: section.body ?? (index === 0 ? site.audience : ''),
+})).filter((section) => section.body);
 ---
 
 <BaseLayout title="關於" description={`認識 ${site.name}：${site.positioning}`} canonical="/about">
@@ -11,15 +18,17 @@ import { ctaHref, ctaAttrs } from '../lib/nav';
       <img src="/images/samples/portrait.jpg" alt="" width="900" height="1200" class="t-media w-full max-w-[280px]" style="aspect-ratio: 3 / 4; object-fit: cover;" />
       <div>
         <p class="t-eyebrow">關於</p>
-        <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">關於 {site.name}</h1>
-        <p class="t-lead mt-6">{site.positioning}</p>
+        <h1 class="t-h1 mt-4" style="font-size: clamp(32px, 4vw, 52px);">{title}</h1>
+        <p class="t-lead mt-6">{intro}</p>
         <div class="t-prose prose prose-lg mt-10 max-w-none">
-          <h2>我服務的對象</h2>
-          <p>{site.audience}</p>
-          <h2>我怎麼工作</h2>
-          <p>先釐清目標，再決定做法；每一步都交付可以自己維護的成果。這段文案是佔位，請依實際情況改寫。</p>
+          {sections.map((section) => (
+            <>
+              <h2>{section.heading}</h2>
+              <p>{section.body}</p>
+            </>
+          ))}
         </div>
-        <a href={ctaHref} class="t-btn mt-10" {...ctaAttrs}>{site.cta.label}</a>
+        <a href={ctaHref} class="t-btn mt-10" {...ctaAttrs}>{copy.about.cta_heading ?? site.cta.label}</a>
       </div>
     </div>
   </section>

@@ -30,16 +30,16 @@
 
 ## 六個主題
 
-`src/themes/<id>/` 各自擁有 `theme.json`、`theme.css`、`BaseLayout.astro`、`Header.astro`、`Footer.astro`、`Home.astro`、`BlogIndex.astro`、`BlogPost.astro`。每個主題依一份 open-design 設計指引（Apache-2.0）完整實作，版面、字型、間距、元件都不同。
+`src/themes/<id>/` 各自擁有 `theme.json`、`theme.css`、`BaseLayout.astro`、`Header.astro`、`Footer.astro`、`Home.astro`、`BlogIndex.astro`、`BlogPost.astro`。六個主題都參考公開示範頁的版面手法自行實作（程式碼與素材未複製）；版面、字型、間距、元件、動畫都不同，動畫共用 `src/lib/motion.ts`（Motion，MIT）。
 
-| id | 名稱 | 調性 | 指引 |
+| id | 名稱 | 調性 | 來源 |
 |---|---|---|---|
-| `bookshop` | 紙本書店 | 溫暖書卷 | claude |
-| `nightshift` | 夜間工作室 | 暗黑沉浸 | linear-app |
-| `gallery` | 留白畫廊 | 極簡純淨 | vercel |
-| `showroom` | 黑白展場 | 攝影展廳 | apple |
-| `playground` | 遊樂場 | 鮮豔活力 | figma |
-| `broadsheet` | 報刊編輯 | 雜誌印刷 | wired |
+| `nightlight` | 小夜燈 | 親切個人 | 版面參考（個人設計師作品集示範頁） |
+| `darkroom` | 暗房 | 暗黑沉浸 | 版面參考（黑底品牌工作室示範頁） |
+| `whitebox` | 白盒子 | 極簡純淨 | 版面參考（建築事務所示範頁） |
+| `daylight` | 日光 | 攝影展廳 | 版面參考（照片主導的行銷代理商示範頁） |
+| `sunrise` | 晨光 | 鮮豔活力 | 版面參考（漸層行銷代理商示範頁） |
+| `weekly` | 週刊 | 雜誌印刷 | 版面參考（慢新聞雜誌示範頁） |
 
 共用頁面（關於、服務、聯絡、404、可選頁面）只用各主題都必須定義的 `.t-*` 類別，契約見 `website-design-preview` 的 `references/token-contract.md`。
 

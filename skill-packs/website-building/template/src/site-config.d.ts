@@ -1,6 +1,6 @@
 // site.config.mjs 的型別定義，讓 .astro 檔案取得欄位提示。
 export type OptionalPage = 'portfolio' | 'case_studies' | 'pricing' | 'faq' | 'newsletter';
-export type ThemeId = 'bookshop' | 'nightshift' | 'gallery' | 'showroom' | 'playground' | 'broadsheet';
+export type ThemeId = 'nightlight' | 'darkroom' | 'whitebox' | 'daylight' | 'sunrise' | 'weekly';
 
 export interface Offering {
   name: string;

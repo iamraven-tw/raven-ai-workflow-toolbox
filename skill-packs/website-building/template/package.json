@@ -12,16 +12,20 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "deploy": "wrangler deploy",
+    "whoami": "wrangler whoami"
   },
   "dependencies": {
     "@astrojs/rss": "4.0.17",
     "@astrojs/sitemap": "3.7.1",
     "@tailwindcss/typography": "0.5.19",
-    "astro": "6.0.8"
+    "astro": "6.0.8",
+    "motion": "13.2.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "4.2.2",
-    "tailwindcss": "4.2.2"
+    "tailwindcss": "4.2.2",
+    "wrangler": "4.129.0"
   }
 }

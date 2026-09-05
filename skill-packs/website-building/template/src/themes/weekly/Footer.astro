@@ -1,0 +1,32 @@
+---
+// 週刊：深橄欖頁尾，三欄連結（頁面、聯絡、其他），底部版權與 RSS。
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { footerLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+const year = new Date().getFullYear();
+const pages = footerLinks.filter((link) => link.href !== '/rss.xml');
+---
+
+<footer class="wk-footer">
+  <div class="t-container grid gap-10 py-14 md:grid-cols-3">
+    <div>
+      <p class="t-eyebrow">頁面</p>
+      <ul class="mt-4 space-y-2.5 text-[14px]">{pages.map((link) => <li><a href={link.href}>{link.label}</a></li>)}</ul>
+    </div>
+    <div>
+      <p class="t-eyebrow">聯絡</p>
+      <ul class="mt-4 space-y-2.5 text-[14px]">
+        {site.contacts.map((channel) => <li><a href={channel.target} {...(channel.kind === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>{channel.label}</a></li>)}
+        <li><a href={ctaHref} {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="t-eyebrow">關於</p>
+      <p class="mt-4 max-w-xs text-[14px] leading-7">{copy.home.lead ?? site.positioning}</p>
+    </div>
+  </div>
+  <div class="t-container flex flex-col gap-2 py-6 text-[12px] sm:flex-row sm:items-center sm:justify-between" style="border-top: 1px solid rgba(255,255,255,0.12);">
+    <p class="flex items-center gap-3"><span class="inline-flex h-6 w-6 items-center justify-center rounded-full" style="background: #c9b27e; color: var(--wk-dark); font-family: var(--wk-serif);">{site.name.slice(0, 1)}</span>© {year} {site.name}</p>
+    <a href="/rss.xml">RSS</a>
+  </div>
+</footer>

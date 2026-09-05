@@ -29,10 +29,57 @@ OPTIONAL_PAGE_FILES = {
 }
 DEFAULT_SITE_URL = "https://example.invalid"
 THEMES_RELATIVE = Path("src/themes")
-DEFAULT_THEME = "bookshop"
+DEFAULT_THEME = "whitebox"
 THEME_ID = re.compile(r"^[a-z][a-z0-9-]{0,31}$")
 SECRET_KEY_FRAGMENTS = ("token", "secret", "password", "cookie", "credential", "apikey", "accountid", "zoneid")
 HEX_COLOR = re.compile(r"^#[0-9a-fA-F]{6}$")
+CONTENT_WRITER_SCRIPTS = SKILL_ROOT.parent / "website-content-writing" / "scripts"
+
+
+def load_copy_renderer():
+    """借用相鄰的 website-content-writing 技能來驗證與渲染文案；沒安裝時回 None。"""
+
+    module_path = CONTENT_WRITER_SCRIPTS / "content_writer.py"
+    if not module_path.is_file():
+        return None
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("website_content_writer", module_path)
+    if spec is None or spec.loader is None:
+        return None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def apply_copy_layer(target: Path, config_path: Path) -> dict[str, Any]:
+    """若工作區有 website/copy.json，就渲染成 site.copy.mjs 並複製文章；沒有就沿用範本預設。"""
+
+    workspace_site_dir = config_path.resolve().parent
+    copy_path = workspace_site_dir / "copy.json"
+    if not copy_path.is_file() or copy_path.is_symlink():
+        return {"applied": False, "reason": "workspace_has_no_copy_json"}
+    renderer = load_copy_renderer()
+    if renderer is None:
+        return {"applied": False, "reason": "website-content-writing_not_installed"}
+    copy = json.loads(copy_path.read_text(encoding="utf-8"))
+    findings = renderer.validate_copy(copy, None)
+    blocking = [f for f in findings if f["kind"] in ("unverified_number", "placeholder_source", "empty_text")]
+    if blocking:
+        raise ScaffoldError("website/copy.json 有阻擋項（未驗證的數字或空白來源），請先用 website-content-writing 修正")
+    (target / "site.copy.mjs").write_text(renderer.render_site_copy(copy), encoding="utf-8")
+    copied: list[str] = []
+    posts_dir = target / "src" / "content" / "posts"
+    for post in copy.get("posts", []):
+        source = workspace_site_dir / "posts" / post["file"]
+        if not source.is_file() or source.is_symlink():
+            raise ScaffoldError(f"copy.json 指到的文章不存在：{source}")
+        shutil.copy2(source, posts_dir / post["file"])
+        copied.append(post["file"])
+    sample = posts_dir / "hello-world.md"
+    if copied and sample.is_file():
+        sample.unlink()
+    return {"applied": True, "status": copy.get("status"), "posts_copied": copied, "sample_post_removed": bool(copied)}
 
 
 class ScaffoldError(RuntimeError):
@@ -357,7 +404,7 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def plan(config: dict[str, Any], template: Path, target: Path, site_url: str, theme_id: str, themes: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def plan(config: dict[str, Any], template: Path, target: Path, site_url: str, theme_id: str, themes: dict[str, dict[str, Any]], config_path: Path) -> dict[str, Any]:
     """產生不寫檔的建立計畫。"""
 
     validate_template(template)
@@ -374,6 +421,7 @@ def plan(config: dict[str, Any], template: Path, target: Path, site_url: str, th
         "theme": theme_id,
         "theme_name": theme["name"],
         "available_themes": sorted(themes),
+        "copy_layer": "workspace copy.json 存在，建立時會套用" if (config_path.resolve().parent / "copy.json").is_file() else "沿用範本預設文案（可先用 website-content-writing 撰寫）",
         "placeholders": sorted(build_svgs(config["business"]["site_name"], theme)) + ["og-image.png", "apple-touch-icon.png"],
         "lockfile_present": (template / "package-lock.json").is_file(),
         "next_steps": ["npm ci", "npm run build", "check_site.py --dist <target>/dist --config <workspace>/website/config.json"],
@@ -381,7 +429,7 @@ def plan(config: dict[str, Any], template: Path, target: Path, site_url: str, th
     }
 
 
-def scaffold(config: dict[str, Any], template: Path, target: Path, site_url: str, theme_id: str, themes: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def scaffold(config: dict[str, Any], template: Path, target: Path, site_url: str, theme_id: str, themes: dict[str, dict[str, Any]], config_path: Path) -> dict[str, Any]:
     """複製範本並寫入設定、可選頁面與佔位素材。"""
 
     validate_template(template)
@@ -413,6 +461,7 @@ def scaffold(config: dict[str, Any], template: Path, target: Path, site_url: str
         shutil.copy2(template / "optional-pages" / file_name, target / "src/pages" / file_name)
         copied_pages.append(file_name)
 
+    copy_layer = apply_copy_layer(target, config_path)
     placeholders = write_placeholders(target / "public", config["business"]["site_name"], theme)
     manifest = {
         "site_config_sha256": sha256_file(target / "site.config.mjs"),
@@ -426,6 +475,7 @@ def scaffold(config: dict[str, Any], template: Path, target: Path, site_url: str
         "optional_pages": copied_pages,
         "theme": theme_id,
         "theme_name": theme["name"],
+        "copy_layer": copy_layer,
         "placeholders": placeholders,
         "lockfile_present": (target / "package-lock.json").is_file(),
         "hashes": manifest,
@@ -474,11 +524,11 @@ def main() -> int:
             config = load_config(config_path)
             theme_id = resolve_theme(config, config_path, args.theme, themes)
             if args.command == "plan":
-                result = plan(config, template, target, args.site_url, theme_id, themes)
+                result = plan(config, template, target, args.site_url, theme_id, themes, config_path)
             else:
                 if not args.confirm_write:
                     raise ScaffoldError("缺少 --confirm-write；未建立任何檔案")
-                result = scaffold(config, template, target, args.site_url, theme_id, themes)
+                result = scaffold(config, template, target, args.site_url, theme_id, themes, config_path)
     except (ScaffoldError, OSError) as error:
         print(json.dumps({"result": "stopped", "error": str(error)}, ensure_ascii=False), file=sys.stderr)
         return 2

@@ -1,0 +1,24 @@
+{
+  "id": "sunrise",
+  "name": "晨光",
+  "tonality": "colorful_energetic",
+  "order": 50,
+  "description": "粉橘漸層像清晨的天色，整站由大圓角（44px）的面板組成：漸層面板放首屏與結尾、淺灰面板放服務。首屏下方一排照片高低交錯，會隨捲動漂移；卡片像小視窗有三個彩色圓點；按鈕全部是黑色藥丸。導覽連結懸停會向上翻頁。",
+  "fits": "教練、顧問、線上課程、想顯得明亮有活力但不幼稚的品牌",
+  "source_kind": "layout_reference",
+  "source_guide": "layout-reference:gradient-marketing-agency",
+  "source_references": ["https://growthly-theme.pages.dev/"],
+  "source_license": "reference_only_no_code_copied",
+  "source_note": "只參考公開示範頁的版面手法與動畫類型（漸層大圓角面板、高低交錯的照片列與捲動漂移、視窗式卡片、翻頁式導覽）。程式碼、文案、圖片與字型檔皆未複製，全部自行實作；動畫用 Motion（MIT）。",
+  "placeholder_colors": {
+    "bg": "#fff5f8",
+    "surface_alt": "#f7f7f8",
+    "accent": "#0a0a0b",
+    "accent_soft": "#ffd6ea",
+    "on_accent": "#ffffff"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap",
+    "families": ["Inter Tight", "Noto Sans TC"]
+  }
+}

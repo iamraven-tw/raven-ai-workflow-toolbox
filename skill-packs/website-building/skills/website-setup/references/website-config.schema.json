@@ -189,7 +189,7 @@
         "tonality": {
           "enum": [
             "not_selected",
-            "warm_literary",
+            "personal_friendly",
             "dark_immersive",
             "clean_minimal",
             "photo_showroom",

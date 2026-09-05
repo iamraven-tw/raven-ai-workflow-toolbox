@@ -1,0 +1,28 @@
+---
+// 白盒子：浮在頁面上方置中的藥丸導覽，左站名、中連結、右黑色圓形 CTA。
+import { site } from '../../../site.config.mjs';
+import { navLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+interface Props { onDark?: boolean; }
+const { onDark = false } = Astro.props;
+const pillStyle = onDark
+  ? 'background: rgba(255,255,255,0.14); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.25); color: #fff;'
+  : 'background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); border: 1px solid var(--wb-line); color: var(--wb-black);';
+---
+
+<header class="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4">
+  <nav class="pointer-events-auto flex items-center gap-2 rounded-full p-1.5 pl-5" style={pillStyle} aria-label="主要導覽">
+    <a href="/" class="text-[13px] font-semibold uppercase" style="letter-spacing: 0.1em; color: inherit; text-decoration: none;">{site.name}</a>
+    <div class="ml-4 hidden items-center gap-5 lg:flex">
+      {navLinks.map((link) => <a href={link.href} class="text-[13px] font-medium" style="color: inherit; text-decoration: none; opacity: 0.85;">{link.label}</a>)}
+    </div>
+    <a href={ctaHref} class="ml-3 hidden h-9 items-center rounded-full px-4 text-[11px] font-semibold uppercase lg:inline-flex" style={`letter-spacing: 0.1em; text-decoration: none; ${onDark ? 'background: #fff; color: var(--wb-black);' : 'background: var(--wb-black); color: #fff;'}`} {...ctaAttrs}>{site.cta.label}</a>
+    <button id="mobile-menu-button" class="ml-2 flex h-9 w-9 items-center justify-center rounded-full lg:hidden" style={onDark ? 'background: #fff; color: var(--wb-black);' : 'background: var(--wb-black); color: #fff;'} aria-label="開啟選單" aria-expanded="false" aria-controls="mobile-menu">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16" /></svg>
+    </button>
+  </nav>
+  <div id="mobile-menu" class="pointer-events-auto absolute left-4 right-4 top-16 hidden rounded-2xl p-5 lg:hidden" style="background: #fff; border: 1px solid var(--wb-line); box-shadow: 0 30px 60px -30px rgba(18,15,15,0.4); color: var(--wb-black);" role="navigation" aria-label="行動版導覽">
+    {navLinks.map((link) => <a href={link.href} class="block py-3 text-[17px] font-medium" style="color: var(--wb-black); text-decoration: none;">{link.label}</a>)}
+    <a href={ctaHref} class="t-btn mt-3" {...ctaAttrs}>{site.cta.label}</a>
+  </div>
+</header>
+<script src="../../lib/menu.ts"></script>

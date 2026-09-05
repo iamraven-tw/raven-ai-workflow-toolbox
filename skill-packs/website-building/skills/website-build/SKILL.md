@@ -26,6 +26,7 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 - `website/config.json`：商業資訊、頁面、設計、託管設定。`business.status` 必須不是 `not_configured`。
 - 使用者指定的專案目標目錄。必須是空目錄或不存在，且不在技能包、範本或 Agent 技能掃描目錄內。
 - 可選：`website-design-preview` 寫入的 `website/design.json`（選定主題）。`scaffold` 會自動讀取與 `config.json` 同目錄的這個檔案，也可用 `--theme` 指定；都沒有就用預設主題 `bookshop`，並在回報中提醒可以先用 `website-design-preview` 挑主題。
+- 可選：`website-content-writing` 寫入的 `website/copy.json` 與 `website/posts/`。`scaffold` 會自動渲染成 `site.copy.mjs` 並複製文章；沒有就沿用範本的預設語氣與佔位句，並在回報中提醒可以先寫文案。
 - 可選：使用者提供的 Logo 或照片。有的話在建置前放進 `public/images/`，並更新對應的 `src` 路徑；沒有就用佔位圖。
 
 不得讀取瀏覽器 Cookie、環境變數中的 Token，或要求使用者貼上任何秘密。

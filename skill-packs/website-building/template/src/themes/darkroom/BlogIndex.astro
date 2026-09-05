@@ -1,0 +1,29 @@
+---
+// 暗房文章列表：巨字標題，文章做成編號長列，懸停整列變亮。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; title?: string; intro?: string; emptyNote?: string; }
+const { posts, title, intro, emptyNote } = Astro.props;
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<section class="t-container" style="padding-block: 160px 120px;">
+  <p class="t-eyebrow" data-reveal="fade">文章</p>
+  <h1 class="t-h1 mt-6" data-reveal="up">{title ?? '文章'}</h1>
+  <p class="t-lead mt-6 max-w-xl" data-reveal="up" data-reveal-delay="120">{intro ?? '記錄工作方法、案例與想法。'}</p>
+  <div class="mt-16" data-reveal-stagger="90">
+    {posts.map((post, index) => (
+      <a href={`/blog/${post.slug}/`} class="dr-post" style="grid-template-columns: auto 1fr; align-items: start;">
+        <span class="t-eyebrow pt-2">{pad(index)}</span>
+        <span>
+          <span class="dr-post__title block">{post.title}</span>
+          <span class="t-muted mt-3 block max-w-2xl text-[15px] leading-7">{post.description}</span>
+          <span class="mt-4 flex flex-wrap items-center gap-3">
+            <time datetime={post.date} class="t-eyebrow">{post.date}</time>
+            {post.tags && post.tags.map((tag) => <span class="t-tag">{tag}</span>)}
+          </span>
+        </span>
+      </a>
+    ))}
+  </div>
+  {posts.length === 0 && <p class="t-note mt-10">{emptyNote ?? '還沒有文章。'}</p>}
+</section>

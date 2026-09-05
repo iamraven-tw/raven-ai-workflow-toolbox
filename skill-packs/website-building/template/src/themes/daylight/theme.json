@@ -1,0 +1,24 @@
+{
+  "id": "daylight",
+  "name": "日光",
+  "tonality": "photo_showroom",
+  "order": 40,
+  "description": "米白紙底配黑色與螢光黃綠（#f5fe90）兩個強調。首屏是滿版照片壓深色漸層，白色大標與黃綠藥丸按鈕；接著黑色橫條跑馬燈、大字敘述與白色事實卡、左側編號路線圖配右側黏住的照片、滿版照片上的一句引言、三張服務卡、黑底的文章橫向列。文字帶模糊淡入（blur-up），卡片有跟著游標的聚光。",
+  "fits": "有好照片的服務業、餐飲、空間、攝影、想顯得明亮專業的一人公司",
+  "source_kind": "layout_reference",
+  "source_guide": "layout-reference:photo-led-marketing-agency",
+  "source_references": ["https://puchix-astro.vercel.app/"],
+  "source_license": "reference_only_no_code_copied",
+  "source_note": "只參考公開示範頁的版面手法與動畫類型（滿版照片首屏、黑色跑馬燈橫條、事實卡、編號路線圖配黏住照片、照片上的引言、黑底文章列、模糊淡入、游標聚光）。程式碼、文案、圖片與字型檔皆未複製，全部自行實作；動畫用 Motion（MIT）。",
+  "placeholder_colors": {
+    "bg": "#faf6f5",
+    "surface_alt": "#0b0b0b",
+    "accent": "#f5fe90",
+    "accent_soft": "#e8f5c2",
+    "on_accent": "#0b0b0b"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&family=Huninn&display=swap",
+    "families": ["Urbanist", "Huninn"]
+  }
+}

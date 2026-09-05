@@ -1,0 +1,31 @@
+---
+// 週刊文章頁：置中襯線標題、細線、封面，內文首字放大，目錄在右側。
+import BaseLayout from './BaseLayout.astro';
+interface TocItem { depth: number; slug: string; text: string; }
+interface Props { title: string; date: string; description: string; slug: string; coverImage?: string; tags?: string[]; toc?: TocItem[]; }
+const { title, date, description, slug, coverImage, tags, toc = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage ?? '/og-image.png'} canonical={`/blog/${slug}/`}>
+  <article class="t-container t-section">
+    <header class="mx-auto max-w-3xl text-center">
+      <div class="flex flex-wrap items-center justify-center gap-3" data-reveal="fade">{tags && tags.map((tag) => <span class="t-tag">{tag}</span>)}</div>
+      <h1 class="t-h1 mt-4" style="font-size: clamp(30px, 3.8vw, 52px);" data-reveal="up">{title}</h1>
+      <p class="t-lead mt-5" data-reveal="up" data-reveal-delay="100">{description}</p>
+      <div class="wk-meta justify-center" data-reveal="fade"><time datetime={date}>{date}</time></div>
+    </header>
+    <hr class="t-divider mx-auto mt-10 max-w-3xl" />
+    {coverImage && <div class="t-media mx-auto mt-10 max-w-4xl" data-reveal="scale"><img src={coverImage} alt={title} class="w-full object-cover" style="aspect-ratio: 16 / 9; filter: saturate(0.75);" /></div>}
+    <div class="mx-auto mt-12 grid max-w-5xl gap-12 lg:grid-cols-[minmax(0,1fr)_220px]">
+      <div class="t-prose prose prose-lg mx-auto w-full max-w-3xl"><slot /></div>
+      {toc.length > 0 && (
+        <aside class="lg:sticky lg:top-8 lg:self-start">
+          <p class="t-eyebrow">目錄</p>
+          <ul class="mt-4 space-y-2" style="border-left: 1px solid var(--wk-line); padding-left: 14px;">
+            {toc.map((item) => <li class={item.depth === 3 ? 'pl-3' : ''}><a href={`#${item.slug}`} class="text-[14px]" style="font-family: var(--wk-serif); color: var(--wk-text); text-decoration: none;">{item.text}</a></li>)}
+          </ul>
+        </aside>
+      )}
+    </div>
+  </article>
+</BaseLayout>

@@ -17,7 +17,7 @@ SCAFFOLD = ROOT / "skills/website-build/scripts/scaffold_site.py"
 THEMES = ROOT / "template/src/themes"
 PREVIEWS = ROOT / "skills/website-design-preview/assets/previews"
 DEFAULT = ROOT / "skills/website-setup/assets/default-config.json"
-TONALITIES = {"warm_literary", "dark_immersive", "clean_minimal", "photo_showroom", "colorful_energetic", "editorial_press"}
+TONALITIES = {"personal_friendly", "dark_immersive", "clean_minimal", "photo_showroom", "colorful_energetic", "editorial_press"}
 
 
 def run(arguments: list[str]) -> subprocess.CompletedProcess[str]:
@@ -38,7 +38,7 @@ def configured_config() -> dict:
             "contact_channels": [{"kind": "email", "label": "Email", "target": "mailto:hello@example.invalid"}],
         }
     )
-    payload["design"].update({"status": "recommended", "tonality": "warm_literary"})
+    payload["design"].update({"status": "recommended", "tonality": "personal_friendly"})
     return payload
 
 
@@ -61,11 +61,17 @@ class StyleGalleryTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertEqual(payload["count"], 6)
         self.assertEqual({theme["tonality"] for theme in payload["themes"]}, TONALITIES)
-        self.assertEqual(payload["recommended"], "nightshift")
+        self.assertEqual(payload["recommended"], "darkroom")
         for path in THEMES.glob("*/theme.json"):
             theme = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(theme["source_license"], "Apache-2.0")
-            self.assertTrue(theme["source_repository"].startswith("https://"))
+            if theme.get("source_kind") == "layout_reference":
+                # 版面參考型主題：記錄 https 來源網址並聲明未複製程式碼與素材
+                self.assertEqual(theme["source_license"], "reference_only_no_code_copied")
+                self.assertTrue(theme["source_references"] and all(url.startswith("https://") for url in theme["source_references"]))
+                self.assertIn("未複製", theme["source_note"])
+            else:
+                self.assertEqual(theme["source_license"], "Apache-2.0")
+                self.assertTrue(theme["source_repository"].startswith("https://"))
             for required in ("theme.css", "Home.astro", "BlogIndex.astro", "BlogPost.astro", "Header.astro", "Footer.astro", "BaseLayout.astro"):
                 self.assertTrue((path.parent / required).is_file(), f"{theme['id']} 缺少 {required}")
         self.assertEqual(self.gallery("list", "--recommend", "not_a_tonality").returncode, 2)
@@ -84,20 +90,20 @@ class StyleGalleryTests(unittest.TestCase):
                 self.assertNotIn('src="/images/', text)
 
     def test_render_substitutes_user_content_and_marks_recommendation(self) -> None:
-        result = self.gallery("render", "--workspace-root", str(self.workspace), "--recommend", "warm_literary")
+        result = self.gallery("render", "--workspace-root", str(self.workspace), "--recommend", "personal_friendly")
         self.assertEqual(result.returncode, 0, result.stderr)
         payload = json.loads(result.stdout)
-        self.assertEqual(payload["recommended"], "bookshop")
+        self.assertEqual(payload["recommended"], "nightlight")
         self.assertEqual(payload["content_source"], "website/config.json")
         gallery = Path(payload["gallery"])
         text = gallery.read_text(encoding="utf-8")
-        self.assertIn('class="card recommended" id="bookshop"', text)
+        self.assertIn('class="card recommended" id="nightlight"', text)
         self.assertEqual(text.count('<article class="card'), 6)
         html_previews = [item for item in payload["previews"] if item.endswith(".html")]
         self.assertEqual(len(html_previews), 18)
         self.assertTrue((gallery.parent / "previews/images/samples/photos.json").is_file())
         self.assertGreaterEqual(len(list((gallery.parent / "previews/images/samples").glob("*.jpg"))), 6)
-        home = (gallery.parent / "previews/bookshop/home.html").read_text(encoding="utf-8")
+        home = (gallery.parent / "previews/nightlight/home.html").read_text(encoding="utf-8")
         self.assertIn("虛構工作室", home)
         self.assertIn("幫虛構的小店把流程交給 AI", home)
         self.assertIn("虛構啟動諮詢", home)
@@ -114,38 +120,38 @@ class StyleGalleryTests(unittest.TestCase):
         self.assertIsNone(payload["recommended"])
 
     def test_select_requires_confirmation_and_replace(self) -> None:
-        self.assertEqual(self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "broadsheet").returncode, 2)
+        self.assertEqual(self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "weekly").returncode, 2)
         self.assertFalse((self.workspace / "website/design.json").exists())
         self.assertEqual(self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "no-such", "--confirm-write").returncode, 2)
 
-        selected = self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "broadsheet", "--confirm-write")
+        selected = self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "weekly", "--confirm-write")
         self.assertEqual(selected.returncode, 0, selected.stderr)
         payload = json.loads(selected.stdout)
-        self.assertEqual(payload["config_patch"]["design"], {"status": "confirmed", "tonality": "editorial_press", "style_source": "bundled", "style_id": "broadsheet"})
+        self.assertEqual(payload["config_patch"]["design"], {"status": "confirmed", "tonality": "editorial_press", "style_source": "bundled", "style_id": "weekly"})
         design = json.loads((self.workspace / "website/design.json").read_text(encoding="utf-8"))
-        self.assertEqual(design["theme"], "broadsheet")
+        self.assertEqual(design["theme"], "weekly")
         self.assertEqual(design["contains_credentials"], False)
 
-        self.assertEqual(self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "broadsheet", "--confirm-write").returncode, 0)
-        different = self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "gallery", "--confirm-write")
+        self.assertEqual(self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "weekly", "--confirm-write").returncode, 0)
+        different = self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "whitebox", "--confirm-write")
         self.assertEqual(different.returncode, 2)
         self.assertIn("--replace", different.stderr)
-        self.assertEqual(self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "gallery", "--confirm-write", "--replace").returncode, 0)
+        self.assertEqual(self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "whitebox", "--confirm-write", "--replace").returncode, 0)
 
     def test_selected_theme_feeds_scaffold_automatically(self) -> None:
-        self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "nightshift", "--confirm-write")
+        self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "darkroom", "--confirm-write")
         target = Path(self.temporary.name) / "site"
         config = self.workspace / "website/config.json"
         plan = run(["python3", str(SCAFFOLD), "plan", "--config", str(config), "--target", str(target)])
         self.assertEqual(plan.returncode, 0, plan.stderr)
-        self.assertEqual(json.loads(plan.stdout)["theme"], "nightshift")
+        self.assertEqual(json.loads(plan.stdout)["theme"], "darkroom")
         scaffold = run(["python3", str(SCAFFOLD), "scaffold", "--config", str(config), "--target", str(target), "--confirm-write"])
         self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
-        self.assertIn("theme: 'nightshift'", (target / "site.config.mjs").read_text(encoding="utf-8"))
-        self.assertIn("#5e6ad2", (target / "public/favicon.svg").read_text(encoding="utf-8"))
-        self.assertTrue((target / "src/themes/nightshift/theme.css").is_file())
-        explicit = run(["python3", str(SCAFFOLD), "plan", "--config", str(config), "--target", str(Path(self.temporary.name) / "site2"), "--theme", "playground"])
-        self.assertEqual(json.loads(explicit.stdout)["theme"], "playground")
+        self.assertIn("theme: 'darkroom'", (target / "site.config.mjs").read_text(encoding="utf-8"))
+        self.assertIn("#f5f5f5", (target / "public/favicon.svg").read_text(encoding="utf-8"))
+        self.assertTrue((target / "src/themes/darkroom/theme.css").is_file())
+        explicit = run(["python3", str(SCAFFOLD), "plan", "--config", str(config), "--target", str(Path(self.temporary.name) / "site2"), "--theme", "sunrise"])
+        self.assertEqual(json.loads(explicit.stdout)["theme"], "sunrise")
         unknown = run(["python3", str(SCAFFOLD), "plan", "--config", str(config), "--target", str(Path(self.temporary.name) / "site3"), "--theme", "nope"])
         self.assertEqual(unknown.returncode, 2)
 

@@ -5,7 +5,7 @@
 /** @type {import('./src/site-config').SiteConfig} */
 export const site = {
   url: 'https://example.invalid',
-  theme: 'bookshop',
+  theme: 'whitebox',
   fonts: 'google',
   name: '範例工作室',
   positioning: '幫小型團隊把重複的工作交給自動化流程',

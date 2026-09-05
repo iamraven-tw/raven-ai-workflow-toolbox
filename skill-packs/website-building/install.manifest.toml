@@ -5,6 +5,7 @@ display_name = "官網打造工作流"
 entrypoint = "INSTALL.md"
 checked_on = "2026-09-05"
 status = "local_candidate_partial_pack"
+first_release_skills_complete = true
 installable = true
 requires_network = false
 support_level = "partial_pack_installable_candidate_not_formally_supported"
@@ -27,13 +28,13 @@ cloudflare_actions_require_network = true
 external_account_actions_require_explicit_authorization = true
 
 [installation]
-candidate_version = "0.3.0"
+candidate_version = "0.5.0"
 manager = "scripts/manage_install.py"
 manager_requires_python = ">=3.11"
 manager_network_access = false
 state_schema_version = 1
 conflict_policy = "stop_without_overwrite"
-managed_entries = ["website-setup", "website-design-preview", "website-build"]
+managed_entries = ["website-setup", "website-content-writing", "website-design-preview", "website-build", "website-deploy"]
 
 [workspace]
 configuration_manager = "skills/website-setup/scripts/manage_workspace.py"
@@ -42,6 +43,10 @@ configuration_schema_version = 1
 state_schema = "skills/website-setup/references/setup-state.schema.json"
 template_path = "skills/website-setup/assets/default-config.json"
 configuration_target = "<workspace>/website/config.json"
+copy_target = "<workspace>/website/copy.json"
+posts_target = "<workspace>/website/posts"
+copy_writer = "skills/website-content-writing/scripts/content_writer.py"
+copy_fact_boundary = "ai_suggestion_may_not_contain_numbers_or_quantities_absent_from_user_facts"
 state_target = "<workspace>/.local/website/setup-state.json"
 credential_policy = "never_store_in_skill_template_general_config_or_setup_state"
 optional_default_sources = [
@@ -63,6 +68,11 @@ boundary_document = "docs/cloudflare-boundary.md"
 bundled_themes = "template/src/themes"
 bundled_theme_count = 6
 bundled_theme_model = "one_complete_theme_per_tonality_not_color_swap"
+theme_source_kinds = ["layout_reference"]
+layout_reference_themes = ["nightlight", "darkroom", "whitebox", "daylight", "sunrise", "weekly"]
+layout_reference_policy = "only_layout_patterns_and_animation_types_referenced; no code, copy, images or font files copied; sources recorded per theme in theme.json"
+animation_library = "motion"
+animation_library_license = "MIT"
 bundled_license_spdx = "Apache-2.0"
 default_path = "bundled_themes_local_gallery_no_network"
 gallery_script = "skills/website-design-preview/scripts/style_gallery.py"
@@ -73,7 +83,8 @@ design_target = "<workspace>/website/design.json"
 guide_library = "nexu-io/open-design"
 guide_library_commit = "50e305dff2b64d9dc0220e5dfa5d8c98ba4364e3"
 guide_library_license = "Apache-2.0"
-guides_used = ["claude", "linear-app", "vercel", "apple", "figma", "wired"]
+guides_used = []
+guide_library_status = "reference_only_no_bundled_theme_derived_from_it_since_2026-09-06"
 format_specification = "google-labs-code/design.md"
 extended_sources_policy = "optional_after_explicit_authorization_and_pinning"
 presentation = "six_tonalities_no_brand_name_defaults"
@@ -93,7 +104,7 @@ install_command = "npm ci"
 build_command = "npm run build"
 node_engine = ">=20.0.0"
 optional_pages = ["portfolio", "case_studies", "pricing", "faq", "newsletter"]
-themes = ["bookshop", "nightshift", "gallery", "showroom", "playground", "broadsheet"]
+themes = ["nightlight", "darkroom", "whitebox", "daylight", "sunrise", "weekly"]
 theme_switch = "site.config.mjs theme field; astro.config.mjs maps @theme alias"
 fonts_default = "google"
 fonts_off_switch = "site.config.mjs fonts = 'system'"
@@ -151,6 +162,13 @@ install_order = 10
 status = "local_candidate"
 
 [[skills]]
+id = "website-content-writing"
+source_path = "skills/website-content-writing"
+required = true
+install_order = 12
+status = "local_candidate"
+
+[[skills]]
 id = "website-design-preview"
 source_path = "skills/website-design-preview"
 required = true
@@ -164,17 +182,12 @@ required = true
 install_order = 20
 status = "local_candidate"
 
-[[planned_skills]]
-id = "website-content-writing"
-status = "not_implemented"
-sequence = 2
-first_release = true
-
-[[planned_skills]]
+[[skills]]
 id = "website-deploy"
-status = "not_implemented"
-sequence = 5
-first_release = true
+source_path = "skills/website-deploy"
+required = true
+install_order = 30
+status = "local_candidate"
 
 [[planned_skills]]
 id = "website-service-integration"
@@ -260,15 +273,29 @@ installed_by = "user_project_npm_ci_from_template_lockfile"
 bundle_source = false
 status = "pinned_in_template_package_json_and_lockfile"
 
-[[planned_dependencies]]
+[[dependencies]]
+id = "motion"
+role = "animation_library_shared_by_all_themes"
+source_type = "official_npm_package"
+source = "https://registry.npmjs.org/motion/13.2.0"
+pinned_version = "13.2.0"
+license = "MIT"
+consumer_skill = "website-build"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
+
+[[dependencies]]
 id = "wrangler"
 role = "cloudflare_cli_login_and_deploy"
 source_type = "official_npm_package"
-source = "https://registry.npmjs.org/wrangler"
-observed_version = "4.129.0"
+source = "https://registry.npmjs.org/wrangler/4.129.0"
+pinned_version = "4.129.0"
 license = "MIT OR Apache-2.0"
 consumer_skill = "website-deploy"
-status = "reference_only_not_installed_by_first_skill"
+installed_by = "user_project_npm_ci_from_template_lockfile"
+bundle_source = false
+status = "pinned_in_template_package_json_and_lockfile"
 
 [[planned_dependencies]]
 id = "google-design-md"
@@ -282,15 +309,15 @@ status = "reference_only_commit_not_yet_pinned"
 
 [[dependencies]]
 id = "open-design-design-guides"
-role = "design_guides_followed_when_authoring_the_six_bundled_themes"
+role = "optional_design_guide_library_for_future_themes_no_bundled_theme_derives_from_it"
 source_type = "public_git_repository"
 source = "https://github.com/nexu-io/open-design"
 pinned_version = "50e305dff2b64d9dc0220e5dfa5d8c98ba4364e3"
 license = "Apache-2.0"
 consumer_skill = "website-design-preview"
-installed_by = "not_installed_guides_were_read_by_maintainer_themes_are_own_implementation"
+installed_by = "not_installed_reference_only"
 bundle_source = false
-status = "attribution_recorded_in_theme_json_and_third_party_notices"
+status = "reference_only_since_2026-09-06_see_extended_sources"
 
 [[planned_dependencies]]
 id = "daisyui"
@@ -356,13 +383,42 @@ blocking_skill = "website-deploy"
 
 [[external_facts_to_confirm]]
 id = "wrangler_oauth_zone_scope"
-question = "Wrangler OAuth 登入是否包含建立 zone 的權限；本套件假設不包含"
+question = "Wrangler OAuth 登入是否包含建立 zone 的權限；本套件假設不包含。deploy_site.py status 會讀回實際權限並回報 zone_edit，實機驗收時確認"
 blocking_skill = "website-deploy"
 
 [[external_facts_to_confirm]]
 id = "workers_dev_subdomain_first_activation"
-question = "帳號 workers.dev 子網域首次啟用能否由 wrangler deploy 互動完成"
+question = "帳號 workers.dev 子網域首次啟用能否由 wrangler deploy 互動完成；官方文件只寫後台設定，技能流程已同時支援兩種情況"
 blocking_skill = "website-deploy"
+
+[[external_facts_to_confirm]]
+id = "static_assets_redirects_host_rule"
+question = "_redirects 的主機名規則（www 轉根網域）在 Workers 靜態資產是否生效；不生效時 www 仍由第二個 custom domain 提供內容"
+blocking_skill = "website-deploy"
+
+[[confirmed_external_facts]]
+id = "custom_domain_requires_active_zone"
+fact = "Custom Domain 需要帳號內已啟用的 zone，主機名不得已有 CNAME；wrangler routes 加 custom_domain=true 後由 Cloudflare 自動建立 DNS 記錄與 Advanced Certificate"
+source = "cloudflare-workers-custom-domains"
+checked_on = "2026-09-05"
+
+[[confirmed_external_facts]]
+id = "custom_domain_exact_hostname"
+fact = "Custom Domain 要求主機名完全一致；根網域與 www 需各自綁定，官方的轉址做法是後台轉址規則加代理的佔位 DNS 記錄"
+source = "cloudflare-workers-custom-domains"
+checked_on = "2026-09-05"
+
+[[confirmed_external_facts]]
+id = "workers_dev_name_rules"
+fact = "Worker 名稱作為 workers.dev 的 DNS 標籤：63 字元以內、只含小寫字母數字與連字號、不以連字號開頭或結尾；帳號子網域在後台 Workers & Pages 設定"
+source = "cloudflare-workers-dev"
+checked_on = "2026-09-05"
+
+[[confirmed_external_facts]]
+id = "static_assets_redirects_file"
+fact = "Workers 靜態資產支援 public/_redirects，上限 2000 靜態與 100 動態規則；規則不套用到 Worker 程式碼處理的請求"
+source = "cloudflare-static-assets-redirects"
+checked_on = "2026-09-05"
 
 [[official_references]]
 id = "cloudflare-workers-static-assets"
@@ -377,6 +433,11 @@ checked_on = "2026-09-05"
 [[official_references]]
 id = "cloudflare-workers-custom-domains"
 url = "https://developers.cloudflare.com/workers/configuration/routing/custom-domains/"
+checked_on = "2026-09-05"
+
+[[official_references]]
+id = "cloudflare-static-assets-redirects"
+url = "https://developers.cloudflare.com/workers/static-assets/redirects/"
 checked_on = "2026-09-05"
 
 [[official_references]]

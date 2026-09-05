@@ -1,0 +1,7 @@
+interface:
+  display_name: "官網部署"
+  short_description: "Wrangler 登入檢查、部署到 workers.dev、讀回驗證、自訂網域與正式公開"
+  default_prompt: "使用 $website-deploy 把已建置的網站專案部署上線。先檢查 Wrangler 登入狀態，列出部署預覽（Worker 名稱、網址、上傳量、費用）讓我授權一次，再部署到 workers.dev 並用 HTTP 讀回驗證。要自訂網域或正式公開時，各自再問我一次授權。"
+
+policy:
+  allow_implicit_invocation: true

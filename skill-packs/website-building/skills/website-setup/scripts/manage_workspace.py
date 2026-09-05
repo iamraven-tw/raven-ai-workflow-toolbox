@@ -29,7 +29,7 @@ LANGUAGES = {"zh-TW", "en"}
 DESIGN_STATUSES = {"not_selected", "recommended", "previewed", "confirmed"}
 TONALITIES = {
     "not_selected",
-    "warm_literary",
+    "personal_friendly",
     "dark_immersive",
     "clean_minimal",
     "photo_showroom",

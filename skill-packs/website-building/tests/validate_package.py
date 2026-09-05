@@ -11,10 +11,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-IMPLEMENTED = {"website-setup", "website-design-preview", "website-build"}
+IMPLEMENTED = {"website-setup", "website-content-writing", "website-design-preview", "website-build", "website-deploy"}
 PLANNED = {
-    "website-content-writing",
-    "website-deploy",
     "website-service-integration",
     "website-operations",
 }
@@ -225,6 +223,8 @@ def validate_skill_structure() -> None:
     validate_template()
     validate_build_skill(skill_root / "website-build")
     validate_design_skill(skill_root / "website-design-preview")
+    validate_deploy_skill(skill_root / "website-deploy")
+    validate_content_skill(skill_root / "website-content-writing")
     skill = skill_root / "website-setup"
     if parse_skill_name(skill / "SKILL.md") != "website-setup":
         raise ValidationError("技能名稱與 manifest 不符")
@@ -274,7 +274,7 @@ def validate_skill_structure() -> None:
         if phrase not in hosting_text:
             raise ValidationError(f"託管與網域文件缺少：{phrase}")
     tonality_text = (skill / "references/tonalities.md").read_text(encoding="utf-8")
-    for tonality in ("warm_literary", "dark_immersive", "clean_minimal", "photo_showroom", "colorful_energetic", "editorial_press"):
+    for tonality in ("personal_friendly", "dark_immersive", "clean_minimal", "photo_showroom", "colorful_energetic", "editorial_press"):
         if tonality not in tonality_text:
             raise ValidationError(f"調性文件缺少：{tonality}")
     intake_text = (skill / "references/intake-questions.md").read_text(encoding="utf-8")
@@ -286,7 +286,7 @@ def validate_skill_structure() -> None:
         if phrase not in touchpoints:
             raise ValidationError(f"人類接觸點文件缺少：{phrase}")
     behavior_text = (ROOT / "tests/behavior-cases.md").read_text(encoding="utf-8")
-    for case_number in range(1, 25):
+    for case_number in range(1, 41):
         if f"## {case_number}." not in behavior_text:
             raise ValidationError(f"缺少虛構行為案例 {case_number}")
 
@@ -324,6 +324,8 @@ def validate_template() -> None:
         ".gitignore",
         "README.md",
         "src/site-config.d.ts",
+        "site.copy.mjs",
+        "src/site-copy.d.ts",
         "src/content.config.ts",
         "src/content/posts/hello-world.md",
         "src/styles/global.css",
@@ -377,6 +379,12 @@ def validate_template() -> None:
     for page in ("portfolio", "case-studies", "pricing", "faq", "newsletter"):
         if not (template / f"optional-pages/{page}.astro").is_file():
             raise ValidationError(f"範本缺少可選頁面：{page}")
+    motion = template / "src/lib/motion.ts"
+    if not motion.is_file() or "prefers-reduced-motion" not in motion.read_text(encoding="utf-8"):
+        raise ValidationError("範本缺少共用動畫層 src/lib/motion.ts，或未尊重 prefers-reduced-motion")
+    package = json.loads((template / "package.json").read_text(encoding="utf-8"))
+    if not re.fullmatch(r"\d+\.\d+\.\d+", str(package.get("dependencies", {}).get("motion", ""))):
+        raise ValidationError("範本必須以確切版本固定 motion 依賴")
     for artifact in ("node_modules", "dist", ".astro"):
         if (template / artifact).exists():
             raise ValidationError(f"範本不得包含建置產物：{artifact}")
@@ -457,7 +465,7 @@ def validate_design_skill(skill: Path) -> None:
             raise ValidationError(f"風格技能契約缺少：{phrase}")
     if "Mermaid" not in text:
         raise ValidationError("多階段技能必須要求以 Mermaid 呈現流程")
-    tonalities = {"warm_literary", "dark_immersive", "clean_minimal", "photo_showroom", "colorful_energetic", "editorial_press"}
+    tonalities = {"personal_friendly", "dark_immersive", "clean_minimal", "photo_showroom", "colorful_energetic", "editorial_press"}
     brand_words = ("apple", "stripe", "vercel", "linear", "notion", "airbnb", "nike", "tesla", "spotify", "figma", "claude", "wired")
     themes_root = ROOT / "template/src/themes"
     seen: set[str] = set()
@@ -468,10 +476,17 @@ def validate_design_skill(skill: Path) -> None:
         theme = json.loads(path.read_text(encoding="utf-8"))
         if theme.get("id") != path.parent.name:
             raise ValidationError(f"主題 id 與目錄不一致：{path.parent.name}")
-        for key in ("name", "tonality", "order", "description", "fits", "source_guide", "source_repository", "source_license", "placeholder_colors"):
+        for key in ("name", "tonality", "order", "description", "fits", "source_guide", "source_license", "placeholder_colors", "google_fonts"):
             if key not in theme:
                 raise ValidationError(f"主題 {theme['id']} 缺少 {key}")
-        if theme["source_license"] != "Apache-2.0" or not str(theme["source_repository"]).startswith("https://"):
+        if theme.get("source_kind", "design_guide") == "layout_reference":
+            # 版面參考型主題：只參考公開示範頁的版面手法，程式碼與素材皆自行實作，必須明確聲明
+            refs = theme.get("source_references", [])
+            if not refs or not all(str(url).startswith("https://") for url in refs):
+                raise ValidationError(f"主題 {theme['id']} 缺少 https 的版面參考來源")
+            if theme["source_license"] != "reference_only_no_code_copied" or "未複製" not in theme.get("source_note", ""):
+                raise ValidationError(f"主題 {theme['id']} 必須聲明只參考版面、未複製程式碼與素材")
+        elif theme["source_license"] != "Apache-2.0" or not str(theme.get("source_repository", "")).startswith("https://"):
             raise ValidationError(f"主題 {theme['id']} 的來源聲明不完整")
         if any(word in theme["id"] or word in theme["name"].lower() for word in brand_words):
             raise ValidationError(f"主題不得以品牌命名：{theme['id']}")
@@ -506,6 +521,86 @@ def validate_design_skill(skill: Path) -> None:
         raise ValidationError("有主題的首頁預覽完全相同，表示主題切換失效")
     if not (skill / "assets/previews/images/samples/photos.json").is_file():
         raise ValidationError("預覽目錄缺少示範照片副本")
+
+
+def validate_deploy_skill(skill: Path) -> None:
+    """確認 website-deploy 的契約、授權關卡與不保存 Token。"""
+
+    if parse_skill_name(skill / "SKILL.md") != "website-deploy":
+        raise ValidationError("部署技能名稱不符")
+    for name in (
+        "agents/openai.yaml",
+        "scripts/deploy_site.py",
+        "references/wrangler-local-route.md",
+        "references/workers-builds-optional-route.md",
+        "references/custom-domain-and-dns.md",
+        "references/launch-checklist.md",
+    ):
+        if not (skill / name).is_file():
+            raise ValidationError(f"部署技能缺少 {name}")
+    text = (skill / "SKILL.md").read_text(encoding="utf-8")
+    for phrase in (
+        "wrangler login", "--confirm-deploy", "--confirm-write", "verify --url", "noindex", "命令旗標不是對話核准",
+        "不保存任何 API Token", "不代按 OAuth 同意", "不輸入付款資料", "Add a site", "nameserver", "執行錯誤最小回填", "停止條件", "workers.dev",
+    ):
+        if phrase not in text:
+            raise ValidationError(f"部署技能契約缺少：{phrase}")
+    if "Mermaid" not in text:
+        raise ValidationError("多階段技能必須要求以 Mermaid 呈現流程")
+    script = (skill / "scripts/deploy_site.py").read_text(encoding="utf-8")
+    for phrase in ("--confirm-deploy", "--confirm-write", "mask_email", "不記帳號 ID", '"account_id"', "example.invalid", "CI"):
+        if phrase not in script:
+            raise ValidationError(f"部署工具缺少保護：{phrase}")
+    for forbidden in ("CLOUDFLARE_API_TOKEN", "api_token=", "Authorization: Bearer"):
+        if forbidden in script:
+            raise ValidationError(f"部署工具不得直接處理 Token：{forbidden}")
+    package = json.loads((ROOT / "template/package.json").read_text(encoding="utf-8"))
+    if package.get("devDependencies", {}).get("wrangler") != "4.129.0" or package.get("scripts", {}).get("deploy") != "wrangler deploy":
+        raise ValidationError("範本必須鎖定 wrangler 4.129.0 並提供 deploy 指令")
+
+
+def validate_content_skill(skill: Path) -> None:
+    """確認 website-content-writing 的契約、事實邊界與範本文案層。"""
+
+    if parse_skill_name(skill / "SKILL.md") != "website-content-writing":
+        raise ValidationError("文案技能名稱不符")
+    for name in ("agents/openai.yaml", "scripts/content_writer.py", "references/writing-rules.md", "references/copy-contract.md", "references/user-posts.md", "assets/field-guide.json"):
+        if not (skill / name).is_file():
+            raise ValidationError(f"文案技能缺少 {name}")
+    text = (skill / "SKILL.md").read_text(encoding="utf-8")
+    for phrase in ("user_fact", "ai_suggestion", "placeholder", "批次確認", "不編造", "--confirm-write", "命令旗標不是對話核准", "sync", "website/copy.json", "執行錯誤最小回填", "停止條件", "不建置、不部署", "guide", "必填", "自己改過一遍", "不寫部落格文章", "user-posts.md"):
+        if phrase not in text:
+            raise ValidationError(f"文案技能契約缺少：{phrase}")
+    if "初始文章" in text or "initial-posts" in text:
+        raise ValidationError("文案技能不得再承諾撰寫初始文章")
+    guide = json.loads((skill / "assets/field-guide.json").read_text(encoding="utf-8"))
+    required = [f["path"] for f in guide["fields"] if f["required"]]
+    if set(required) != {"home.title", "home.lead", "about.intro", "about.sections", "contact.intro"}:
+        raise ValidationError(f"欄位指南必填集合不符：{required}")
+    for field in guide["fields"]:
+        for key in ("label", "purpose", "length", "example", "tip"):
+            if not field.get(key):
+                raise ValidationError(f"欄位指南 {field['path']} 缺少 {key}")
+    if "Mermaid" not in text:
+        raise ValidationError("多階段技能必須要求以 Mermaid 呈現流程")
+    script = (skill / "scripts/content_writer.py").read_text(encoding="utf-8")
+    for phrase in ("unverified_number", "placeholder_source", "required_missing", "FABRICATION_HINTS", "--confirm-write", "reject_secrets", "command_guide"):
+        if phrase not in script:
+            raise ValidationError(f"文案工具缺少保護：{phrase}")
+    template = ROOT / "template"
+    if not (template / "site.copy.mjs").is_file() or not (template / "src/site-copy.d.ts").is_file():
+        raise ValidationError("範本缺少文案層 site.copy.mjs 或型別")
+    for page in ("about", "services", "contact", "404"):
+        if "site.copy.mjs" not in (template / f"src/pages/{page}.astro").read_text(encoding="utf-8"):
+            raise ValidationError(f"共用頁面 {page} 未讀取文案層")
+    for path in sorted((template / "src/themes").glob("*/Home.astro")):
+        # 結尾標題可以放在首頁或頁尾（有些主題把結尾邀請設計在頁尾）
+        home = path.read_text(encoding="utf-8") + (path.parent / "Footer.astro").read_text(encoding="utf-8")
+        if "copy.home.title ??" not in home or "copy.home.primary_cta ??" not in home or "copy.home.closing_heading ??" not in home:
+            raise ValidationError(f"主題首頁未讀取文案層：{path.parent.name}")
+    scaffold = (ROOT / "skills/website-build/scripts/scaffold_site.py").read_text(encoding="utf-8")
+    if "apply_copy_layer" not in scaffold:
+        raise ValidationError("scaffold 未套用工作區文案層")
 
 
 def validate_public_boundary() -> None:

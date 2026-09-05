@@ -24,7 +24,7 @@ DESIGN_RELATIVE = Path("website/design.json")
 CONFIG_RELATIVE = Path("website/config.json")
 GALLERY_RELATIVE = Path(".local/website/style-gallery")
 TONALITIES = {
-    "warm_literary": "溫暖書卷",
+    "personal_friendly": "親切個人",
     "dark_immersive": "暗黑沉浸",
     "clean_minimal": "極簡純淨",
     "photo_showroom": "攝影展廳",
@@ -74,7 +74,7 @@ def load_themes(themes_root: Path = THEMES_ROOT) -> list[dict[str, Any]]:
     themes: list[dict[str, Any]] = []
     for path in sorted(themes_root.glob("*/theme.json")):
         theme = read_json(path, label=f"主題描述 {path.parent.name}")
-        for key in ("id", "name", "tonality", "order", "description", "fits", "source_guide", "source_repository", "source_license"):
+        for key in ("id", "name", "tonality", "order", "description", "fits", "source_guide", "source_license"):
             if key not in theme:
                 raise GalleryError(f"主題 {path.parent.name} 缺少 {key}")
         if theme["id"] != path.parent.name or not ID_PATTERN.fullmatch(theme["id"]):
@@ -221,7 +221,7 @@ def render_gallery(themes: list[dict[str, Any]], site: dict[str, Any], recommend
             f'<p class="desc">{e(theme["description"])}</p>'
             f'<p class="fits">適合：{e(theme["fits"])}　·　id: <code>{e(theme["id"])}</code></p>'
             f'<div class="links"><a href="previews/{e(theme["id"])}/home.html">首頁全尺寸</a><a href="previews/{e(theme["id"])}/blog.html">文章列表</a><a href="previews/{e(theme["id"])}/post.html">單篇文章</a></div>'
-            f'<p class="src">設計指引來源：open-design／{e(theme["source_guide"])}（{e(theme["source_license"])}）</p>'
+            f'<p class="src">{e(source_label(theme))}</p>'
             "</div></article>"
         )
     note = "" if site["from_config"] else "<p class=\"lead\" style=\"color:#a15c00\">目前顯示的是虛構範例內容；完成 website-setup 後重新產生畫廊，就會換成你的站名與文案。</p>"
@@ -229,7 +229,7 @@ def render_gallery(themes: list[dict[str, Any]], site: dict[str, Any], recommend
         '<!doctype html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
         f'<title>風格畫廊 · {e(site["name"])}</title><meta name="robots" content="noindex"><style>{GALLERY_CSS}</style></head><body>'
         '<div class="wrap"><h1>選一個網站風格</h1>'
-        f'<p class="lead">以下每一格都是「{e(site["name"])}」用該風格真正建置出來的首頁，不是示意圖。每套風格的版面、字型、間距與元件都依各自的設計指引實作。回覆編號或名稱即可；之後想換風格只需重建，內容不會動。</p>{note}'
+        f'<p class="lead">以下每一格都是「{e(site["name"])}」用該風格真正建置出來的首頁，不是示意圖。每套風格的版面、字型、間距、元件與動畫都各自不同，各參考一個公開示範頁的版面手法自行實作。回覆編號或名稱即可；之後想換風格只需重建，內容不會動。</p>{note}'
         f'<div class="grid">{"".join(cards)}</div></div>'
         "<script>function fit(){document.querySelectorAll('.frame').forEach(function(f){var s=f.clientWidth/1280;var i=f.querySelector('iframe');if(i){i.style.transform='scale('+s+')';}});}fit();window.addEventListener('resize',fit);</script>"
         "</body></html>"
@@ -251,6 +251,16 @@ def write_text_atomic(path: Path, content: str) -> None:
             temporary.unlink()
 
 
+
+def source_label(theme: dict[str, Any]) -> str:
+    """卡片上的來源說明：設計指引型寫指引名稱與授權；版面參考型寫參考網址並聲明未複製程式碼。"""
+
+    if theme.get("source_kind") == "layout_reference":
+        refs = "、".join(str(url) for url in theme.get("source_references", []))
+        return f"版面參考（只借鏡版面手法與動畫類型，未複製程式碼與素材）：{refs}"
+    return f"設計指引來源：open-design／{theme['source_guide']}（{theme['source_license']}）"
+
+
 def recommend_theme(themes: list[dict[str, Any]], tonality: str | None) -> str | None:
     if tonality is None or tonality == "not_selected":
         return None
@@ -268,7 +278,7 @@ def command_list(themes: list[dict[str, Any]], recommend: str | None) -> dict[st
         "count": len(themes),
         "recommended": recommend_theme(themes, recommend),
         "themes": [
-            {"index": index, "id": theme["id"], "name": theme["name"], "tonality": theme["tonality"], "description": theme["description"], "fits": theme["fits"], "source_guide": theme["source_guide"]}
+            {"index": index, "id": theme["id"], "name": theme["name"], "tonality": theme["tonality"], "description": theme["description"], "fits": theme["fits"], "source_guide": theme["source_guide"], "source_kind": theme.get("source_kind", "design_guide"), "source_references": theme.get("source_references", [])}
             for index, theme in enumerate(themes, start=1)
         ],
     }

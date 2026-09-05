@@ -4,9 +4,9 @@
 
 | 檔案 | 用途 |
 |---|---|
-| `theme.json` | id、name、tonality、order、description、fits、source_guide、source_repository、source_license、placeholder_colors |
+| `theme.json` | id、name、tonality、order、description、fits、source_guide、source_license、placeholder_colors、google_fonts；設計指引型另有 source_repository（Apache-2.0）；版面參考型（`source_kind: layout_reference`）另有 source_references、source_note，`source_license` 為 `reference_only_no_code_copied` |
 | `theme.css` | 主題全部樣式；必須定義下方的 `.t-*` 共用類別 |
-| `BaseLayout.astro` | 匯入 `global.css` 與 `theme.css`，含 SEO meta、robots、Header、Footer |
+| `BaseLayout.astro` | 匯入 `global.css` 與 `theme.css`，含 SEO meta、robots、Header、Footer；在 head 以行內腳本加上 `js-motion` 類別，在 body 尾端載入 `src/lib/motion.ts` |
 | `Header.astro`、`Footer.astro` | 從 `src/lib/nav.ts` 取連結，版面自行決定；手機選單用 `mobile-menu-button` 與 `mobile-menu` 兩個 id |
 | `Home.astro` | 首頁全部區塊 |
 | `BlogIndex.astro` | 接 `posts` 屬性 |
@@ -42,10 +42,10 @@
 ```json
 {
   "schema_version": 1,
-  "theme": "bookshop",
-  "name": "紙本書店",
-  "tonality": "warm_literary",
-  "source_guide": "claude",
+  "theme": "nightlight",
+  "name": "小夜燈",
+  "tonality": "personal_friendly",
+  "source_guide": "layout-reference:personal-designer-portfolio",
   "selected_at": "2026-01-01T00:00:00+00:00",
   "contains_credentials": false
 }

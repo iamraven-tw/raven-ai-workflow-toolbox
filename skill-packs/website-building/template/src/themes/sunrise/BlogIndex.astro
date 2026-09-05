@@ -1,0 +1,33 @@
+---
+// 晨光文章列表：置中標題，文章是視窗式卡片。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; title?: string; intro?: string; emptyNote?: string; }
+const { posts, title, intro, emptyNote } = Astro.props;
+const fallbackCovers = ['/images/samples/clean-desk.jpg', '/images/samples/cafe-table.jpg', '/images/samples/open-book.jpg', '/images/samples/phone-edge.jpg', '/images/samples/creative-desk.jpg', '/images/samples/keyboard-coffee.jpg'];
+---
+
+<section class="t-container t-section">
+  <div class="mx-auto max-w-2xl text-center">
+    <p class="t-eyebrow" data-reveal="fade">文章</p>
+    <h1 class="t-h1 mt-5" style="font-size: clamp(36px, 5vw, 64px);" data-reveal="up">{title ?? '文章'}</h1>
+    <p class="t-lead mt-5" data-reveal="up" data-reveal-delay="100">{intro ?? '記錄工作方法、案例與想法。'}</p>
+  </div>
+  <div class="mt-14 grid gap-6 md:grid-cols-2" data-reveal-stagger="110">
+    {posts.map((post, index) => (
+      <a href={`/blog/${post.slug}/`} class="su-window">
+        <div class="su-window__bar">
+          <span class="su-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <time datetime={post.date} class="t-eyebrow" style="color: var(--su-ink);">{post.date}</time>
+          <span class="su-arrow" aria-hidden="true">→</span>
+        </div>
+        <div class="su-window__media"><img src={post.coverImage ?? fallbackCovers[index % fallbackCovers.length]} alt="" width="1200" height="900" loading="lazy" /></div>
+        <div class="px-3 pb-4 pt-5">
+          <h2 class="t-card-title">{post.title}</h2>
+          <p class="t-muted mt-2 text-[15px] leading-7">{post.description}</p>
+          {post.tags && post.tags.length > 0 && <div class="mt-4 flex flex-wrap gap-2">{post.tags.map((tag) => <span class="t-tag">{tag}</span>)}</div>}
+        </div>
+      </a>
+    ))}
+  </div>
+  {posts.length === 0 && <p class="t-note mx-auto mt-10 max-w-md text-center">{emptyNote ?? '還沒有文章。'}</p>}
+</section>

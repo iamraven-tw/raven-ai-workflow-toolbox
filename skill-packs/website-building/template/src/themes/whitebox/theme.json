@@ -1,0 +1,24 @@
+{
+  "id": "whitebox",
+  "name": "白盒子",
+  "tonality": "clean_minimal",
+  "order": 30,
+  "description": "純白與近黑，沒有第三個顏色。首屏是滿版照片壓深色漸層、加引號的超大標題（Latin 全大寫）、右下一張白色小卡；接著淡到幾乎看不見的巨字當背景、照片配兩段文字、細線分隔的事實卡、不規則錯落的文章格、可展開的編號服務列、超大標題的合作方式、一條文字跑馬燈與黑色頁尾。字會逐字上升，大按鈕會被游標吸過去。",
+  "fits": "建築、室內、空間、攝影、顧問、想顯得沉穩專業的一人事務所",
+  "source_kind": "layout_reference",
+  "source_guide": "layout-reference:architecture-studio-editorial",
+  "source_references": ["https://studioarch-astro.vercel.app/"],
+  "source_license": "reference_only_no_code_copied",
+  "source_note": "只參考公開示範頁的版面手法與動畫類型（滿版照片加引號巨標、年份角標、右下小卡、淡色巨字背景、細線事實卡、錯落文章格、編號可展開服務列、超大標題合作段、文字跑馬燈、逐字上升、磁吸按鈕）。程式碼、文案、圖片與字型檔皆未複製，全部自行實作；動畫用 Motion（MIT）。",
+  "placeholder_colors": {
+    "bg": "#ffffff",
+    "surface_alt": "#f5f5f5",
+    "accent": "#120f0f",
+    "accent_soft": "#e4e4e4",
+    "on_accent": "#ffffff"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Chocolate+Classical+Sans&display=swap",
+    "families": ["Space Grotesk", "Chocolate Classical Sans"]
+  }
+}

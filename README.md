@@ -13,7 +13,7 @@ AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計�
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於早期開發階段。AI 知識庫、AI 剪片與 Google 工具自動化的 Agent 端候選版可供外部驗收，但都尚未正式支援；各套件仍有另一臺電腦、外部帳號或人工成果驗收關卡。社群媒體技能包尚未完成；官網打造技能包已完成前三個本機候選技能，本 repository 也尚未公開發布。
+> 本專案目前處於早期開發階段。AI 知識庫、AI 剪片與 Google 工具自動化的 Agent 端候選版可供外部驗收，但都尚未正式支援；各套件仍有另一臺電腦、外部帳號或人工成果驗收關卡。社群媒體技能包尚未完成；官網打造技能包已完成第一版五個本機候選技能，本 repository 也尚未公開發布。
 
 ## 專案要解決的問題
 
@@ -39,7 +39,7 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 | Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 用固定版本 Learn-GAS 保留 Apps Script 路線，先完成需求分流、本機實作與遠端確認關卡，再由使用者做 Google 實機驗收 |
 | AI 知識庫 | Agent 端候選版可供外部驗收；本機生命週期與三種桌面／開發用戶端技能發現已通過，尚未正式支援 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
 | 社群媒體管理工作流 | 有個人化實驗與自動化經驗，但公開版本需要重新設計 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
-| 官網打造工作流 | 前 3 個技能（設定、風格挑選、建置）與起始範本為可安裝的本機候選；其餘四個尚未建立，尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到 `workers.dev` 上線與自訂網域 |
+| 官網打造工作流 | 第一版五個技能（設定、文案、風格挑選、建置、部署）與起始範本為可安裝的本機候選；第二版兩個技能尚未建立，尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到 `workers.dev` 上線與自訂網域 |
 
 ### 1. AI 剪片工作流
 
@@ -156,7 +156,7 @@ flowchart LR
 
 第一階段會先以一人公司最常需要的最小可用官網為範圍：能清楚介紹業務、建立信任、收集潛在顧客，並提供明確的聯絡或購買入口。AI 可以協助規劃、撰寫、設計與開發，但網域購買、付費服務、正式部署與公開發布仍需要使用者明確確認。
 
-這套技能包的設計前提是交給 AI Agent 全程執行：人類只回答一次商業訪談、批次確認預設方案、完成 Cloudflare 登入與授權，其餘由 Agent 完成。技術路線固定為 Astro 靜態站點加 Cloudflare Workers 靜態資產免費方案，預設先上線到 `workers.dev`，自訂網域是授權後的第二步。風格提供六個依公開設計指引各自實作的完整主題，選風格時由 Agent 產生本機畫廊直接展示。目前完成 `website-setup`、`website-design-preview`、`website-build` 與起始範本，完整決策、人類接觸點清單與七個技能的順序見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)，套件位於 [`skill-packs/website-building/`](skill-packs/website-building/README.md)。
+這套技能包的設計前提是交給 AI Agent 全程執行：人類只回答一次商業訪談、批次確認預設方案、完成 Cloudflare 登入與授權，其餘由 Agent 完成。技術路線固定為 Astro 靜態站點加 Cloudflare Workers 靜態資產免費方案，預設先上線到 `workers.dev`，自訂網域是授權後的第二步。目前第一版五個技能與起始範本都已完成，完整決策、人類接觸點清單與七個技能的順序見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)，套件位於 [`skill-packs/website-building/`](skill-packs/website-building/README.md)。
 
 ## 共用設計原則
 
@@ -312,7 +312,7 @@ AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INST
 
 AI 剪片已建立 [`skill-packs/ai-video/`](skill-packs/ai-video/README.md) 的完整 Agent 安裝與生命週期契約，並發布鎖定的 [Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1)。manifest 標示 `installable = true`，代表可安裝為外部驗收候選版；`officially_supported` 仍為空，直到使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收。根專案的套件分流見 [`INSTALL.md`](INSTALL.md)。
 
-社群媒體管理技能包尚未提供安裝方式。官網打造目前提供 `website-setup`、`website-design-preview`、`website-build` 與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構、虛構生命週期與範本建置已通過，技能發現、Wrangler 登入、部署與網域都尚未執行。
+社群媒體管理技能包尚未提供安裝方式。官網打造目前提供第一版五個技能與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構與虛構生命週期已通過，技能發現、真實 Wrangler 登入、部署與網域都尚未執行，範本建置以環境變數選擇性驗證，部署流程以假的 wrangler 程式做虛構測試。設計決策見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)。
 
 ## 貢獻
 

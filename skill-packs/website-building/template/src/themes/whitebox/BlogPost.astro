@@ -1,0 +1,30 @@
+---
+// 白盒子文章頁：超大標題與年份角標，封面壓在下方，內文窄欄，目錄在右側。
+import BaseLayout from './BaseLayout.astro';
+interface TocItem { depth: number; slug: string; text: string; }
+interface Props { title: string; date: string; description: string; slug: string; coverImage?: string; tags?: string[]; toc?: TocItem[]; }
+const { title, date, description, slug, coverImage, tags, toc = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage ?? '/og-image.png'} canonical={`/blog/${slug}/`}>
+  <article class="t-container" style="padding-block: 160px 120px;">
+    <header class="flex flex-wrap items-start justify-between gap-8">
+      <h1 class="t-h1 max-w-5xl" style="font-size: clamp(32px, 4.8vw, 72px); text-transform: none;" data-split="words" data-split-step="50">{title}</h1>
+      <span class="wb-year shrink-0 pt-3" style="color: var(--wb-grey);" data-reveal="fade" data-reveal-delay="500">[{date.slice(0, 4)}]</span>
+    </header>
+    <div class="mt-8 flex flex-wrap items-center gap-3" data-reveal="fade" data-reveal-delay="300"><time datetime={date} class="text-[13px]" style="color: var(--wb-grey);">{date}</time>{tags && tags.map((tag) => <span class="t-tag">{tag}</span>)}</div>
+    <p class="t-lead mt-6 max-w-2xl" data-reveal="up" data-reveal-delay="350">{description}</p>
+    {coverImage && <div class="t-media mt-14" data-reveal="scale"><img src={coverImage} alt={title} class="w-full object-cover" style="aspect-ratio: 21 / 9; filter: saturate(0.6);" data-parallax="-0.08" /></div>}
+    <div class="mt-16 grid gap-12 lg:grid-cols-[220px_minmax(0,1fr)]">
+      {toc.length > 0 ? (
+        <aside class="lg:sticky lg:top-28 lg:self-start">
+          <p class="text-[11px] font-semibold uppercase" style="letter-spacing: 0.1em; color: var(--wb-grey);">目錄</p>
+          <ul class="mt-4 space-y-2" style="border-left: 1px solid var(--wb-line); padding-left: 14px;">
+            {toc.map((item) => <li class={item.depth === 3 ? 'pl-3' : ''}><a href={`#${item.slug}`} class="text-[14px] font-medium" style="color: var(--wb-black); text-decoration: none;">{item.text}</a></li>)}
+          </ul>
+        </aside>
+      ) : <div></div>}
+      <div class="t-prose prose prose-lg w-full max-w-3xl"><slot /></div>
+    </div>
+  </article>
+</BaseLayout>

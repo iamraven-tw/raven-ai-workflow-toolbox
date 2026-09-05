@@ -1,13 +1,13 @@
 # 本機候選版安裝
 
-目前安裝 `website-setup`、`website-design-preview` 與 `website-build` 三個技能。安裝管理器不連網、不登入 Cloudflare、不安裝 Node 套件，也不建立任何網站專案；起始範本留在技能包的 `template/`，由 `website-build` 在使用者確認後複製到指定目錄。
+目前安裝第一版全部五個技能：`website-setup`、`website-content-writing`、`website-design-preview`、`website-build` 與 `website-deploy`。安裝管理器不連網、不登入 Cloudflare、不安裝 Node 套件，也不建立任何網站專案；起始範本留在技能包的 `template/`，由 `website-build` 在使用者確認後複製到指定目錄。
 
 ```mermaid
 flowchart TD
     A[讀取 manifest 與本文件] --> B[唯讀預覽來源、目標與衝突]
     B --> C{使用者確認本機技能寫入}
     C -- 否 --> S[停止，不變更]
-    C -- 是 --> D[安裝 setup、design-preview、build 三個技能]
+    C -- 是 --> D[安裝第一版五個技能]
     D --> E[雜湊與技能發現驗證]
     E --> F{要初始化工作區設定嗎}
     F -- 否 --> G[只回報已安裝層級]
@@ -50,4 +50,4 @@ python3 scripts/manage_install.py status \
 
 ## 這個技能不做的事
 
-安裝與設定技能不會安裝 Node.js、Astro 或 Wrangler。`website-build` 會在使用者確認計畫後建立專案並執行 `npm ci`（從 npm registry 下載 lockfile 鎖定的套件），但不會建立 Cloudflare 帳號、不會執行 `wrangler login`、不會部署、不會購買或綁定網域。這些屬於 `website-deploy` 的外部關卡，各自需要預覽、明確授權與讀回驗證；`website-deploy` 目前尚未建立。
+安裝與設定技能不會安裝 Node.js、Astro 或 Wrangler。`website-build` 會在使用者確認計畫後建立專案並執行 `npm ci`（從 npm registry 下載 lockfile 鎖定的套件），但不會建立 Cloudflare 帳號、不會執行 `wrangler login`、不會部署、不會購買或綁定網域。這些屬於 `website-deploy` 的外部關卡，各自需要預覽、明確授權與讀回驗證；`website-deploy` 只在使用者對同一份預覽明確授權後執行，且目前只有虛構測試，真實 Cloudflare 驗收尚未進行。

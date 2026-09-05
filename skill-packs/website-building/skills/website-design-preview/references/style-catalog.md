@@ -1,23 +1,23 @@
 # 主題目錄
 
-六個主題，各依 open-design（Apache-2.0）的一份設計指引完整實作。主題名稱是本專案自訂的意象名；指引來源只用於聲明與追溯，不作為使用者可見的預設值。
+六個主題，都參考一個公開示範頁的版面手法與動畫類型自行實作，程式碼、文案、圖片與字型檔皆未複製（來源網址記在各主題 `theme.json` 的 `source_references`）。主題名稱是本專案自訂的意象名；來源只用於聲明與追溯，不作為使用者可見的預設值。所有主題共用 `src/lib/motion.ts`（Motion，MIT）：`data-reveal` 進場、`data-reveal-stagger` 依序進場、`data-parallax` 視差、`data-marquee` 跑馬燈、`data-pointer` 游標聚光、`data-trail` 游標拖尾、`data-counter` 數字，全部尊重 `prefers-reduced-motion`。
 
-| 編號 | id | 名稱 | 調性 | 指引 | 版面與元件的關鍵差異 | 適合 |
+| 編號 | id | 名稱 | 調性 | 來源 | 版面與元件的關鍵差異 | 適合 |
 |---|---|---|---|---|---|---|
-| 1 | `bookshop` | 紙本書店 | 溫暖書卷 | claude | 羊皮紙底、赤陶色唯一 CTA；襯線標題字重 500；淺色與近黑章節交替；ring shadow 取代邊框；文章列表是編號目錄 | 教學、寫作、諮詢、個人品牌 |
-| 2 | `nightshift` | 夜間工作室 | 暗黑沉浸 | linear-app | 近黑畫布、半透明白邊框、靛紫唯一色彩；置中 Hero 加帶邊框媒體；大標負字距；文章列表是時間軸 | 軟體、AI、影音製作 |
-| 3 | `gallery` | 留白畫廊 | 極簡純淨 | vercel | 純白、無色彩；陰影當邊框；區塊間一條黑線；服務用編號流程列；文章列表是陰影卡片網格 | 設計、顧問、專業服務 |
-| 4 | `showroom` | 黑白展場 | 攝影展廳 | apple | 黑、淺灰、白三色章節交替；置中巨標；膠囊按鈕；藍色只給動作；文章列表是圖片優先卡片 | 攝影、產品、空間、作品集 |
-| 5 | `playground` | 遊樂場 | 鮮豔活力 | figma | 介面只有黑白，Hero 是多色漸層；藥丸與圓形按鈕；虛線焦點框；輕字重內文；等寬大寫小標 | 創意工作室、活動、課程 |
-| 6 | `broadsheet` | 報刊編輯 | 雜誌印刷 | wired | 零圓角、無陰影；2px 黑框按鈕；細線分欄；等寬大寫眉標；黑色橫幅區塊標題；報頭式導覽；頭版式首頁 | 媒體、評論、電子報 |
+| 1 | `nightlight` | 小夜燈 | 親切個人 | 版面參考：個人設計師作品集示範頁 | 深墨綠底配紫、萊姆、粉三色點綴；打招呼式兩行大字；瀏覽器視窗框放照片、貼紙與星形；文章是一疊視窗卡；四色服務卡；結尾大字中間嵌圓形照片；標誌與連結懸停翻頁 | 自由工作者、設計師、教練、用名字經營的品牌 |
+| 2 | `darkroom` | 暗房 | 暗黑沉浸 | 版面參考：黑底品牌工作室示範頁 | 全黑只有白灰；佔滿畫面的巨型標題、游標留下照片拖尾；服務與信任依據跑馬燈；大敘述配信任列；01／02／03 編號服務長列表配黏住的照片；最新文章列；疊照片結尾；頁尾巨字站名 | 品牌、設計、影像、想被記住的工作室 |
+| 3 | `whitebox` | 白盒子 | 極簡純淨 | 版面參考：建築事務所示範頁 | 純白與近黑；滿版照片加引號巨標與年份角標、右下小卡；淡色巨字背景；細線事實卡；錯落文章格；編號可展開的服務列；超大標題合作段；文字跑馬燈；逐字上升、磁吸按鈕 | 建築、空間、攝影、顧問、沉穩專業的事務所 |
+| 4 | `daylight` | 日光 | 攝影展廳 | 版面參考：照片主導的行銷代理商示範頁 | 米白紙底、黑與螢光黃綠兩個強調；滿版照片首屏加右下說明框；黑色跑馬燈橫條；大字敘述加事實卡；編號路線圖（關於頁段落）配黏住照片；照片上的引言；服務卡有游標聚光；黑底文章橫向列；文字模糊淡入 | 有好照片的服務業、餐飲、空間、攝影 |
+| 5 | `sunrise` | 晨光 | 鮮豔活力 | 版面參考：漸層行銷代理商示範頁 | 粉橘柔焦漸層只在 44px 大圓角面板上；首屏四張高低交錯、隨捲動漂移的照片；淺灰面板放服務卡與漸層行動卡；視窗式文章卡（三個彩色圓點）；漸層面板放三步驟；引言卡；導覽連結懸停翻頁；頁尾巨字 | 教練、顧問、線上課程、想明亮有活力 |
+| 6 | `weekly` | 週刊 | 雜誌印刷 | 版面參考：慢新聞雜誌示範頁 | 報紙灰底、米白卡片、深橄欖頁尾、褐色小標；報頭雙層導覽；三欄雜誌首屏（標題、傾斜封面、側欄）；引言輪播；雜誌格；對談卡；排行榜配深色行動盒；襯線字型 | 寫作者、評論、電子報、以文章為主 |
 
 ## 建議規則
 
 `style_gallery.py list --recommend <調性>` 回傳該調性的主題。調性由 `website-setup` 依受眾推薦；沒有時：
 
 - 「暗色」「科技」「專業」：`dark_immersive`
-- 「溫暖」「親切」「書」「教學」：`warm_literary`
-- 「乾淨」「簡單」「可信」：`clean_minimal`
+- 「親切」「個人」「作品集」「自由工作者」：`personal_friendly`
+- 「乾淨」「簡單」「可信」「空間」「建築」：`clean_minimal`
 - 「照片」「作品」「展示」：`photo_showroom`
 - 「活潑」「年輕」「有趣」：`colorful_energetic`
 - 「雜誌」「文章」「報導」：`editorial_press`
@@ -25,8 +25,8 @@
 
 ## 字型
 
-所有主題只用系統字型堆疊，Latin 字型依指引指定（Georgia、Inter、Geist、SF Pro、Playfair 等）並提供完整 fallback，中文一律 Noto Sans TC／Noto Serif TC 系統字。沒有外部字型請求。要接 Google Fonts 屬於擴充。
+`site.fonts` 為 `google`（預設）時，各主題載入自己 `theme.json` 指定的 Google Fonts，中文字型也各不相同（LXGW WenKai TC、Noto Sans TC、Noto Serif TC、Cactus Classical Serif、Huninn 等）；改成 `system` 就完全不發外部請求，只用系統字型堆疊。
 
 ## 新增主題
 
-新增一個主題要：一份可追溯、授權允許的設計指引；`template/src/themes/<id>/` 內完整的 theme.json、theme.css、BaseLayout、Header、Footer、Home、BlogIndex、BlogPost；theme.css 定義全部 `.t-*` 共用類別；用意象命名不用品牌名；重新執行 `export_previews.py`；通過 `tests/test_style_gallery.py`。
+新增一個主題要：一份可追溯、授權允許的設計指引，或一個公開示範頁作為版面參考（只參考版面手法與動畫類型，`theme.json` 以 `source_kind: layout_reference` 記錄網址並聲明未複製程式碼與素材）；`template/src/themes/<id>/` 內完整的 theme.json、theme.css、BaseLayout、Header、Footer、Home、BlogIndex、BlogPost；theme.css 定義全部 `.t-*` 共用類別；用意象命名不用品牌名；重新執行 `export_previews.py`；通過 `tests/test_style_gallery.py`。

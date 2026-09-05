@@ -1,0 +1,30 @@
+---
+// 日光文章列表：左標題右導言，文章是圖片優先的卡片，游標聚光。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; title?: string; intro?: string; emptyNote?: string; }
+const { posts, title, intro, emptyNote } = Astro.props;
+const fallbackCovers = ['/images/samples/keyboard-coffee.jpg', '/images/samples/phone-edge.jpg', '/images/samples/creative-desk.jpg', '/images/samples/open-book.jpg', '/images/samples/clean-desk.jpg', '/images/samples/cafe-table.jpg'];
+---
+
+<section class="t-container t-section">
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+    <div>
+      <span class="t-tag" data-reveal="blur">文章</span>
+      <h1 class="t-h1 mt-5" data-reveal="blur" data-reveal-delay="80">{title ?? '文章'}</h1>
+    </div>
+    <p class="t-lead lg:pb-2" data-reveal="blur" data-reveal-delay="160">{intro ?? '記錄工作方法、案例與想法。'}</p>
+  </div>
+  <div class="t-grid-3 mt-14" data-reveal-stagger="110" data-reveal-variant="blur">
+    {posts.map((post, index) => (
+      <a href={`/blog/${post.slug}/`} class="t-card" style="padding: 12px; text-decoration: none; display: block;" data-pointer>
+        <div class="t-media" style="aspect-ratio: 4 / 3;"><img src={post.coverImage ?? fallbackCovers[index % fallbackCovers.length]} alt="" width="1200" height="900" class="h-full w-full object-cover" loading="lazy" /></div>
+        <div class="px-3 pb-3 pt-5">
+          <div class="flex flex-wrap items-center gap-2"><time datetime={post.date} class="t-eyebrow">{post.date}</time>{post.tags && post.tags.map((tag) => <span class="t-tag">{tag}</span>)}</div>
+          <h2 class="t-card-title mt-3">{post.title}</h2>
+          <p class="t-muted mt-2 text-[15px] leading-7">{post.description}</p>
+        </div>
+      </a>
+    ))}
+  </div>
+  {posts.length === 0 && <p class="t-note mt-10 max-w-md">{emptyNote ?? '還沒有文章。'}</p>}
+</section>

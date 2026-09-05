@@ -1,0 +1,149 @@
+---
+// 晨光首頁：漸層面板裡的導覽、置中巨標與四張高低交錯、會隨捲動漂移的照片 → 信任依據小字列
+// → 淺灰面板裡的服務卡（最後一張是漸層行動卡）→ 視窗式最新文章 → 漸層面板裡的「怎麼合作」三步驟
+// → 信任引言卡 → 結尾邀請。
+import { getCollection } from 'astro:content';
+import Header from './Header.astro';
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { ctaHref, ctaAttrs } from '../../lib/nav';
+
+const posts = (await getCollection('posts'))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 4);
+const portraits = [
+  { src: '/images/samples/writing-hand.jpg', tint: '#dcd3f5', down: false },
+  { src: '/images/samples/creative-desk.jpg', tint: '#f6e3a8', down: true },
+  { src: '/images/samples/portrait.jpg', tint: '#f4c5cf', down: false },
+  { src: '/images/samples/raspberries.jpg', tint: '#bfe0ec', down: true },
+];
+const fallbackCovers = ['/images/samples/clean-desk.jpg', '/images/samples/cafe-table.jpg', '/images/samples/open-book.jpg', '/images/samples/phone-edge.jpg'];
+const steps = [
+  { title: '說明你的情況', body: '用一封信或一次短談，講清楚你現在卡在哪、想達成什麼。' },
+  { title: '收到可行的方案', body: '我會回你一份看得懂的方案：做什麼、不做什麼、大概多久。' },
+  { title: '交付與後續維護', body: '交付你能自己維護的成果，並說明之後怎麼調整。' },
+];
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<section class="su-panel su-panel--grad" style="margin-top: 12px;">
+  <Header embedded />
+  <div class="t-container pt-10 text-center md:pt-16">
+    <p class="t-eyebrow" data-reveal="fade">{copy.home.eyebrow ?? site.name}</p>
+    <h1 class="t-h1 mx-auto mt-5 max-w-4xl" data-reveal="up" data-reveal-delay="80">{copy.home.title ?? site.positioning}</h1>
+    <p class="t-lead mx-auto mt-6 max-w-xl" data-reveal="up" data-reveal-delay="180">{copy.home.lead ?? site.audience}</p>
+    <div class="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal="up" data-reveal-delay="280">
+      <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+      <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>
+    </div>
+  </div>
+  <div class="t-container pb-4">
+    <div class="su-portraits" data-reveal-stagger="110" data-reveal-variant="scale">
+      {portraits.map((photo, index) => (
+        <div class={`su-portrait ${photo.down ? 'su-portrait--down' : ''}`} style={`background: ${photo.tint};`} data-parallax={photo.down ? '-0.14' : '0.14'}>
+          <img src={photo.src} alt="" width="900" height="1125" loading={index < 2 ? 'eager' : 'lazy'} />
+        </div>
+      ))}
+    </div>
+  </div>
+  {site.trustSignals.length > 0 && (
+    <div class="t-container pb-12 pt-10 text-center">
+      <p class="t-eyebrow" data-reveal="fade">{copy.home.trust_eyebrow ?? '可以放心的原因'}</p>
+      <ul class="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-3 text-[15px] font-medium" style="color: #4b5563;" data-reveal-stagger="80" data-reveal-variant="fade">
+        {site.trustSignals.map((signal) => <li>{signal}</li>)}
+      </ul>
+    </div>
+  )}
+</section>
+
+<section class="su-panel su-panel--soft">
+  <div class="t-container t-section relative">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="t-eyebrow" data-reveal="fade">{copy.home.offerings_eyebrow ?? '服務'}</p>
+      <h2 class="t-h2 mt-4" data-reveal="up">{copy.home.offerings_heading ?? '三件我能幫上的事'}</h2>
+      {copy.home.offerings_intro && <p class="t-lead mt-5" data-reveal="up" data-reveal-delay="100">{copy.home.offerings_intro}</p>}
+    </div>
+    <div class="t-grid-3 mt-14" data-reveal-stagger="110">
+      {site.offerings.map((offering, index) => (
+        <article class="t-card">
+          <span class="su-icon" aria-hidden="true">{pad(index)}</span>
+          <h3 class="t-card-title mt-6">{offering.name}</h3>
+          <p class="t-muted mt-3 text-[15px] leading-7">{offering.summary}</p>
+        </article>
+      ))}
+      <article class="t-card flex flex-col justify-between sm:col-span-2 lg:col-span-3" style="background: var(--su-grad); border: 0;">
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+          <div>
+            <h3 class="t-h3">{copy.home.closing_heading ?? '準備好開始了嗎？'}</h3>
+            <p class="mt-3 max-w-xl text-[15px] leading-7" style="color: #374151;">{copy.home.closing_lead ?? '一封信說明你的情況，我會告訴你值不值得做。'}</p>
+          </div>
+          <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+{posts.length > 0 && (
+  <section class="t-container t-section">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="t-eyebrow" data-reveal="fade">文章</p>
+      <h2 class="t-h2 mt-4" data-reveal="up">{copy.blog.title ?? '最近寫的'}</h2>
+    </div>
+    <div class={`mt-14 grid gap-6 ${posts.length > 1 ? 'md:grid-cols-2' : 'md:max-w-2xl md:mx-auto'}`} data-reveal-stagger="120">
+      {posts.map((post, index) => (
+        <a href={`/blog/${post.id}/`} class="su-window">
+          <div class="su-window__bar">
+            <span class="su-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="t-eyebrow" style="color: var(--su-ink);">{post.data.tags?.[0] ?? post.data.date}</span>
+            <span class="su-arrow" aria-hidden="true">→</span>
+          </div>
+          <div class="su-window__media"><img src={post.data.coverImage ?? fallbackCovers[index % fallbackCovers.length]} alt="" width="1200" height="900" loading="lazy" /></div>
+          <div class="px-3 pb-4 pt-5">
+            <h3 class="t-card-title">{post.data.title}</h3>
+            <p class="t-muted mt-2 text-[15px] leading-7">{post.data.description}</p>
+          </div>
+        </a>
+      ))}
+    </div>
+    <div class="mt-10 text-center" data-reveal="fade"><a href="/blog" class="t-btn-secondary">全部文章</a></div>
+  </section>
+)}
+
+<section class="su-panel su-panel--grad">
+  <div class="t-container t-section">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="t-eyebrow" data-reveal="fade">怎麼合作</p>
+      <h2 class="t-h2 mt-4" data-reveal="up">{copy.services.title ?? '從第一封信到交付，三步'}</h2>
+    </div>
+    <div class="mt-14 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+      <div class="t-media aspect-[4/5] max-h-[560px]" data-reveal="scale">
+        <img src="/images/samples/laptop-coffee.jpg" alt="" width="1200" height="800" class="h-full w-full object-cover" style="scale: 1.15;" data-parallax="-0.1" loading="lazy" />
+      </div>
+      <div class="space-y-4" data-reveal-stagger="140" data-reveal-variant="right">
+        {steps.map((step, index) => (
+          <div class="su-step">
+            <span class="su-step__num" aria-hidden="true">{pad(index)}</span>
+            <div>
+              <h3 class="t-card-title">{step.title}</h3>
+              <p class="t-muted mt-2 text-[15px] leading-7">{step.body}</p>
+            </div>
+          </div>
+        ))}
+        <div class="pt-2 text-right"><a href="/services" class="t-btn">{copy.home.secondary_cta ?? '看服務內容'}</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{site.trustSignals.length > 0 && (
+  <section class="t-container t-section">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="t-eyebrow" data-reveal="fade">{copy.home.trust_eyebrow ?? '事實'}</p>
+      <h2 class="t-h2 mt-4" data-reveal="up">{copy.home.trust_heading ?? '為什麼可以放心'}</h2>
+    </div>
+    <div class="t-grid-3 mt-14" data-reveal-stagger="120">
+      {site.trustSignals.map((signal) => <div class="su-quote"><p class="text-[17px] font-medium leading-8" style="color: var(--su-ink);">{signal}</p></div>)}
+    </div>
+  </section>
+)}

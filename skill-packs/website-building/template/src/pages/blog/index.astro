@@ -4,6 +4,7 @@ import BaseLayout from '@theme/BaseLayout.astro';
 import BlogIndex from '@theme/BlogIndex.astro';
 import { getCollection } from 'astro:content';
 import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
 
 const posts = (await getCollection('posts'))
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
@@ -11,5 +12,5 @@ const posts = (await getCollection('posts'))
 ---
 
 <BaseLayout title="文章" description={`${site.name} 的文章與筆記`} canonical="/blog">
-  <BlogIndex posts={posts} />
+  <BlogIndex posts={posts} title={copy.blog.title ?? undefined} intro={copy.blog.intro ?? undefined} emptyNote={copy.blog.empty_note ?? undefined} />
 </BaseLayout>

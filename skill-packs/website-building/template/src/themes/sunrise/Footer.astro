@@ -1,0 +1,36 @@
+---
+// 晨光：頁尾是一塊漸層面板，左邊標記與定位、右邊連結，底部把站名放大。
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { footerLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+const year = new Date().getFullYear();
+---
+
+<footer class="su-panel su-panel--grad" style="margin-top: 0;">
+  <div class="t-container grid gap-12 pt-16 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-start">
+    <div>
+      <a href="/" class="flex items-center gap-2 text-[17px] font-semibold" style="color: var(--su-ink); text-decoration: none;">
+        <span class="inline-block h-3.5 w-3.5 rotate-45 rounded-[3px]" style="background: var(--su-ink);" aria-hidden="true"></span>{site.name}
+      </a>
+      <p class="mt-4 max-w-sm text-[15px] leading-7" style="color: #374151;">{copy.home.lead ?? site.positioning}</p>
+      <div class="mt-6 flex flex-wrap gap-2">
+        {site.contacts.map((channel) => (
+          <a href={channel.target} class="t-tag" style="background: rgba(255,255,255,0.7);" {...(channel.kind === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>{channel.label}</a>
+        ))}
+      </div>
+    </div>
+    <nav aria-label="頁尾導覽">
+      <p class="t-eyebrow">頁面</p>
+      <ul class="mt-4 space-y-2 text-[15px] font-medium">
+        {footerLinks.map((link) => <li><a href={link.href} style="color: var(--su-ink); text-decoration: none;"><span class="su-roll"><span>{link.label}</span><span aria-hidden="true">{link.label}</span></span></a></li>)}
+      </ul>
+    </nav>
+    <div class="lg:text-right">
+      <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+      <p class="mt-4 text-[12px]" style="color: var(--su-muted);">© {year} {site.name}</p>
+    </div>
+  </div>
+  <div class="t-container pb-6 pt-12" style="overflow-x: hidden;">
+    <div class="su-giant" aria-hidden="true" data-reveal="up">{site.name}</div>
+  </div>
+</footer>

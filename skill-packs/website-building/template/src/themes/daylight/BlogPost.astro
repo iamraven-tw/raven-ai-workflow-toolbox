@@ -1,0 +1,33 @@
+---
+// 日光文章頁：滿版封面壓深色漸層、白色標題，內文窄欄在米白底，目錄在右側白卡。
+import BaseLayout from './BaseLayout.astro';
+interface TocItem { depth: number; slug: string; text: string; }
+interface Props { title: string; date: string; description: string; slug: string; coverImage?: string; tags?: string[]; toc?: TocItem[]; }
+const { title, date, description, slug, coverImage, tags, toc = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage ?? '/og-image.png'} canonical={`/blog/${slug}/`}>
+  <article>
+    <header class="dl-quote" style="min-height: 60svh;">
+      {coverImage ? <img src={coverImage} alt="" width="1200" height="800" style="object-position: center;" data-parallax="-0.1" /> : <img src="/images/samples/clean-desk.jpg" alt="" width="1200" height="800" data-parallax="-0.1" />}
+      <div class="t-container relative z-10 w-full py-20">
+        <div class="flex flex-wrap items-center gap-2" data-reveal="blur"><time datetime={date} class="t-tag">{date}</time>{tags && tags.map((tag) => <span class="t-tag" style="background: rgba(255,255,255,0.15); color: #fff;">{tag}</span>)}</div>
+        <h1 class="dl-hero__title mt-6" data-reveal="blur" data-reveal-delay="100">{title}</h1>
+        <p class="mt-5 max-w-2xl text-[17px] leading-8" style="color: #e6e6e6;" data-reveal="blur" data-reveal-delay="200">{description}</p>
+      </div>
+    </header>
+    <div class="t-container grid gap-12 py-16 lg:grid-cols-[minmax(0,1fr)_260px]">
+      <div class="t-prose prose prose-lg mx-auto w-full max-w-3xl"><slot /></div>
+      {toc.length > 0 && (
+        <aside class="lg:sticky lg:top-28 lg:self-start">
+          <div class="t-details" style="padding: 22px 24px;">
+            <p class="t-eyebrow">目錄</p>
+            <ul class="mt-4 space-y-2">
+              {toc.map((item) => <li class={item.depth === 3 ? 'pl-3' : ''}><a href={`#${item.slug}`} class="text-[14px] font-semibold" style="color: var(--dl-dark); text-decoration: none;">{item.text}</a></li>)}
+            </ul>
+          </div>
+        </aside>
+      )}
+    </div>
+  </article>
+</BaseLayout>

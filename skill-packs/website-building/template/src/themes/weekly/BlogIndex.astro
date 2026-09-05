@@ -1,0 +1,41 @@
+---
+// 週刊文章列表：第一篇放大，其餘雜誌格。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; title?: string; intro?: string; emptyNote?: string; }
+const { posts, title, intro, emptyNote } = Astro.props;
+const [lead, ...rest] = posts;
+const fallbackCovers = ['/images/samples/cafe-table.jpg', '/images/samples/writing-hand.jpg', '/images/samples/raspberries.jpg', '/images/samples/keyboard-coffee.jpg', '/images/samples/clean-desk.jpg', '/images/samples/open-book.jpg'];
+---
+
+<section class="t-container t-section">
+  <div class="text-center" style="border-bottom: 1px solid var(--wk-line); padding-bottom: 28px;">
+    <span class="t-tag" data-reveal="fade">文章</span>
+    <h1 class="t-h1 mt-4" data-reveal="up">{title ?? '文章'}</h1>
+    <p class="t-lead mx-auto mt-4 max-w-xl" data-reveal="up" data-reveal-delay="100">{intro ?? '記錄工作方法、案例與想法。'}</p>
+  </div>
+  {lead && (
+    <a href={`/blog/${lead.slug}/`} class="wk-story mt-12 grid gap-8 lg:grid-cols-2 lg:items-center" data-reveal="up">
+      <div class="t-media" style="aspect-ratio: 4 / 3;"><img src={lead.coverImage ?? fallbackCovers[0]} alt="" width="1200" height="900" /></div>
+      <div>
+        <span class="t-tag">{lead.tags?.[0] ?? '最新'}</span>
+        <h2 class="t-h2 mt-3">{lead.title}</h2>
+        <p class="t-lead mt-4">{lead.description}</p>
+        <div class="wk-meta"><time datetime={lead.date}>{lead.date}</time></div>
+      </div>
+    </a>
+  )}
+  {rest.length > 0 && (
+    <div class="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger="110">
+      {rest.map((post, index) => (
+        <a href={`/blog/${post.slug}/`} class="wk-story">
+          <div class="t-media"><img src={post.coverImage ?? fallbackCovers[(index + 1) % fallbackCovers.length]} alt="" width="1200" height="900" loading="lazy" /></div>
+          <span class="t-tag mt-4 block">{post.tags?.[0] ?? '文章'}</span>
+          <h2 style="font-family: var(--wk-serif); font-size: 18px; line-height: 1.35; margin-top: 8px;">{post.title}</h2>
+          <p class="t-muted mt-2 text-[14px] leading-6">{post.description}</p>
+          <div class="wk-meta"><time datetime={post.date}>{post.date}</time></div>
+        </a>
+      ))}
+    </div>
+  )}
+  {posts.length === 0 && <p class="t-note mx-auto mt-10 max-w-md">{emptyNote ?? '還沒有文章。'}</p>}
+</section>

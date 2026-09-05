@@ -1,0 +1,24 @@
+{
+  "id": "nightlight",
+  "name": "小夜燈",
+  "tonality": "personal_friendly",
+  "order": 10,
+  "description": "深墨綠近黑的底配紫、萊姆、粉三個點綴色，像深夜書桌上的小燈。首屏左邊是跟你打招呼的兩行大字，右邊是一個瀏覽器視窗框，裡面放你的照片、貼紙和一顆星形。文章做成一疊視窗卡片，服務是四色卡片，結尾的大字中間嵌一張圓形照片。整站有翻頁式標誌、進場、視差與懸停動畫。",
+  "fits": "自由工作者、設計師、教練、用自己名字經營的一人品牌",
+  "source_kind": "layout_reference",
+  "source_guide": "layout-reference:personal-designer-portfolio",
+  "source_references": ["https://michael-theme.pages.dev/"],
+  "source_license": "reference_only_no_code_copied",
+  "source_note": "只參考公開示範頁的版面手法與動畫類型（打招呼式首屏、瀏覽器視窗框、貼紙與星形、對話泡泡、四色服務卡、大字嵌圓形照片）。程式碼、文案、圖片與字型檔皆未複製，全部自行實作；動畫用 Motion（MIT）。",
+  "placeholder_colors": {
+    "bg": "#0c1212",
+    "surface_alt": "#7772ff",
+    "accent": "#d4f06d",
+    "accent_soft": "#ff9e9e",
+    "on_accent": "#0c1212"
+  },
+  "google_fonts": {
+    "href": "https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&family=Iansui&display=swap",
+    "families": ["Albert Sans", "Iansui"]
+  }
+}

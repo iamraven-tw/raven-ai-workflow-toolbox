@@ -1,0 +1,7 @@
+interface:
+  display_name: "官網文案填寫"
+  short_description: "列出每頁必填與可選欄位、給範例，引導使用者填寫自己的文案；AI 只提供起點"
+  default_prompt: "使用 $website-content-writing 引導我填官網文案。先列出必填與可選欄位、每欄的用途和一個範例，讓我自己寫；我沒空的欄位你先填範例並標記，提醒我之後要改。不要編造數字或客戶，不要幫我寫部落格文章。確認後寫入 website/copy.json。"
+
+policy:
+  allow_implicit_invocation: true

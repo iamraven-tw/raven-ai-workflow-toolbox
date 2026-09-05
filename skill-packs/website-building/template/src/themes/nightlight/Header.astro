@@ -1,0 +1,29 @@
+---
+// 小夜燈：極簡導覽。左邊站名（懸停翻頁變萊姆色）、中間細字連結、右邊萊姆藥丸 CTA。
+import { site } from '../../../site.config.mjs';
+import { navLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+---
+
+<header class="relative z-40">
+  <nav class="t-container flex h-[76px] items-center justify-between gap-6" aria-label="主要導覽">
+    <a href="/" class="text-[18px] font-semibold" style="color: var(--nl-fg); text-decoration: none; letter-spacing: -0.02em;">
+      <span class="nl-roll"><span>{site.name}©</span><span aria-hidden="true">{site.name}©</span></span>
+    </a>
+    <div class="hidden items-center gap-7 md:flex">
+      {navLinks.map((link) => (
+        <a href={link.href} class="text-[14px] font-medium" style="color: var(--nl-muted); text-decoration: none;"><span class="nl-roll"><span>{link.label}</span><span aria-hidden="true">{link.label}</span></span></a>
+      ))}
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="hidden md:inline-flex"><a href={ctaHref} class="t-btn" style="padding: 12px 18px;" {...ctaAttrs}>{site.cta.label}</a></span>
+      <button id="mobile-menu-button" class="flex h-11 w-11 items-center justify-center rounded-full md:hidden" style="border: 1px solid var(--nl-line); color: var(--nl-fg);" aria-label="開啟選單" aria-expanded="false" aria-controls="mobile-menu">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </nav>
+  <div id="mobile-menu" class="mx-4 hidden rounded-3xl p-5 md:hidden" style="background: var(--nl-panel); border: 1px solid var(--nl-line);" role="navigation" aria-label="行動版導覽">
+    {navLinks.map((link) => <a href={link.href} class="block py-3 text-[17px] font-semibold" style="color: var(--nl-fg); text-decoration: none;">{link.label}</a>)}
+    <a href={ctaHref} class="t-btn mt-3 w-full" {...ctaAttrs}>{site.cta.label}</a>
+  </div>
+</header>
+<script src="../../lib/menu.ts"></script>

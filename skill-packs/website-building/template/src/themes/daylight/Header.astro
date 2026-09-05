@@ -1,0 +1,28 @@
+---
+// 日光：白色黏性導覽。左邊黑圓標記加站名、中間連結、右邊黃綠藥丸 CTA。
+import { site } from '../../../site.config.mjs';
+import { navLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+const mark = site.name.replace(/\s+/g, '').slice(0, 1);
+---
+
+<header class="sticky top-0 z-50" style="background: rgba(255,255,255,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--dl-line);">
+  <nav class="t-container flex h-[72px] items-center justify-between gap-6" aria-label="主要導覽">
+    <a href="/" class="flex items-center gap-2.5 text-[17px] font-semibold" style="color: var(--dl-dark); text-decoration: none; letter-spacing: -0.01em;">
+      <span class="flex h-8 w-8 items-center justify-center rounded-full text-[13px] font-bold" style="background: var(--dl-dark); color: var(--dl-primary);" aria-hidden="true">{mark}</span>{site.name}
+    </a>
+    <div class="hidden items-center gap-8 md:flex">
+      {navLinks.map((link) => <a href={link.href} class="text-[15px] font-semibold" style="color: var(--dl-dark); text-decoration: none;">{link.label}</a>)}
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="hidden md:inline-flex"><a href={ctaHref} class="t-btn" style="padding: 11px 18px; font-size: 14px;" {...ctaAttrs}>{site.cta.label}</a></span>
+      <button id="mobile-menu-button" class="flex h-10 w-10 items-center justify-center rounded-full md:hidden" style="background: var(--dl-dark); color: #fff;" aria-label="開啟選單" aria-expanded="false" aria-controls="mobile-menu">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </nav>
+  <div id="mobile-menu" class="hidden px-6 pb-6 md:hidden" style="background: #fff; border-top: 1px solid var(--dl-line);" role="navigation" aria-label="行動版導覽">
+    {navLinks.map((link) => <a href={link.href} class="block py-3 text-[17px] font-semibold" style="color: var(--dl-dark); text-decoration: none;">{link.label}</a>)}
+    <a href={ctaHref} class="t-btn mt-3 w-full" {...ctaAttrs}>{site.cta.label}</a>
+  </div>
+</header>
+<script src="../../lib/menu.ts"></script>

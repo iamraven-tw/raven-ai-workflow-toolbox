@@ -1,0 +1,30 @@
+---
+// 小夜燈：頁尾是一個帶邊框的圓角盒子，左邊站名與定位、中間頁面、右邊 CTA。
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { footerLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+const year = new Date().getFullYear();
+---
+
+<footer class="t-container pb-8 pt-4">
+  <div class="nl-footer grid gap-10 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-start">
+    <div>
+      <p class="text-[20px] font-semibold" style="letter-spacing: -0.02em;">{site.name}©</p>
+      <p class="mt-4 max-w-sm text-[15px] leading-7" style="color: var(--nl-muted);">{copy.home.lead ?? site.positioning} <span aria-hidden="true" style="color: var(--nl-purple);">✦</span></p>
+      <div class="mt-6 flex flex-wrap gap-2">
+        {site.contacts.map((channel) => <a href={channel.target} class="t-btn-secondary" style="padding: 10px 14px;" {...(channel.kind === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>{channel.label}</a>)}
+      </div>
+    </div>
+    <nav aria-label="頁尾導覽">
+      <p class="t-eyebrow">頁面</p>
+      <ul class="mt-4 space-y-2 text-[15px] font-medium">
+        {footerLinks.map((link) => <li><a href={link.href} style="color: var(--nl-fg); text-decoration: none;"><span class="nl-roll"><span>{link.label}</span><span aria-hidden="true">{link.label}</span></span></a></li>)}
+      </ul>
+    </nav>
+    <div class="lg:self-end"><a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a></div>
+  </div>
+  <div class="flex flex-col gap-2 px-2 pt-6 text-[13px] sm:flex-row sm:items-center sm:justify-between" style="color: var(--nl-muted);">
+    <p>{site.name}© — {year}</p>
+    <a href="#main-content" style="color: var(--nl-muted); text-decoration: none;">回到最上面 ↑</a>
+  </div>
+</footer>

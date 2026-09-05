@@ -1,0 +1,160 @@
+---
+// 日光首頁：滿版照片首屏（白色大標、黃綠按鈕、右下說明框）→ 黑色跑馬燈橫條 → 大字敘述加白色事實卡
+// → 左側編號路線圖（用關於頁段落）配右側黏住的照片 → 滿版照片上的一句引言 → 三張服務卡（游標聚光）
+// → 黑底的最新文章橫向列 → 結尾邀請。
+import { getCollection } from 'astro:content';
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { ctaHref, ctaAttrs } from '../../lib/nav';
+
+const posts = (await getCollection('posts'))
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 5);
+const fallbackCovers = ['/images/samples/keyboard-coffee.jpg', '/images/samples/phone-edge.jpg', '/images/samples/creative-desk.jpg', '/images/samples/open-book.jpg', '/images/samples/clean-desk.jpg'];
+const roadmap = copy.about.sections
+  .map((section, index) => ({ heading: section.heading, body: section.body ?? (index === 0 ? site.audience : null) }))
+  .filter((section) => section.body);
+const pad3 = (index: number) => `${String(index + 1).padStart(3, '0')}//`;
+const pad = (index: number) => String(index + 1).padStart(2, '0');
+---
+
+<section class="dl-hero">
+  <div class="dl-hero__bg" aria-hidden="true">
+    <img src="/images/samples/cafe-table.jpg" alt="" width="1200" height="800" data-reveal="scale" fetchpriority="high" />
+  </div>
+  <div class="t-container relative z-10 grid w-full gap-10 py-24 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end lg:py-32">
+    <div>
+      <span class="t-tag" data-reveal="blur">{copy.home.eyebrow ?? site.name}</span>
+      <h1 class="dl-hero__title mt-6" data-reveal="blur" data-reveal-delay="120">{copy.home.title ?? site.positioning}</h1>
+      <div class="dl-on-dark mt-9 flex flex-wrap items-center gap-3" data-reveal="blur" data-reveal-delay="260">
+        <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+        <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>
+      </div>
+    </div>
+    <div class="dl-hero__aside lg:justify-self-end" data-reveal="blur" data-reveal-delay="400">
+      <p class="t-eyebrow" style="color: var(--dl-primary);">{copy.home.trust_eyebrow ?? '這是給誰的'}</p>
+      <p class="mt-3 text-[15px] leading-7" style="color: #e6e6e6;">{copy.home.lead ?? site.audience}</p>
+    </div>
+  </div>
+</section>
+
+{(site.trustSignals.length > 0 || site.offerings.length > 0) && (
+  <div class="dl-band" data-marquee="24000" aria-hidden="true">
+    <div class="t-marquee">
+      <div class="t-marquee-track">
+        {[...site.trustSignals, ...site.offerings.map((offering) => offering.name)].map((item) => <span><i></i>{item}</span>)}
+      </div>
+    </div>
+  </div>
+)}
+
+<section class="t-container t-section">
+  <div class="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
+    <p class="text-[20px] font-semibold" style="color: var(--dl-secondary);" data-reveal="blur">© {site.name}</p>
+    <div>
+      <h2 class="dl-statement" data-reveal="blur">{copy.home.offerings_intro ?? copy.about.intro ?? '先弄清楚問題值不值得解，再決定做法；每一步都交付你能自己維護的成果。'}</h2>
+      <a href="/about" class="t-btn mt-8" style="padding: 11px 18px; font-size: 14px;" data-reveal="blur" data-reveal-delay="120">關於 {site.name}</a>
+    </div>
+  </div>
+  {site.trustSignals.length > 0 && (
+    <div class="t-grid-3 mt-14" data-reveal-stagger="120" data-reveal-variant="blur">
+      {site.trustSignals.map((signal, index) => (
+        <div class="dl-fact">
+          <span class="dl-fact__num" aria-hidden="true">{pad(index)}</span>
+          <p class="mt-4 text-[15px] leading-7" style="color: var(--dl-grey);">{signal}</p>
+        </div>
+      ))}
+    </div>
+  )}
+</section>
+
+{roadmap.length > 0 && (
+  <section class="t-container t-section" style="padding-top: 0;">
+    <div class="mx-auto max-w-2xl text-center">
+      <span class="t-tag" data-reveal="blur">{copy.about.title ?? '關於'}</span>
+      <h2 class="t-h2 mt-5" data-reveal="blur" data-reveal-delay="80">{copy.home.trust_heading ?? '我怎麼工作'}</h2>
+      {copy.about.intro && <p class="t-lead mt-4" data-reveal="blur" data-reveal-delay="160">{copy.about.intro}</p>}
+    </div>
+    <div class="mt-14 grid gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div class="space-y-4" data-reveal-stagger="130" data-reveal-variant="blur">
+        {roadmap.map((section, index) => (
+          <article class="dl-road">
+            <p class="dl-road__idx">{pad3(index)}</p>
+            <p class="t-eyebrow mt-6">{section.heading}</p>
+            <p class="mt-3 text-[15px] leading-7" style="color: var(--dl-text);">{section.body}</p>
+          </article>
+        ))}
+      </div>
+      <div class="t-media aspect-[4/3] lg:sticky lg:top-28 lg:aspect-auto lg:min-h-[520px] lg:self-start" data-reveal="scale">
+        <img src="/images/samples/laptop-coffee.jpg" alt="" width="1200" height="800" class="h-full w-full object-cover" style="scale: 1.12;" data-parallax="-0.1" loading="lazy" />
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="dl-quote">
+  <img src="/images/samples/portrait.jpg" alt="" width="900" height="1200" loading="lazy" data-parallax="-0.15" style="scale: 1.15;" />
+  <div class="t-container relative z-10 grid w-full gap-8 py-20 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end">
+    <div>
+      <span class="t-tag" data-reveal="blur">{copy.home.closing_eyebrow ?? '一句話'}</span>
+      <p class="dl-quote__text mt-6" data-reveal="blur" data-reveal-delay="100">「{copy.home.trust_heading ?? '每一件交出去的東西，都要能讓你自己接手。'}」</p>
+      <p class="mt-8 flex items-center gap-3 text-[15px] font-semibold" data-reveal="blur" data-reveal-delay="200">
+        <span class="flex h-10 w-10 items-center justify-center rounded-full text-[13px] font-bold" style="background: var(--dl-primary); color: var(--dl-dark);" aria-hidden="true">{site.name.slice(0, 1)}</span>{site.name}
+      </p>
+    </div>
+    <div class="lg:justify-self-end lg:text-right" data-reveal="blur" data-reveal-delay="300">
+      <p class="text-[15px] font-semibold" style="color: #dcdcdc;">{copy.home.offerings_eyebrow ?? '服務項目'}</p>
+      <p class="dl-fact__num mt-2" style="color: var(--dl-light); font-size: clamp(56px, 7vw, 110px);">{pad(site.offerings.length - 1)}</p>
+    </div>
+  </div>
+</section>
+
+<section class="t-container t-section">
+  <div class="grid gap-8 lg:grid-cols-[220px_minmax(0,1fr)]">
+    <span class="t-tag self-start" data-reveal="blur">{copy.home.offerings_eyebrow ?? '服務'}</span>
+    <h2 class="t-h2" data-reveal="blur" data-reveal-delay="80">{copy.home.offerings_heading ?? '三件我能幫上的事'}</h2>
+  </div>
+  <div class="t-grid-3 mt-14" data-reveal-stagger="120" data-reveal-variant="blur">
+    {site.offerings.map((offering, index) => (
+      <article class="t-card" data-pointer>
+        <span class="dl-icon" aria-hidden="true">{pad(index)}</span>
+        <h3 class="t-card-title mt-7">{offering.name}</h3>
+        <p class="t-muted mt-3 text-[15px] leading-7">{offering.summary}</p>
+        <a href={ctaHref} class="t-btn mt-8" style="padding: 11px 18px; font-size: 14px;" {...ctaAttrs}>{site.cta.label}</a>
+      </article>
+    ))}
+  </div>
+</section>
+
+{posts.length > 0 && (
+  <section class="t-section-alt">
+    <div class="t-container t-section">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <span class="t-tag" data-reveal="blur">文章</span>
+          <h2 class="t-h2 mt-5" data-reveal="blur" data-reveal-delay="80">{copy.blog.title ?? '最近寫的'}</h2>
+        </div>
+        <a href="/blog" class="t-btn" data-reveal="blur" data-reveal-delay="160">全部文章</a>
+      </div>
+      <div class="dl-posts mt-12" data-reveal-stagger="120" data-reveal-variant="blur">
+        {posts.map((post, index) => (
+          <a href={`/blog/${post.id}/`} class="dl-post">
+            <div class="dl-post__media"><img src={post.data.coverImage ?? fallbackCovers[index % fallbackCovers.length]} alt="" width="1200" height="900" loading="lazy" /></div>
+            <div class="dl-post__row"><h3>{post.data.title}</h3><time datetime={post.data.date}>{post.data.date}</time></div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<section class="t-container t-section">
+  <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+    <div>
+      <span class="t-tag" data-reveal="blur">{copy.home.closing_eyebrow ?? '最後一步'}</span>
+      <h2 class="t-h2 mt-5" data-reveal="blur" data-reveal-delay="80">{copy.home.closing_heading ?? '準備好開始了嗎？'}</h2>
+      <p class="t-lead mt-4 max-w-xl" data-reveal="blur" data-reveal-delay="160">{copy.home.closing_lead ?? '一封信說明你的情況，我會告訴你值不值得做。'}</p>
+    </div>
+    <a href={ctaHref} class="t-btn" data-reveal="blur" data-reveal-delay="240" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+  </div>
+</section>

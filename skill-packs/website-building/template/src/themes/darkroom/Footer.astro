@@ -1,0 +1,26 @@
+---
+// 暗房：頁尾先是一句邀請與連結，再把站名放到超出畫面的大小。
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { footerLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+const year = new Date().getFullYear();
+---
+
+<footer class="overflow-hidden" style="border-top: 1px solid var(--dr-line-soft);">
+  <div class="t-container grid gap-10 py-16 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+    <div>
+      <p class="dr-statement" style="font-size: clamp(22px, 2.4vw, 34px); max-width: 22ch;">{copy.home.closing_heading ?? '準備好開始了嗎？'}<br /><em>{copy.home.closing_lead ?? '一封信說明你的情況。'}</em></p>
+      <a href={ctaHref} class="t-btn mt-8" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
+    </div>
+    <nav class="flex flex-wrap gap-x-6 gap-y-3 text-[14px] font-semibold lg:justify-end" aria-label="頁尾導覽">
+      {footerLinks.map((link) => <a href={link.href} class="dr-arrow-link">{link.label}</a>)}
+    </nav>
+  </div>
+  <div class="t-container">
+    <div class="dr-giant" aria-hidden="true" data-reveal="up">{site.name}</div>
+  </div>
+  <div class="t-container flex flex-col gap-2 py-6 text-[12px] sm:flex-row sm:items-center sm:justify-between" style="color: var(--dr-dim);">
+    <p>© {year} {site.name}</p>
+    <a href="#main-content" class="dr-arrow-link" style="color: var(--dr-muted); font-size: 12px;">回到最上面 ↑</a>
+  </div>
+</footer>

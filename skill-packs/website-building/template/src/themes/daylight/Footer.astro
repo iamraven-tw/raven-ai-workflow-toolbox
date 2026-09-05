@@ -1,0 +1,35 @@
+---
+// 日光：黑底頁尾，左邊標記與定位，右邊頁面與聯絡兩欄，最下一行版權。
+import { site } from '../../../site.config.mjs';
+import { copy } from '../../../site.copy.mjs';
+import { footerLinks } from '../../lib/nav';
+const year = new Date().getFullYear();
+const mark = site.name.replace(/\s+/g, '').slice(0, 1);
+---
+
+<footer class="dl-footer">
+  <div class="t-container grid gap-12 py-16 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:gap-20">
+    <div>
+      <a href="/" class="flex items-center gap-2.5 text-[18px] font-semibold">
+        <span class="flex h-9 w-9 items-center justify-center rounded-full text-[14px] font-bold" style="background: var(--dl-primary); color: var(--dl-dark);" aria-hidden="true">{mark}</span>{site.name}
+      </a>
+      <p class="mt-5 max-w-sm text-[15px] leading-7" style="color: #b5b5b5;">{copy.home.lead ?? site.positioning}</p>
+    </div>
+    <nav aria-label="頁尾導覽">
+      <p class="t-eyebrow">頁面</p>
+      <ul class="mt-4 space-y-2.5 text-[15px] font-semibold">
+        {footerLinks.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      </ul>
+    </nav>
+    <div>
+      <p class="t-eyebrow">聯絡</p>
+      <ul class="mt-4 space-y-2.5 text-[15px] font-semibold">
+        {site.contacts.map((channel) => <li><a href={channel.target} {...(channel.kind === 'email' ? {} : { target: '_blank', rel: 'noopener noreferrer' })}>{channel.label} ↗</a></li>)}
+      </ul>
+    </div>
+  </div>
+  <div class="t-container flex flex-col gap-2 py-6 text-[13px] sm:flex-row sm:items-center sm:justify-between" style="border-top: 1px solid rgba(255,255,255,0.12); color: #8a8a8a;">
+    <p>© {year} {site.name}</p>
+    <a href="#main-content">回到最上面 ↑</a>
+  </div>
+</footer>

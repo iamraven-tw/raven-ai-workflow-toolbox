@@ -1,0 +1,28 @@
+---
+// 週刊：報頭雙層導覽。上層左邊日期、中間襯線報頭、右邊 CTA；下層置中分類連結。
+import { site } from '../../../site.config.mjs';
+import { navLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+const today = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+const halves = Math.ceil(site.name.length / 2);
+---
+
+<header class="t-container">
+  <div class="wk-topbar">
+    <span style="color: var(--wk-muted);">{today}</span>
+    <a href="/" class="wk-masthead" aria-label={site.name}><em>{site.name.slice(0, halves)}</em>{site.name.slice(halves)}</a>
+    <div class="flex items-center justify-end gap-3">
+      <a href={ctaHref} class="hidden font-medium md:inline" style="color: var(--wk-text); text-decoration: none;" {...ctaAttrs}>✦ {site.cta.label}</a>
+      <button id="mobile-menu-button" class="inline-flex h-9 w-9 items-center justify-center md:hidden" style="border: 1px solid var(--wk-line); border-radius: 50%; color: var(--wk-text);" aria-label="開啟選單" aria-expanded="false" aria-controls="mobile-menu">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7h16M4 12h16M4 17h16" /></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="wk-navrow hidden md:flex" aria-label="主要導覽">
+    {navLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+  </nav>
+  <div id="mobile-menu" class="hidden py-4 md:hidden" style="border-bottom: 1px solid var(--wk-line);" role="navigation" aria-label="行動版導覽">
+    {navLinks.map((link) => <a href={link.href} class="block py-2 text-[17px]" style="font-family: var(--wk-serif); color: var(--wk-text); text-decoration: none;">{link.label}</a>)}
+    <a href={ctaHref} class="t-btn mt-3" {...ctaAttrs}>{site.cta.label}</a>
+  </div>
+</header>
+<script src="../../lib/menu.ts"></script>

@@ -1,0 +1,28 @@
+---
+// 暗房：固定在最上層的透明導覽。左右各一組藥丸連結，中間是站名首字的白色圓標；手機只留圓標與選單鈕。
+import { site } from '../../../site.config.mjs';
+import { navLinks, ctaHref, ctaAttrs } from '../../lib/nav';
+const mark = site.name.replace(/\s+/g, '').slice(0, 1);
+const half = Math.ceil(navLinks.length / 2);
+const left = navLinks.slice(0, half);
+const right = navLinks.slice(half);
+---
+
+<header class="fixed inset-x-0 top-0 z-50">
+  <nav class="flex items-center justify-between gap-4 px-[clamp(20px,3vw,40px)] py-5" aria-label="主要導覽">
+    <div class="hidden items-center gap-2 lg:flex">
+      {left.map((link) => <a href={link.href} class="dr-pill">{link.label}</a>)}
+    </div>
+    <a href="/" class="flex h-11 w-11 items-center justify-center rounded-full text-[15px] font-extrabold" style="background: var(--dr-fg); color: var(--dr-bg); text-decoration: none;" aria-label={site.name}>{mark}</a>
+    <div class="hidden items-center gap-2 lg:flex">
+      {right.map((link) => <a href={link.href} class="dr-pill">{link.label}</a>)}
+      <a href={ctaHref} class="dr-pill" style="background: var(--dr-fg); color: var(--dr-bg); border-color: var(--dr-fg);" {...ctaAttrs}>{site.cta.label}</a>
+    </div>
+    <div class="lg:hidden"><button id="mobile-menu-button" class="dr-pill" aria-label="開啟選單" aria-expanded="false" aria-controls="mobile-menu">選單</button></div>
+  </nav>
+  <div id="mobile-menu" class="mx-5 hidden rounded-3xl p-5 lg:hidden" style="background: #121212; border: 1px solid var(--dr-line);" role="navigation" aria-label="行動版導覽">
+    {navLinks.map((link) => <a href={link.href} class="block py-3 text-[17px] font-semibold" style="color: var(--dr-fg); text-decoration: none;">{link.label}</a>)}
+    <a href={ctaHref} class="t-btn mt-3 w-full" {...ctaAttrs}>{site.cta.label}</a>
+  </div>
+</header>
+<script src="../../lib/menu.ts"></script>

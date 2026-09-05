@@ -1,0 +1,35 @@
+---
+// 小夜燈文章列表：左邊黏住的標題，右邊一疊視窗卡。
+interface Post { slug: string; title: string; date: string; description: string; tags?: string[]; coverImage?: string; }
+interface Props { posts: Post[]; title?: string; intro?: string; emptyNote?: string; }
+const { posts, title, intro, emptyNote } = Astro.props;
+const fallbackCovers = ['/images/samples/creative-desk.jpg', '/images/samples/raspberries.jpg', '/images/samples/phone-edge.jpg', '/images/samples/vintage-camera.jpg', '/images/samples/cafe-table.jpg', '/images/samples/open-book.jpg'];
+const coverTints = ['#7772ff', '#ff9e9e', '#f5c451', '#d4f06d'];
+---
+
+<section class="t-container t-section">
+  <div class="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+    <div class="lg:sticky lg:top-24 lg:self-start">
+      <p class="t-eyebrow" data-reveal="fade">文章</p>
+      <h1 class="t-h1 mt-5" style="font-size: clamp(36px, 4.6vw, 64px);" data-reveal="up">{title ?? '文章'}</h1>
+      <p class="t-lead mt-5 max-w-sm" data-reveal="up" data-reveal-delay="100">{intro ?? '記錄工作方法、案例與想法。'}</p>
+    </div>
+    <div class="space-y-6" data-reveal-stagger="120">
+      {posts.map((post, index) => (
+        <a href={`/blog/${post.slug}/`} class="nl-work">
+          <div class="nl-window__bar" aria-hidden="true"><span class="nl-dots"><i></i><i></i><i></i></span><time datetime={post.date} class="text-[13px]" style="color: var(--nl-muted);">{post.date}</time></div>
+          <div class="nl-work__media" style={`background: ${coverTints[index % coverTints.length]};`}>
+            <img src={post.coverImage ?? fallbackCovers[index % fallbackCovers.length]} alt="" width="1200" height="900" loading="lazy" />
+            {post.tags && post.tags[0] && <span class="nl-work__tag t-tag">{post.tags[0]}</span>}
+            <span class="nl-work__arrow" aria-hidden="true">↗</span>
+          </div>
+          <div class="px-3 pb-3 pt-5">
+            <h2 class="t-card-title">{post.title}</h2>
+            <p class="t-muted mt-2 text-[15px] leading-7">{post.description}</p>
+          </div>
+        </a>
+      ))}
+      {posts.length === 0 && <p class="t-note">{emptyNote ?? '還沒有文章。'}</p>}
+    </div>
+  </div>
+</section>

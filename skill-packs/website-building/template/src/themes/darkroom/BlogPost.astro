@@ -1,0 +1,36 @@
+---
+// 暗房文章頁：置中窄欄，標題巨大，封面圓角，目錄黏在右側。
+import BaseLayout from './BaseLayout.astro';
+interface TocItem { depth: number; slug: string; text: string; }
+interface Props { title: string; date: string; description: string; slug: string; coverImage?: string; tags?: string[]; toc?: TocItem[]; }
+const { title, date, description, slug, coverImage, tags, toc = [] } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} ogImage={coverImage ?? '/og-image.png'} canonical={`/blog/${slug}/`}>
+  <article class="t-container" style="padding-block: 160px 120px;">
+    <header class="mx-auto max-w-4xl text-center">
+      <div class="flex flex-wrap items-center justify-center gap-3" data-reveal="fade">
+        <time datetime={date} class="t-eyebrow">{date}</time>
+        {tags && tags.map((tag) => <span class="t-tag">{tag}</span>)}
+      </div>
+      <h1 class="t-h1 mt-8" style="font-size: clamp(36px, 5vw, 80px);" data-reveal="up">{title}</h1>
+      <p class="t-lead mx-auto mt-6 max-w-2xl" data-reveal="up" data-reveal-delay="120">{description}</p>
+    </header>
+    {coverImage && (
+      <div class="t-media mx-auto mt-14 max-w-5xl" data-reveal="scale">
+        <img src={coverImage} alt={title} class="w-full object-cover" style="aspect-ratio: 16 / 9;" data-parallax="-0.08" />
+      </div>
+    )}
+    <div class="mx-auto mt-16 grid max-w-5xl gap-12 lg:grid-cols-[minmax(0,1fr)_240px]">
+      <div class="t-prose prose prose-invert prose-lg mx-auto w-full max-w-3xl"><slot /></div>
+      {toc.length > 0 && (
+        <aside class="lg:sticky lg:top-28 lg:self-start">
+          <p class="t-eyebrow">目錄</p>
+          <ul class="mt-5 space-y-3" style="border-left: 1px solid var(--dr-line); padding-left: 16px;">
+            {toc.map((item) => <li class={item.depth === 3 ? 'pl-3' : ''}><a href={`#${item.slug}`} class="text-[14px] font-medium" style="color: var(--dr-muted); text-decoration: none;">{item.text}</a></li>)}
+          </ul>
+        </aside>
+      )}
+    </div>
+  </article>
+</BaseLayout>
