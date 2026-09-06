@@ -1,0 +1,4 @@
+interface:
+  display_name: "社群互動管理"
+  short_description: "隔離公開留言或按需 Meta 私訊，人工確認後逐則回覆並驗證"
+  default_prompt: "使用 $social-community-management 整理指定社群的公開留言；若我明確要求處理 Facebook／Instagram 私訊，才按需同步 24 小時內由對方先發起的純文字對話。先隔離並準備人工預覽，不直接回覆。"

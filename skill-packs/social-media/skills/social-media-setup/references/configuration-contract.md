@@ -10,10 +10,12 @@
 
 ## 一般設定
 
-設定使用 `schema_version: 3`，必須符合 `social-media-config.schema.json`，只包含：
+新設定使用 `schema_version: 5`，必須符合 `social-media-config.schema.json`；既有版本 3／4 保留唯讀／原版本交易相容，不自動寫入遷移。只包含：
 
 - 策略狀態、目標、受眾、內容主題、平台角色與策略來源相對路徑。
 - 五個平台的選取狀態、請求功能、授權模式、已確認／拒絕的 permission、偏好介面、整合狀態與最後實際驗證時間。
+- 版本 4 的 image_production：預設製圖方式、資訊密集圖卡方式、可空的網頁服務名稱與 SVG 圖示來源。完整一次設定流程見 [圖片製作偏好](image-production-preferences.md)。沒有憑證或永久瀏覽器代操作授權。
+- 版本 5 的 brand_visual：經確認的品牌色、字型、風格、Logo 與主視覺素材相對路徑；未提供欄位保留 null。內容留在使用者自己的設定，不進入公開範本。
 
 平台被選取後，`authorization_profile` 預設為 `full_management`；只有使用者明確縮小權限或只要求單一功能時才使用 `custom`。`requested_permissions` 記錄 OAuth 前確認的實際 permission／scope 名稱，`declined_permissions` 只記錄使用者明確要求移除的項目。兩個清單不得重複，且不得包含 Token、App／資源 ID 或憑證位置。未選取的平台固定使用 `not_selected` 與兩個空清單。
 

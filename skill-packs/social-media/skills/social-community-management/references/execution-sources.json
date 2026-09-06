@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-09-06",
+  "caller": "social-community-management Agent invokes community_execute.py after each required approval gate",
+  "queue_helper": "scripts/community_queue.py",
+  "official_api_adapter": "scripts/official_community_api.py",
+  "transaction_coordinator": "scripts/community_execute.py",
+  "batch_limits": {
+    "maximum_comments": 100,
+    "maximum_pages_per_list": 5,
+    "incomplete_pagination_result": "partial_requires_attention"
+  },
+  "write_policy": "one queue claim immediately before each external mutation; unresolved claims and unknown results must not be resent",
+  "readback_policy": "verify reply id, owned author, parent, exact text, platform time and real reply URL before replied",
+  "live_status": "not_performed",
+  "platforms": {
+    "youtube": {
+      "primary_interface": "official_api_plus_controlled_browser_permalink",
+      "api_source": "scripts/official_community_api.py",
+      "browser_source": "authorized controlled Chrome via OpenCLI",
+      "implemented_actions": [
+        "verify_owned_video",
+        "list_top_level_comments",
+        "list_all_direct_replies",
+        "create_text_reply",
+        "read_reply"
+      ],
+      "official_read_endpoints": [
+        "videos.list",
+        "commentThreads.list",
+        "comments.list"
+      ],
+      "official_write_endpoint": "comments.insert",
+      "url_evidence": "YouTube Data API comment resources do not provide a permalink field; a controlled browser must observe the exact comment and reply URLs",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://developers.google.com/youtube/v3/guides/implementation/comments"
+    },
+    "facebook": {
+      "primary_interface": "official_api",
+      "api_source": "scripts/official_community_api.py",
+      "implemented_actions": [
+        "verify_owned_page_post",
+        "list_top_level_comments",
+        "list_all_direct_replies",
+        "create_text_reply",
+        "read_reply"
+      ],
+      "official_read_edges": [
+        "/{post-id}/comments",
+        "/{comment-id}/comments",
+        "/{reply-id}"
+      ],
+      "official_write_edge": "/{comment-id}/comments",
+      "url_evidence": "permalink_url is read from the official Comment object",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://github.com/facebook/facebook-python-business-sdk/blob/main/facebook_business/adobjects/comment.py"
+    },
+    "instagram": {
+      "primary_interface": "official_api_plus_controlled_browser_permalink",
+      "api_source": "scripts/official_community_api.py",
+      "browser_source": "authorized controlled Chrome via OpenCLI",
+      "implemented_actions": [
+        "verify_owned_media",
+        "list_top_level_comments",
+        "list_all_direct_replies",
+        "create_text_reply",
+        "read_reply"
+      ],
+      "official_read_edges": [
+        "/{ig-media-id}/comments",
+        "/{ig-comment-id}/replies",
+        "/{reply-id}"
+      ],
+      "official_write_edge": "/{ig-comment-id}/replies",
+      "url_evidence": "IGComment provides id and timestamp but no documented permalink field; API records stay local until controlled-browser URL evidence is supplied",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://github.com/facebook/facebook-python-business-sdk/blob/main/facebook_business/adobjects/igcomment.py"
+    },
+    "threads": {
+      "primary_interface": "official_api",
+      "api_source": "scripts/official_community_api.py",
+      "implemented_actions": [
+        "verify_owned_thread",
+        "list_direct_replies",
+        "list_all_direct_child_replies",
+        "create_reply_container",
+        "read_container_status",
+        "publish_reply",
+        "read_reply"
+      ],
+      "official_read_edges": [
+        "/me/threads",
+        "/{thread-id}/replies",
+        "/{thread-id}/conversation",
+        "/{container-id}"
+      ],
+      "official_write_edges": [
+        "/me/threads with reply_to_id",
+        "/me/threads_publish"
+      ],
+      "url_evidence": "permalink and replied_to are read from official reply fields; conversation is available for flattened context but direct-reply validation uses the replies edge",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://www.postman.com/meta/threads/documentation/dht3nzz/threads-api"
+    },
+    "substack": {
+      "primary_interface": "controlled_browser",
+      "primary_source": "authorized controlled Chrome via OpenCLI handoff from scripts/community_execute.py",
+      "implemented_actions": [
+        "save_browser_fetch_evidence",
+        "ingest_browser_records",
+        "prepare_single_reply_handoff",
+        "claim_before_browser_submit",
+        "record_reloaded_observation"
+      ],
+      "known_gap": "no official public comments write API was found; do not call private or reverse-engineered endpoints",
+      "implementation_status": "browser_handoff_claim_and_observation_integrated_live_pending",
+      "official_reference": "https://support.substack.com/hc/en-us/articles/360037832711-How-do-I-enable-or-disable-comments-on-my-posts"
+    }
+  }
+}

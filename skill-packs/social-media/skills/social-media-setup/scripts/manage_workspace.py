@@ -253,9 +253,52 @@ def validate_configuration(payload: dict[str, Any]) -> None:
     """以不需第三方套件的方式執行完整設定契約。"""
 
     reject_secret_material(payload)
-    require_exact_keys(payload, {"schema_version", "strategy", "integrations"}, path="$")
-    if payload["schema_version"] != 3:
-        raise ConfigurationError("schema_version 必須是 3")
+    # 舊版唯讀相容；只有明確預覽／確認的新候選才升級，不暗中改設定。
+    version = payload.get("schema_version")
+    if type(version) is not int or version not in {3, 4, 5}:
+        raise ConfigurationError("schema_version 必須是 3、4 或 5")
+    keys = {"schema_version", "strategy", "integrations"}
+    if version >= 4:
+        keys.add("image_production")
+    if version == 5:
+        keys.add("brand_visual")
+    require_exact_keys(payload, keys, path="$")
+    if version >= 4:
+        image = payload["image_production"]
+        if not isinstance(image, dict):
+            raise ConfigurationError("image_production 必須是 object")
+        require_exact_keys(image, {"default_method", "information_dense_method", "web_provider", "icon_source"}, path="$.image_production")
+        if image["default_method"] not in ("not_configured", "codex", "antigravity", "web", "html_css"):
+            raise ConfigurationError("image_production.default_method 不支援")
+        if image["information_dense_method"] not in ("inherit", "html_css"):
+            raise ConfigurationError("image_production.information_dense_method 不支援")
+        if image["icon_source"] not in ("heroicons", "none"):
+            raise ConfigurationError("image_production.icon_source 不支援")
+        validate_optional_text(image["web_provider"], path="image_production.web_provider", maximum=100)
+
+    if version == 5:
+        brand = payload["brand_visual"]
+        if not isinstance(brand, dict):
+            raise ConfigurationError("brand_visual 必須是 object")
+        colors = {"primary_color", "secondary_color", "background_color", "text_color"}
+        refs = {"logo_ref", "main_visual_ref"}
+        require_exact_keys(brand, colors | refs | {"status", "font_family", "style_notes"}, path="brand_visual")
+        if brand["status"] not in ("not_configured", "confirmed"):
+            raise ConfigurationError("品牌視覺狀態不支援")
+        for field in colors:
+            if brand[field] is not None and (not isinstance(brand[field], str) or not re.fullmatch(r"#[0-9A-Fa-f]{6}", brand[field])):
+                raise ConfigurationError("品牌顏色必須是六位 HEX 或 null")
+        validate_optional_text(brand["font_family"], path="brand_visual.font_family", maximum=100)
+        validate_optional_text(brand["style_notes"], path="brand_visual.style_notes", maximum=1000)
+        for field in refs:
+            value = brand[field]
+            validate_optional_text(value, path=f"brand_visual.{field}", maximum=300)
+            if value is not None and (value.startswith(("/", "~")) or "\\" in value or ":" in value or ".." in PurePosixPath(value).parts or PurePosixPath(value) == PurePosixPath(".")):
+                raise ConfigurationError("品牌素材只接受工作區相對路徑")
+        # 尚未確認的推測只留在當次簡報，不冒充已保存品牌。
+        populated = any(value is not None for key, value in brand.items() if key != "status")
+        if populated != (brand["status"] == "confirmed"):
+            raise ConfigurationError("品牌確認狀態必須與設定內容一致")
 
     strategy = payload["strategy"]
     if not isinstance(strategy, dict):

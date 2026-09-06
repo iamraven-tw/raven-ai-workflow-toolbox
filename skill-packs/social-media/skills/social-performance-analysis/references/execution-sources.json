@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "kind": "social_performance_execution_sources",
+  "implementation_status": "implemented_metric_catalog_local_fictional_tests_live_not_performed",
+  "data_contract": "references/performance-source-contract.md",
+  "metric_catalog": "references/metric-catalog.json",
+  "metric_catalog_validator": "scripts/metric_catalog.py",
+  "dataset_helper": "scripts/performance_review.py",
+  "collector": "scripts/performance_collect.py",
+  "official_api_adapter": "scripts/official_performance_api.py",
+  "private_data_root": "<workspace>/social-media/performance/",
+  "credential_boundary": "setup_runtime_memory_only_authorization_header_never_saved",
+  "platforms": {
+    "youtube": {
+      "interface": "official_api",
+      "endpoint": "GET https://youtubeanalytics.googleapis.com/v2/reports",
+      "scope_level": "owned_channel",
+      "required_scopes": [
+        "https://www.googleapis.com/auth/youtube.readonly",
+        "https://www.googleapis.com/auth/yt-analytics.readonly"
+      ],
+      "coverage": "aggregate_plus_daily_probe",
+      "metric_validation": "static_allowlist_exact_identity_and_pacific_timezone",
+      "implementation": "account_metric_single_series"
+    },
+    "facebook": {
+      "interface": "official_api",
+      "endpoint": "GET https://graph.facebook.com/{version}/{page-id}/insights",
+      "scope_level": "owned_page",
+      "required_scopes": [
+        "pages_read_engagement",
+        "read_insights"
+      ],
+      "coverage": "unknown_until_metric_period_evidence_is_verified",
+      "metric_validation": "runtime_name_period_and_description_from_api_doc",
+      "implementation": "account_metric_single_series"
+    },
+    "instagram": {
+      "interface": "official_api",
+      "endpoints": {
+        "instagram_login": "GET https://graph.instagram.com/{version}/{ig-user-id}/insights",
+        "instagram_facebook_login": "GET https://graph.facebook.com/{version}/{ig-user-id}/insights"
+      },
+      "scope_level": "owned_professional_account",
+      "required_scopes_by_route": {
+        "instagram_login": [
+          "instagram_business_basic",
+          "instagram_business_manage_insights"
+        ],
+        "instagram_facebook_login": [
+          "instagram_basic",
+          "instagram_manage_insights",
+          "pages_read_engagement"
+        ]
+      },
+      "coverage": "unknown_until_metric_period_evidence_is_verified",
+      "metric_validation": "runtime_name_period_and_description",
+      "implementation": "account_metric_single_series"
+    },
+    "threads": {
+      "interface": "official_api",
+      "endpoint": "GET https://graph.threads.net/{version}/{threads-user-id}/threads_insights",
+      "scope_level": "owned_account",
+      "required_scopes": [
+        "threads_basic",
+        "threads_manage_insights"
+      ],
+      "coverage": "unknown_no_invented_since_until_query",
+      "metric_validation": "official_example_allowlist_followers_snapshot_excluded",
+      "implementation": "account_metric_single_series"
+    },
+    "substack": {
+      "interface": "imported_evidence",
+      "preferred_source": "official_substack_mcp",
+      "fallbacks": [
+        "official_export",
+        "controlled_browser"
+      ],
+      "scope_level": "owned_publication",
+      "coverage": "must_be_bound_to_saved_source_evidence",
+      "metric_validation": "semantic_allowlist_and_interface_eligibility",
+      "implementation": "artifact_normalizer_no_rest_client"
+    }
+  },
+  "unsupported_as_integration": [
+    "manual_number_without_raw_evidence",
+    "rss_as_performance_metrics",
+    "third_party_or_private_endpoint_presented_as_official",
+    "cross_platform_numeric_ranking"
+  ],
+  "live_status": "not_performed"
+}

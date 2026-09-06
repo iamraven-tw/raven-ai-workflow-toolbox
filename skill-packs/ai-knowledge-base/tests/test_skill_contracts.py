@@ -108,6 +108,8 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("仍可用本地來源完成目前能回答的部分", retrieval)
         self.assertIn("不得將兩者視為不可替換的永久介面", retrieval)
         self.assertIn("只有使用者明確要求加入、上傳或保存來源時", retrieval)
+        self.assertIn("social-media-strategy-and-insights.md", retrieval)
+        self.assertIn("不能在沒有使用者討論、補充與確認時", retrieval)
 
     def test_socratic_dialogue_hands_off_without_auto_write(self) -> None:
         """對話先檢索、一次一題，最後仍不等於寫入授權。"""

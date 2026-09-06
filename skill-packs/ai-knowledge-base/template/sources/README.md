@@ -6,7 +6,7 @@
 
 | 類型 | 目錄 | 角色 |
 |---|---|---|
-| 一人公司設定 | `strategy/` | 使用者確認的方向、客群、價值、限制與近期優先事項 |
+| 策略與已確認洞察 | `strategy/` | 使用者確認的一人公司方向、社群策略、長期洞察與重要變更 |
 | 第一大腦心得 | `book-notes/` | 使用者直接說出、閱讀與思考後形成的內容 |
 | 次級資料 | `references/` | 作者原文、文件、報告與 Notebook 路由 |
 | 結構化知識 | `wiki/` | Agent 整理的扁平知識頁，必須連回心得或來源 |
@@ -20,7 +20,8 @@ sources/
 ├── .graphifyignore
 ├── strategy/
 │   ├── README.md
-│   └── solopreneur-profile.md
+│   ├── solopreneur-profile.md
+│   └── social-media-strategy-and-insights.md
 ├── book-notes/
 │   └── README.md
 ├── references/
@@ -38,11 +39,13 @@ sources/
 
 實際案例可以按需要增加專案專用目錄，但不能把擴充誤列為所有使用者必須安裝的核心。
 
-## 一人公司設定
+## 策略設定
 
 第一次啟動且使用者沒有其他明確任務、`strategy/solopreneur-profile.md` 仍是 `status: not_configured` 時，使用 `/solopreneur-profile` 逐步建立設定。已有明確任務時不強制先填設定檔。
 
 創業方向問題先讀設定檔，再透過 `/knowledge-source-retrieval` 尋找既有知識；需要挑戰假設或比較選項時使用 `/socratic-dialogue`。任何設定檔寫入都先預覽並取得使用者確認。
+
+社群策略、內容規劃、平台角色或成效判斷相關問題，同時讀取 `strategy/social-media-strategy-and-insights.md`。它只保存人類討論並確認過的長期結論；原始報告與單次成效不得自動寫入。
 
 ## Wiki 分類
 

@@ -1,5 +1,22 @@
 {
-  "schema_version": 3,
+  "schema_version": 5,
+  "brand_visual": {
+    "status": "not_configured",
+    "primary_color": null,
+    "secondary_color": null,
+    "background_color": null,
+    "text_color": null,
+    "font_family": null,
+    "style_notes": null,
+    "logo_ref": null,
+    "main_visual_ref": null
+  },
+  "image_production": {
+    "default_method": "not_configured",
+    "information_dense_method": "html_css",
+    "web_provider": null,
+    "icon_source": "heroicons"
+  },
   "strategy": {
     "status": "not_configured",
     "primary_goal": null,

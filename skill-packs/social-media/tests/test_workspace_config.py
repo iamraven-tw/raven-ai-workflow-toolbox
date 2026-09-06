@@ -62,6 +62,81 @@ class WorkspaceConfigurationTests(unittest.TestCase):
         }
         self.write_candidate(payload)
 
+    def test_image_preference_preview_apply_preserves_existing_strategy(self):
+        """舊版升級必須預覽確認，只新增圖片偏好，不重設策略與平台。"""
+        candidate = json.loads(self.candidate.read_text(encoding="utf-8"))
+        old = dict(candidate)
+        old["schema_version"] = 3
+        del old["image_production"]
+        del old["brand_visual"]
+        self.write_candidate(old)
+        preview = json.loads(self.command("preview").stdout)
+        applied = self.command("apply", "--expected-preview-sha256", preview["preview_sha256"], "--confirm-write")
+        self.assertEqual(applied.returncode, 0, applied.stderr)
+        actual = self.workspace / "social-media/config.json"
+        before = actual.read_bytes()
+        candidate["image_production"]["default_method"] = "antigravity"
+        self.write_candidate(candidate)
+        preview_result = self.command("preview")
+        self.assertEqual(preview_result.returncode, 0, preview_result.stderr)
+        self.assertEqual(actual.read_bytes(), before)
+        preview = json.loads(preview_result.stdout)
+        denied = self.command("apply", "--expected-preview-sha256", preview["preview_sha256"])
+        self.assertNotEqual(denied.returncode, 0)
+        self.assertEqual(actual.read_bytes(), before)
+        applied = self.command("apply", "--expected-preview-sha256", preview["preview_sha256"], "--confirm-write")
+        self.assertEqual(applied.returncode, 0, applied.stderr)
+        saved = json.loads(actual.read_text(encoding="utf-8"))
+        self.assertEqual(saved["strategy"], old["strategy"])
+        self.assertEqual(saved["integrations"], old["integrations"])
+        self.assertEqual(saved["image_production"]["default_method"], "antigravity")
+
+    def test_image_preferences_reject_secrets_and_permanent_browser_grant(self):
+        """設定只存偏好，不接受秘密或長期瀏覽器代操作授權。"""
+        payload = json.loads(self.candidate.read_text(encoding="utf-8"))
+        for key, value in (("default_method", "unverified_api"), ("browser_authorized", True), ("api_key", "fictional-value")):
+            candidate = json.loads(json.dumps(payload))
+            candidate["image_production"][key] = value
+            self.write_candidate(candidate)
+            self.assertNotEqual(self.command("preview").returncode, 0)
+
+    def test_brand_migration_preserves_version_four_preferences(self):
+        """四版升五版只補品牌；預覽不會寫入，仍須原確認交易。"""
+        candidate = json.loads(self.candidate.read_text(encoding="utf-8"))
+        old = json.loads(json.dumps(candidate))
+        old["schema_version"] = 4
+        old.pop("brand_visual")
+        old["image_production"]["default_method"] = "web"
+        self.write_candidate(old)
+        view = self.preview()
+        self.assertEqual(self.command("apply", "--expected-preview-sha256", view["preview_sha256"], "--confirm-write").returncode, 0)
+        actual = self.workspace / "social-media/config.json"
+        before = actual.read_bytes()
+        candidate["image_production"] = old["image_production"]
+        candidate["brand_visual"].update(status="confirmed", primary_color="#126644", logo_ref="brand/fictional-logo.svg")
+        self.write_candidate(candidate)
+        view = self.preview()
+        self.assertEqual(actual.read_bytes(), before)
+        self.assertEqual(self.command("apply", "--expected-preview-sha256", view["preview_sha256"], "--confirm-write").returncode, 0)
+        saved = json.loads(actual.read_text(encoding="utf-8"))
+        for field in ("strategy", "integrations", "image_production"):
+            self.assertEqual(saved[field], old[field])
+        self.assertEqual(saved["brand_visual"]["primary_color"], "#126644")
+
+    def test_brand_rejects_unconfirmed_guesses_bad_colors_and_escaping_refs(self):
+        """秘密、未確認色票與越界素材不能存成一般設定。"""
+        original = json.loads(self.candidate.read_text(encoding="utf-8"))
+        for patch in ({"primary_color": "#112233"}, {"status": "confirmed"},
+                      {"status": "confirmed", "primary_color": "blue"},
+                      {"status": "confirmed", "logo_ref": "../private.svg"},
+                      {"status": "confirmed", "logo_ref": "https://example.invalid/logo.svg"},
+                      {"status": "confirmed", "api_key": "fictional"}):
+            candidate = json.loads(json.dumps(original))
+            candidate["brand_visual"].update(patch)
+            self.write_candidate(candidate)
+            self.assertNotEqual(self.command("preview").returncode, 0)
+        self.assertFalse((self.workspace / "social-media/config.json").exists())
+
     def tearDown(self) -> None:
         """移除作業系統暫存資料。"""
 

@@ -1,0 +1,6 @@
+interface:
+  display_name: "社群成效分析"
+  short_description: "四週期成效回顧、資料品質檢查與人工確認策略寫回"
+  default_prompt: "使用 $social-performance-analysis 回顧已選平台成效，先提出三至五項觀察，只討論一個策略問題；預覽並再次確認後才寫回策略。"
+policy:
+  allow_implicit_invocation: true

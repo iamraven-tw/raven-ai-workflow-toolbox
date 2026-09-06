@@ -1,4 +1,4 @@
-"""Facebook Pages 與 YouTube OAuth 交換、讀回及 Token 生命週期。"""
+"""Facebook Pages、YouTube、兩種 Instagram 登入與 Threads 的 OAuth 生命週期。"""
 
 from __future__ import annotations
 
@@ -14,14 +14,18 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 import credential_store as vault
+import instagram_facebook_oauth
 from oauth_http import OAuthError, OfficialHTTP
+import meta_user_oauth
 
 
-ROUTES = {"facebook", "youtube"}
+ROUTES = {"facebook", "youtube", "instagram", "threads"}
 STATES = {"not_configured", "configured", "authorizing", "exchanging", "refreshing", "saving", "ready",
           "reauth_required", "permission_mismatch", "target_mismatch", "expired",
           "invalid_callback", "cancelled", "timeout", "read_failed", "rate_limited",
           "remote_result_unknown", "storage_incomplete", "refresh_required"}
+DEFAULT_LOGIN_ROUTES = {"facebook": "facebook_pages", "youtube": "youtube_desktop",
+                        "instagram": "instagram_login", "threads": "threads_login"}
 
 
 def validate_config(config):
@@ -29,8 +33,13 @@ def validate_config(config):
     required = {"platform", "client_id", "target_id", "scopes", "secret_ref",
                 "graph_version", "redirect_uri", "callback_port", "callback_mode",
                 "tls_cert", "tls_key"}
-    if not isinstance(config, dict) or set(config) != required or config["platform"] not in ROUTES:
+    keys = set(config) if isinstance(config, dict) else set()
+    if (not isinstance(config, dict) or (keys != required and keys != required | {"login_route"})
+            or config.get("platform") not in ROUTES):
         raise OAuthError("invalid_configuration")
+    config = dict(config)
+    config["login_route"] = config.get("login_route") or DEFAULT_LOGIN_ROUTES[config["platform"]]
+    required.add("login_route")
     if any(not isinstance(config[k], str) for k in required - {"scopes", "callback_port"}):
         raise OAuthError("invalid_configuration")
     for key in ("client_id", "target_id", "secret_ref"):
@@ -44,7 +53,7 @@ def validate_config(config):
         raise OAuthError("invalid_configuration")
     if type(config["callback_port"]) is not int or not 0 <= config["callback_port"] <= 65535:
         raise OAuthError("invalid_configuration")
-    if config["platform"] == "facebook":
+    if config["platform"] in {"facebook", "instagram", "threads"}:
         try:
             uri = urlsplit(config["redirect_uri"])
             uri.port
@@ -57,11 +66,32 @@ def validate_config(config):
                 or not re.fullmatch(r"v[0-9]+\.0", config["graph_version"])
                 or not config["client_id"].isdigit() or not config["target_id"].isdigit()):
             raise OAuthError("invalid_configuration")
-        if "pages_show_list" not in scopes:
+        route = config["login_route"]
+        valid_routes = {"facebook": {"facebook_pages"}, "youtube": {"youtube_desktop"},
+                        "instagram": {"instagram_login", "instagram_facebook_login"},
+                        "threads": {"threads_login"}}
+        if route not in valid_routes[config["platform"]]:
             raise OAuthError("invalid_configuration")
+        if route == "facebook_pages" and "pages_show_list" not in scopes:
+            raise OAuthError("invalid_configuration")
+        if route == "instagram_facebook_login":
+            if not {"pages_show_list", "pages_read_engagement", "instagram_basic"}.issubset(scopes):
+                raise OAuthError("invalid_configuration")
+            if any(s.startswith("instagram_business_")
+                   or not (s.startswith(("pages_", "instagram_", "ads_"))
+                           or s == "business_management") for s in scopes):
+                raise OAuthError("invalid_configuration")
+        elif config["platform"] in meta_user_oauth.PLATFORMS:
+            basic = "instagram_business_basic" if config["platform"] == "instagram" else "threads_basic"
+            if basic not in scopes:
+                raise OAuthError("invalid_configuration")
+            prefix = "instagram_business_" if config["platform"] == "instagram" else "threads_"
+            if any(not s.startswith(prefix) for s in scopes):
+                raise OAuthError("invalid_configuration")
         if config["callback_mode"] == "https_local" and not (config["tls_cert"] and config["tls_key"]):
             raise OAuthError("invalid_configuration")
-    elif (config["callback_mode"] != "loopback" or config["redirect_uri"] or config["graph_version"]
+    elif (config["login_route"] != "youtube_desktop"
+          or config["callback_mode"] != "loopback" or config["redirect_uri"] or config["graph_version"]
           or config["tls_cert"] or config["tls_key"]
           or "https://www.googleapis.com/auth/youtube.readonly" not in scopes):
         raise OAuthError("invalid_configuration")
@@ -145,7 +175,7 @@ class Runtime:
 
     def configure(self, config, *, confirmed=False, replace=False):
         """預覽確認後才保存私人連線設定；不碰任何外部帳號。"""
-        validate_config(config)
+        config = validate_config(config)
         if not confirmed or config["platform"] != self.platform:
             raise OAuthError("authorization_required")
         with self.lock():
@@ -158,6 +188,28 @@ class Runtime:
     def config(self):
         """讀取加密的私人設定，不對外輸出。"""
         return validate_config(json.loads(self._load(self.prefix + "-config")))
+
+    def resource_context(self, *, confirmed_read=False):
+        """提供下游可信 adapter 所需的非敏感資源識別，不回傳 Token。"""
+
+        if not confirmed_read:
+            raise OAuthError("authorization_required")
+        with self.lock():
+            if self.status()["status"] != "ready":
+                raise OAuthError("recovery_required")
+            config = self.config()
+            result = {
+                "platform": self.platform,
+                "login_route": config["login_route"],
+                "target_id": config["target_id"],
+                "graph_version": config["graph_version"],
+            }
+            if config["login_route"] == instagram_facebook_oauth.LOGIN_ROUTE:
+                # Conversations API 的 Facebook Login 路徑需要相連 Page ID；
+                # 這是非敏感資源識別，但仍只在完成當次 Token 驗證後交給可信 adapter。
+                bundle = self._bundle()
+                result["page_id"] = instagram_facebook_oauth.identifier(bundle.get("page_id"))
+            return result
 
     def _save_bundle(self, bundle):
         """可變長 Token 分段留在原生憑證庫，避免 Windows 單筆大小限制。"""
@@ -230,7 +282,11 @@ class Runtime:
 
     def _verify(self, config, bundle):
         """只做身分及權限讀回，沒有發布、留言或成效寫入。"""
-        if self.platform == "facebook":
+        if config["login_route"] == instagram_facebook_oauth.LOGIN_ROUTE:
+            instagram_facebook_oauth.verify(self, config, bundle)
+        elif self.platform in meta_user_oauth.PLATFORMS:
+            meta_user_oauth.verify(self, config, bundle)
+        elif self.platform == "facebook":
             info = self._debug(config, bundle["access_token"], "PAGE")
             expected = set(config["scopes"]) | {"public_profile"}
             if set(info.get("scopes", [])) != expected:
@@ -300,6 +356,10 @@ class Runtime:
                           "redirect_uri": redirect_uri, "code": code, "code_verifier": verifier,
                           "grant_type": "authorization_code"})
                 bundle = self._google_bundle(response)
+            elif config["login_route"] == instagram_facebook_oauth.LOGIN_ROUTE:
+                bundle = instagram_facebook_oauth.exchange(self, config, code, redirect_uri, secret)
+            elif self.platform in meta_user_oauth.PLATFORMS:
+                bundle = meta_user_oauth.exchange(self, config, code, redirect_uri, secret)
             else:
                 endpoint = f"https://graph.facebook.com/{config['graph_version']}/oauth/access_token"
                 response = self.http.request("GET", endpoint, mutation=True, query={
@@ -350,6 +410,14 @@ class Runtime:
                 raise OAuthError("recovery_required")
             config, bundle = self.config(), self._bundle()
             try:
+                if config["login_route"] == instagram_facebook_oauth.LOGIN_ROUTE:
+                    bundle = instagram_facebook_oauth.verify(self, config, bundle)
+                    self.mark("ready")
+                    return bundle["access_token"]
+                if self.platform in meta_user_oauth.PLATFORMS:
+                    bundle = meta_user_oauth.access_bundle(self, config, bundle, allow_refresh)
+                    self.mark("ready")
+                    return bundle["access_token"]
                 if self.platform == "youtube" and bundle["expires_at"] <= self.clock() + 60:
                     if not allow_refresh:
                         raise OAuthError("refresh_required")

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "id": "opencli",
+  "upstream_url": "https://github.com/jackwener/opencli",
+  "download_url": "https://github.com/jackwener/opencli.git",
+  "tag": "v1.8.8",
+  "commit": "8271afc67e8504bda94c147f446ee29775d08274",
+  "tree": "cca13cab1fca24de4d7a2d0b222639ab7c287bd6",
+  "version": "1.8.8",
+  "license_spdx": "Apache-2.0",
+  "license_sha256": "0210b8b66cf00358242cb921ba2be3a46dfe0190159b1b952388a3880ce1ff54",
+  "lockfile_sha256": "45e6e72b22edfe744663bed6b9d7391cec7b1003920963d6128b01d6a6f8f634",
+  "install_method": "pinned_github_source_local_build",
+  "node_policy": "22.x >=22.13.0 or 24.x",
+  "extension": {
+    "version": "1.0.24",
+    "url": "https://github.com/jackwener/OpenCLI/releases/download/v1.8.8/opencli-extension-v1.0.24.zip",
+    "size_bytes": 45776,
+    "sha256": "bad9163f32a66224404e302f52f35391672341d2bd0bf30c8bbaae3c6e6e246c",
+    "digest_evidence": "github_release_metadata_not_locally_downloaded",
+    "permissions": [
+      "debugger",
+      "tabs",
+      "cookies",
+      "activeTab",
+      "alarms",
+      "storage",
+      "tabGroups",
+      "downloads"
+    ],
+    "host_permissions": [
+      "<all_urls>"
+    ]
+  },
+  "checked_on": "2026-09-05",
+  "live_installation": "not_performed"
+}

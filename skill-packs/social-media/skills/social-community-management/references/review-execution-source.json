@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-09-06",
+  "mvp_mode": "human_review_only",
+  "manual_review_helper": "scripts/manual_review.py",
+  "interface": "temporary_ipv4_loopback_html_form_without_javascript_or_external_assets",
+  "input_scope": "selected screened items only; one item is shown at a time",
+  "content_policy": "HTML-escape visitor name, post text, comment text, and URL; render URL as text only",
+  "network_policy": "bind 127.0.0.1 on an ephemeral port; require the exact loopback Host and same-origin form POST; no external requests",
+  "output_policy": "stdout contains only the loopback URL, review ID, status, counts, and private relative paths; no source or draft text",
+  "session_policy": "store only a SHA-256 capability hash in a 0600 private session; suppress HTTP logs; expire after 1800 seconds",
+  "review_evidence": "save a 0600 per-decision receipt before binding reviewer=human and the exact source hash in community_queue.py",
+  "decision_values": [
+    "allow",
+    "uncertain",
+    "quarantine"
+  ],
+  "allow_meaning": "eligible for the separate six-column Google Sheets review, not permission to reply",
+  "isolated_ai": {
+    "status": "disabled_not_bundled_or_selectable",
+    "reason": "the current host cannot prove a model runner has no tools, publishing authority, credentials, private files, environment variables, history, or memory",
+    "enable_only_after": [
+      "a host-enforced sandbox is identified and tested",
+      "model input and strict JSON output are limited to one screened record",
+      "external data transfer and model cost are disclosed and authorized",
+      "credentials remain in the trusted caller and outside the model prompt",
+      "negative tests prove tool, file, browser, environment, history, and credential access are unavailable",
+      "community_queue.py and this source record are deliberately updated to enable the verified runner"
+    ]
+  },
+  "dependencies": "python_standard_library_only",
+  "live_status": "local_fictional_loopback_tests_only"
+}

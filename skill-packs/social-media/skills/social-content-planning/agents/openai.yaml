@@ -1,0 +1,6 @@
+interface:
+  display_name: "社群內容規劃"
+  short_description: "先調查目前社群相似題材，交付案例讓你決定方向，再安排內容行事曆與簡報"
+  default_prompt: "使用 $social-content-planning，先依我的知識與目標調查社群相似題材，呈現案例並等我決定方向，再規劃內容。"
+policy:
+  allow_implicit_invocation: true

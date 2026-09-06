@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "candidate_version": "0.7.0",
+  "record_scope": "private_acceptance_record_do_not_commit_to_public_toolbox",
+  "started_at": null,
+  "completed_at": null,
+  "environment": {
+    "operating_system": null,
+    "agent_client": null,
+    "agent_version": null,
+    "candidate_digest": null,
+    "clean_environment_confirmed": false
+  },
+  "stages": {
+    "LIVE-01": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    },
+    "LIVE-02": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    },
+    "LIVE-03": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    },
+    "LIVE-04": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    },
+    "LIVE-05": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    },
+    "LIVE-06": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    },
+    "LIVE-07": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    },
+    "LIVE-08": {
+      "status": "not_run",
+      "authorization_reference": null,
+      "scope": [],
+      "evidence": [],
+      "limitations": []
+    }
+  },
+  "external_actions": {
+    "third_party_installation": false,
+    "native_secret_store_write": false,
+    "login_or_oauth": false,
+    "platform_read": false,
+    "platform_write": false,
+    "second_environment_access": false,
+    "commit": false,
+    "push": false,
+    "release": false
+  },
+  "overall_status": "not_run"
+}

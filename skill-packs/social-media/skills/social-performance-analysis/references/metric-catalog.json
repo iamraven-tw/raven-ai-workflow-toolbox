@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "kind": "social_performance_metric_catalog",
+  "verified_on": "2026-09-06",
+  "scope": "account_level_minimum_mvp",
+  "sources": {
+    "youtube_metrics": "https://developers.google.com/youtube/analytics/metrics",
+    "youtube_channel_reports": "https://developers.google.com/youtube/analytics/channel_reports",
+    "youtube_reports_query": "https://developers.google.com/youtube/analytics/reference/reports/query",
+    "youtube_revision_history": "https://developers.google.com/youtube/analytics/revision_history",
+    "facebook_page_codegen": "https://raw.githubusercontent.com/facebook/facebook-business-sdk-codegen/main/api_specs/specs/Page.json",
+    "facebook_insights_result": "https://raw.githubusercontent.com/facebook/facebook-python-business-sdk/main/facebook_business/adobjects/insightsresult.py",
+    "instagram_official_collection": "https://www.postman.com/meta/instagram/folder/23987686-f659d7d1-d74c-44e4-9192-9b1e8694c511",
+    "threads_account_insights": "https://www.postman.com/meta/threads/request/4pbwq2u/get-account-insights",
+    "substack_mcp": "https://support.substack.com/hc/en-us/articles/50834026608916-How-to-connect-Substack-to-your-AI-Assistant",
+    "substack_metrics": "https://support.substack.com/hc/en-us/articles/5320347155860-A-guide-to-Substack-metrics"
+  },
+  "platforms": {
+    "youtube": {
+      "validation_mode": "static_allowlist",
+      "source_timezone": "America/Los_Angeles",
+      "coverage_policy": "aggregate_plus_exact_day_probe",
+      "filters": "empty_only_in_minimum_mvp",
+      "metrics": {
+        "views": {
+          "definition": "youtube-analytics-views-2026-08-27",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "engagedViews": {
+          "definition": "youtube-analytics-engaged-views-2026-08-27",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "estimatedMinutesWatched": {
+          "definition": "youtube-analytics-estimated-minutes-watched-2026-08-27",
+          "unit": "minutes",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "averageViewDuration": {
+          "definition": "youtube-analytics-average-view-duration-2026-08-27",
+          "unit": "seconds",
+          "aggregation": "average",
+          "basis": "period_activity"
+        },
+        "averageViewPercentage": {
+          "definition": "youtube-analytics-average-view-percentage-2026-08-27",
+          "unit": "percent",
+          "aggregation": "average",
+          "basis": "period_activity"
+        },
+        "comments": {
+          "definition": "youtube-analytics-comments-2026-08-27",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "likes": {
+          "definition": "youtube-analytics-likes-2026-08-27",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "shares": {
+          "definition": "youtube-analytics-shares-2026-08-27",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "subscribersGained": {
+          "definition": "youtube-analytics-channel-subscribers-gained-2026-08-27",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "subscribersLost": {
+          "definition": "youtube-analytics-channel-subscribers-lost-2026-08-27",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        }
+      },
+      "definition_warning": "views_and_engagedViews_are_not_interchangeable_and_shorts_view_counting_changed"
+    },
+    "facebook": {
+      "validation_mode": "runtime_official_description",
+      "coverage_policy": "unknown_until_live_metric_period_pagination_evidence",
+      "required_definition": "facebook-page-insights-runtime-description",
+      "allowed_periods": [
+        "day",
+        "week",
+        "days_28",
+        "month"
+      ],
+      "required_query": {
+        "show_description_from_api_doc": true
+      },
+      "static_metric_allowlist": false,
+      "reason": "official_codegen_confirms_the_endpoint_and_parameters_but_does_not_enumerate_page_metric_availability"
+    },
+    "instagram": {
+      "validation_mode": "runtime_official_description",
+      "coverage_policy": "unknown_until_live_metric_period_pagination_evidence",
+      "required_definition": "instagram-user-insights-runtime-description",
+      "allowed_periods": [
+        "day",
+        "week",
+        "days_28",
+        "month",
+        "lifetime",
+        "total_over_range"
+      ],
+      "allowed_metric_types": [
+        null,
+        "time_series",
+        "total_value"
+      ],
+      "static_metric_allowlist": false,
+      "reason": "metric_period_type_and_account_eligibility_must_be_proven_by_the_selected_live_endpoint"
+    },
+    "threads": {
+      "validation_mode": "official_example_allowlist",
+      "coverage_policy": "unknown_because_account_insights_has_no_verified_arbitrary_since_until_contract",
+      "required_period": "day",
+      "metrics": {
+        "views": {
+          "definition": "threads-account-profile-views-day-2026-09-06",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "likes": {
+          "definition": "threads-account-post-likes-day-2026-09-06",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "replies": {
+          "definition": "threads-account-post-replies-day-2026-09-06",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "reposts": {
+          "definition": "threads-account-post-reposts-day-2026-09-06",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "quotes": {
+          "definition": "threads-account-post-quotes-day-2026-09-06",
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        }
+      },
+      "descriptive_only": {
+        "followers_count": "current_snapshot_not_historic_period_activity",
+        "follower_demographics": "breakdown_not_scalar_calendar_series",
+        "post_insights": "lifetime_values_not_calendar_series"
+      }
+    },
+    "substack": {
+      "validation_mode": "imported_semantic_allowlist",
+      "coverage_policy": "source_artifact_must_state_and_prove_the_exact_period_or_snapshot",
+      "mcp_eligibility": "publication_admin_and_bestseller_and_connected_mcp_client",
+      "mcp_access": "read_only_publication_data_no_profile_or_notes_activity",
+      "metrics": {
+        "traffic_views": {
+          "unit": "count",
+          "aggregation": "total",
+          "basis": "period_activity"
+        },
+        "total_subscribers": {
+          "unit": "count",
+          "aggregation": "snapshot",
+          "basis": "period_end_snapshot"
+        },
+        "paid_subscribers": {
+          "unit": "count",
+          "aggregation": "snapshot",
+          "basis": "period_end_snapshot"
+        }
+      },
+      "descriptive_only": {
+        "gross_annualized_revenue": "current_annualized_snapshot_not_realized_period_revenue",
+        "post_total_views": "post_lifetime_and_repeat_views",
+        "post_open_rate": "post_lifetime_rate_with_definition_change_history",
+        "post_delivery_rate": "post_lifetime_rate_with_definition_change_history",
+        "post_link_clicks": "source_exposes_both_opener_rate_and_total_count"
+      },
+      "allowed_eligibility_by_interface": {
+        "official_substack_mcp": "admin_bestseller_mcp_connected",
+        "official_export": "account_export_authorized",
+        "controlled_browser": "authenticated_admin_browser_read"
+      }
+    }
+  }
+}

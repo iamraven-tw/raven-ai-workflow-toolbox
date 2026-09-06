@@ -1,0 +1,4 @@
+interface:
+  display_name: "社群圖片製作"
+  short_description: "依已保存的四路製圖偏好製作封面、圖卡與輪播，保留來源與成圖確認"
+  default_prompt: "請使用 $social-image-production，依已保存方式與這次需求製圖；網頁模型先交提示詞，成圖後展示預覽。"

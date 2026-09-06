@@ -3,6 +3,7 @@
 import http.client
 import json
 import re
+import secrets
 import ssl
 from urllib.parse import urlencode, urlsplit
 
@@ -24,6 +25,9 @@ def classify_response(status, payload, mutation=False):
     """辨識已知拒絕與不明結果；不回傳錯誤本文、URL 或標頭。"""
 
     error = payload.get("error") if isinstance(payload, dict) else None
+    if isinstance(payload, dict) and payload.get("error_type"):
+        # Meta 授權碼交換也可能用平面 error_type／code，不輸出 error_message。
+        error = {"code": payload.get("code")}
     code = error.get("code") if isinstance(error, dict) else None
     details = error.get("errors", []) if isinstance(error, dict) else []
     reasons = {item.get("reason") for item in details if isinstance(item, dict) and isinstance(item.get("reason"), str)} if isinstance(details, list) else set()
@@ -48,7 +52,7 @@ def classify_response(status, payload, mutation=False):
 class OfficialHTTP:
     """不用系統代理或通用 URL；呼叫方無法把秘密轉送到任意主機。"""
 
-    def request(self, method, endpoint, *, query=None, form=None, bearer=None, mutation=False):
+    def request(self, method, endpoint, *, query=None, form=None, bearer=None, mutation=False, multipart=False):
         """每次只送一次，限制回應大小並保持 TLS 驗證。"""
         url = urlsplit(endpoint)
         allowed = (
@@ -56,16 +60,35 @@ class OfficialHTTP:
             or url.netloc == "www.googleapis.com" and url.path == "/youtube/v3/channels"
             or url.netloc == "graph.facebook.com" and re.fullmatch(
                 r"/v[0-9]+\.0/(oauth/access_token|debug_token|me/accounts|me/permissions|me|[0-9]+)", url.path)
+            or url.netloc == "api.instagram.com" and url.path == "/oauth/access_token" and method == "POST"
+            or url.netloc in {"graph.instagram.com", "graph.threads.net"} and method == "GET"
+                and (url.path in {"/access_token", "/refresh_access_token"}
+                     or re.fullmatch(r"/v[0-9]+\.0/me", url.path))
+            or url.netloc == "graph.threads.net" and (
+                url.path == "/oauth/access_token" and method == "POST"
+                or url.path == "/debug_token" and method == "GET")
         )
         if (url.scheme != "https" or url.query or url.fragment or not allowed
-                or method not in {"GET", "POST"} or (form is not None and method != "POST")):
+                or method not in {"GET", "POST"} or (form is not None and method != "POST")
+                or multipart and (form is None or method != "POST")):
             raise OAuthError("invalid_configuration")
         path = url.path + ("?" + urlencode(query) if query else "")
         headers = {"Accept": "application/json", "Cache-Control": "no-store"}
         body = None
         if form is not None:
-            body = urlencode(form).encode("utf-8")
-            headers["Content-Type"] = "application/x-www-form-urlencoded"
+            if multipart:
+                # Instagram 官方 code 交換範例採 multipart；欄位名不可注入 MIME 標頭。
+                boundary = "oauth-" + secrets.token_hex(24)
+                parts = []
+                for key, value in form.items():
+                    if not re.fullmatch(r"[a-z_]+", key) or not isinstance(value, str):
+                        raise OAuthError("invalid_configuration")
+                    parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{key}"\r\n\r\n{value}\r\n')
+                body = ("".join(parts) + f"--{boundary}--\r\n").encode("utf-8")
+                headers["Content-Type"] = "multipart/form-data; boundary=" + boundary
+            else:
+                body = urlencode(form).encode("utf-8")
+                headers["Content-Type"] = "application/x-www-form-urlencoded"
         if bearer:
             headers["Authorization"] = "Bearer " + bearer
         connection = http.client.HTTPSConnection(url.hostname, timeout=20, context=ssl.create_default_context())

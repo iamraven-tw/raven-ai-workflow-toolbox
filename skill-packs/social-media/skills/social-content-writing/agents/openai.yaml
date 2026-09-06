@@ -1,0 +1,6 @@
+interface:
+  display_name: "社群內容撰寫"
+  short_description: "將核准題材或文章改寫成各平台草稿，整理圖片與影片需求並保留確認關卡"
+  default_prompt: "使用 $social-content-writing，將我提供的文章改寫成選定平台的文案並整理媒體需求，先給完整預覽，不發布。"
+policy:
+  allow_implicit_invocation: true

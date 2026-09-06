@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "input_ref": "fictional-image-acceptance-main",
+  "platform": "instagram",
+  "kind": "carousel",
+  "width": 1080,
+  "height": 1350,
+  "visual": "虛構工作室的現代編輯式資訊圖卡；深青主色、橘色重點、米白背景、深色文字",
+  "sources": [
+    {
+      "ref": "fictional-original-ai-agent-copy",
+      "rights": "公開套件自製的虛構測試文字，未使用第三方品牌或私人素材"
+    }
+  ],
+  "pages": [
+    {
+      "id": "cover",
+      "exact_text": "AI Agent 是什麼？\n從目標到行動的工作流程",
+      "alt_text": "米白底的直式資訊圖卡，標題說明 AI Agent 是從目標到行動的工作流程"
+    },
+    {
+      "id": "comparison",
+      "exact_text": "聊天機器人\n回答當下問題\n\nAI Agent\n根據目標選擇工具並完成多步驟工作",
+      "alt_text": "比較聊天機器人與 AI Agent 的直式圖卡，前者回答問題，後者依目標使用工具完成工作"
+    },
+    {
+      "id": "workflow",
+      "exact_text": "1 接收目標\n2 選擇工具\n3 執行任務\n4 讀回驗證\n\n重要動作保留人工確認",
+      "alt_text": "列出 AI Agent 接收目標、選擇工具、執行任務、讀回驗證四步驟，並提醒重要動作保留人工確認"
+    }
+  ],
+  "layout": {
+    "font_size": 64,
+    "margin": 76,
+    "background": "#F7F4EC",
+    "foreground": "#1E2A2A"
+  }
+}
+

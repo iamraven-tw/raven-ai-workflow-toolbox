@@ -249,6 +249,16 @@ def validate_workspace_template(manifest: dict) -> None:
     if "status: not_configured" not in profile_text:
         raise ValidationError("公開一人公司設定範本必須保持 not_configured")
 
+    social_strategy = (
+        template_root / "sources/strategy/social-media-strategy-and-insights.md"
+    )
+    social_strategy_text = social_strategy.read_text(encoding="utf-8")
+    if "status: not_configured" not in social_strategy_text:
+        raise ValidationError("公開社群媒體策略與洞察範本必須保持 not_configured")
+    for required in ("每週", "每月", "每季", "每年", "使用者補充或修正"):
+        if required not in social_strategy_text:
+            raise ValidationError(f"公開社群媒體策略範本缺少必要欄位：{required}")
+
     validate_client_instruction_files(template_root, "工作區範本")
 
 

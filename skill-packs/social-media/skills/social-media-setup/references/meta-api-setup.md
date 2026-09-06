@@ -86,7 +86,7 @@ Agent 建立含防偽 `state` 的授權請求並開啟官方 OAuth 畫面。使�
 
 ### 5. Agent 完成 Token 與讀回驗證
 
-Facebook Pages 使用 [OAuth 執行器](oauth-runtime.md) 的 HTTPS Web server code flow；不得混用 Native/Desktop App。Agent 驗證 callback 的 `state`、錯誤與目標，再依官方流程交換 Token，並透過 `credential_store.py` 的 `store_secret()` 保存選定 Page Token，不增加人工複製。短期及長期 User Token 僅作交換與權限核對，不持久保存。Token、授權碼與 Secret 不得出現在 stdout、錯誤訊息、對話、一般設定或 URL 日誌；官方 GET 所需秘密參數只在本機受控程序內經 HTTPS 傳送，不能當成瀏覽器網址開啟。寫入後必須由同一 backend 讀回比對，並以非敏感參照與 OAuth 狀態記錄結果。Instagram／Threads 尚無專用執行器，不能沿用此交換流程。
+Facebook Pages 使用 [OAuth 執行器](oauth-runtime.md) 的 HTTPS Web server code flow；不得混用 Native/Desktop App。Agent 驗證 callback 的 `state`、錯誤與目標，再依官方流程交換 Token，並透過 `credential_store.py` 的 `store_secret()` 保存選定 Page Token，不增加人工複製。短期及長期 User Token 僅作交換與權限核對，不持久保存。Token、授權碼與 Secret 不得出現在 stdout、錯誤訊息、對話、一般設定或 URL 日誌；官方 GET 所需秘密參數只在本機受控程序內經 HTTPS 傳送，不能當成瀏覽器網址開啟。寫入後必須由同一 backend 讀回比對，並以非敏感參照與 OAuth 狀態記錄結果。Instagram Login／Threads 改用 [專用交換與刷新契約](instagram-threads-oauth.md) 的各自 User Token 流程；Instagram via Facebook Login 使用 [專用 Page Token 契約](instagram-facebook-login-oauth.md)，核對 Facebook 使用者、唯一相連 Page 與 IG 帳號，不能把單純 Page 驗證當成 IG 驗證。
 
 接著先呼叫平台文件指定的唯讀端點，並核對：
 

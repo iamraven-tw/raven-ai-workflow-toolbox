@@ -13,7 +13,7 @@ AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計�
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於早期開發階段。AI 知識庫、AI 剪片與 Google 工具自動化的 Agent 端候選版可供外部驗收，但都尚未正式支援；各套件仍有另一臺電腦、外部帳號或人工成果驗收關卡。社群媒體技能包尚未完成；官網打造技能包已完成第一版五個本機候選技能；AI Agent 規則與技能盤點技能包已鎖定上游 v0.2.1 為本機候選。本 repository 也尚未公開發布。
+> 本專案目前處於早期開發階段。六個技能包都已完成 Agent 端的本機候選版：AI 知識庫、AI 剪片與 Google 工具自動化可供外部驗收，社群媒體七個技能、官網打造第一版五個技能與 AI Agent 規則盤點仍是本機候選。全部尚未正式支援；登入、外部帳號、實機發布與另一臺電腦驗收，都等所有工具包完成後才集中安排。本 repository 也尚未公開發布。
 
 ## 專案要解決的問題
 
@@ -38,7 +38,7 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 | AI 剪片工作流 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 由使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收；之後再朝官方核心＋臺灣中文擴充套件演進 |
 | Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 用固定版本 Learn-GAS 保留 Apps Script 路線，先完成需求分流、本機實作與遠端確認關卡，再由使用者做 Google 實機驗收 |
 | AI 知識庫 | Agent 端候選版可供外部驗收；本機生命週期與三種桌面／開發用戶端技能發現已通過，尚未正式支援 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
-| 社群媒體管理工作流 | 有個人化實驗與自動化經驗，但公開版本需要重新設計 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
+| 社群媒體管理工作流 | 七個技能為可安裝的本機候選（候選版 0.7.0）；七份流程審查已完成，登入／OAuth、平台讀取與測試發布尚未執行，尚未正式支援 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
 | 官網打造工作流 | 第一版五個技能（設定、文案、風格挑選、建置、部署）與起始範本為可安裝的本機候選；第二版兩個技能尚未建立，尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到 `workers.dev` 上線與自訂網域 |
 | AI Agent 規則與技能盤點 | 上游 v0.2.1 已鎖定並以乾淨 clone 核對雜湊，本套件為可安裝的本機候選；技能發現、實際盤點與另一臺電腦驗收尚未執行，尚未正式支援 | 讓 Agent 盤點本機所有 AI coding agent 的規則與技能，寫成中文摘要並用本機網站呈現，協助使用者看懂並整理自己的工作流設定 |
 
@@ -102,6 +102,10 @@ Toolbox 新增的 `google-workflow-router` 只處理 Learn-GAS 沒有涵蓋的�
 
 ### 4. 社群媒體管理工作流
 
+初始化、規劃、撰寫、圖片、發布、互動與成效七個技能都已完成本機候選版，完整套件與安裝邊界見 [`skill-packs/social-media/`](skill-packs/social-media/README.md)。流程審查完成只代表設計方向已逐項確認，不代表外部整合、真實 Agent 行為、實機發布或正式公開支援已完成。
+
+平台 API／OAuth 建立完成後，使用者沒有另行指定時，憑證預設存入目前作業系統帳號的 macOS Keychain 或 Windows Credential Manager。一般設定只保存整合意圖，工作區另存不含秘密值的本機參照；保存憑證不等於授權發布或其他遠端寫入。
+
 社群媒體技能包不只負責「幫我發一篇貼文」。它要先引導使用者建立自己的管理方法：
 
 - 經營目標、受眾與平台角色
@@ -114,17 +118,17 @@ Toolbox 新增的 `google-workflow-router` 只處理 Learn-GAS 沒有涵蓋的�
 
 第一階段預計涵蓋：
 
-- Facebook、Instagram、Threads 的 Meta 平台工作流
-- X 的內容搜尋、名單管理、互動與發布工作流
-- Substack 文章與 Notes 的準備、發布與驗證工作流
+- YouTube 的內容發布、公開留言與成效工作流
+- Facebook、Instagram、Threads 的內容、互動與成效工作流
+- Substack 內容與成效的官方能力，以及受控瀏覽器備援邊界
 
 預設的執行順序是：
 
 1. 優先使用平台正式提供且符合使用情境的 API。
-2. 其次使用可驗證的官方連接器或命令列工具。
-3. API 不存在、權限不足或不適合時，才透過 OpenCLI 操作使用者已登入的瀏覽器。
+2. 其次使用可驗證的官方連接器，再評估可靠的命令列工具。
+3. 正式介面不存在、權限不足或不適合時，才評估受控登入瀏覽器。
 4. 只有需要畫面判斷、而且前述方法不可行時，才使用 Computer Use。
-5. 若自動化風險過高或無法可靠驗證，就停在預覽階段，交由使用者手動完成。
+5. 若自動化風險過高或無法可靠驗證，就只產生預覽，交由使用者手動完成。
 
 ```mermaid
 flowchart LR
@@ -157,7 +161,7 @@ flowchart LR
 
 第一階段會先以一人公司最常需要的最小可用官網為範圍：能清楚介紹業務、建立信任、收集潛在顧客，並提供明確的聯絡或購買入口。AI 可以協助規劃、撰寫、設計與開發，但網域購買、付費服務、正式部署與公開發布仍需要使用者明確確認。
 
-這套技能包的設計前提是交給 AI Agent 全程執行：人類只回答一次商業訪談、批次確認預設方案、完成 Cloudflare 登入與授權，其餘由 Agent 完成。技術路線固定為 Astro 靜態站點加 Cloudflare Workers 靜態資產免費方案，預設先上線到 `workers.dev`，自訂網域是授權後的第二步。目前第一版五個技能與起始範本都已完成，完整決策、人類接觸點清單與七個技能的順序見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)，套件位於 [`skill-packs/website-building/`](skill-packs/website-building/README.md)。
+這套技能包的設計前提是交給 AI Agent 全程執行：人類只回答一次商業訪談、批次確認預設方案、完成 Cloudflare 登入與授權，其餘由 Agent 完成。技術路線固定為 Astro 靜態站點加 Cloudflare Workers 靜態資產免費方案，預設先上線到 `workers.dev`，自訂網域是授權後的第二步。風格提供六個完整主題，各參考一個公開示範頁的版面手法與動畫類型自行實作，走到選風格的步驟時由 Agent 產生本機畫廊直接展示真正建置出來的頁面。目前第一版五個技能與起始範本都已完成，第二版的服務串接與維運兩個技能尚未建立；完整決策、人類接觸點清單與七個技能的順序見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)，套件位於 [`skill-packs/website-building/`](skill-packs/website-building/README.md)。
 
 ## 共用設計原則
 
@@ -179,7 +183,11 @@ flowchart LR
 
 瀏覽器操作比較容易受到登入狀態、版面改動與彈出視窗影響。需要使用瀏覽器時，技能必須先確認帳號、目標、可見預覽與停止條件，完成後再讀回結果，而不是只相信按鈕已經被點擊。
 
+「API 優先」是指正式資料讀寫介面；若平台沒有提供建立開發者 App 或設定 OAuth 的 provisioning API，Agent 可在取得明確授權後操作官方開發者後台。使用者只處理登入、安全驗證、法律條款與 OAuth 同意，其餘後台設定由 Agent 完成，最後仍以正式 API 讀回驗證。
+
 ### 準備、執行與驗證分開
+
+目前開發順序：先完成各工具包的本機實作、靜態檢查與虛構資料測試，所有工具包完成後才集中安排實機驗收。延後項目包含真實憑證庫、登入／OAuth、平台資料讀取、測試發布與另一臺電腦驗收；延後不代表通過，也不解除各項外部操作的明確授權要求。逐技能的流程確認仍照原順序進行，不必先完成實機驗收才建立下一個技能。
 
 產生草稿不代表已發布；建立本機檔案不代表已上傳；按下按鈕也不代表平台已接受。每個工作流都要分開記錄：
 
@@ -247,6 +255,7 @@ ai-workflow-toolbox/
 - 必要的參考資料、腳本、範例或模板
 - 權限、費用、外部影響與人工確認點
 - 正常、錯誤、重複執行與中斷恢復測試
+- 真實執行發現技能規則錯誤時，採一次小修正、一次針對性重測的最小回填流程
 - 安裝、更新、移除與相容性說明
 - 使用者可以親自完成的成果驗收步驟
 
@@ -305,6 +314,7 @@ ai-workflow-toolbox/
 - 外部操作有預覽、明確確認與執行後驗證。
 - 不需要把真實憑證或私人資料放進技能目錄。
 - 文件中的輸入、輸出、權限、費用與停止點和實際行為一致。
+- 已定義經驗回填邊界：只把同一技能中已重現、已修正並重測通過的通用問題寫回原始技能，不因單次故障拖延主要任務。
 - 本機檢查、人工驗收與遠端平台狀態沒有被混為同一件事。
 
 ## 安裝
@@ -313,7 +323,7 @@ AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INST
 
 AI 剪片已建立 [`skill-packs/ai-video/`](skill-packs/ai-video/README.md) 的完整 Agent 安裝與生命週期契約，並發布鎖定的 [Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1)。manifest 標示 `installable = true`，代表可安裝為外部驗收候選版；`officially_supported` 仍為空，直到使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收。根專案的套件分流見 [`INSTALL.md`](INSTALL.md)。
 
-社群媒體管理技能包尚未提供安裝方式。官網打造目前提供第一版五個技能與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構與虛構生命週期已通過，技能發現、真實 Wrangler 登入、部署與網域都尚未執行，範本建置以環境變數選擇性驗證，部署流程以假的 wrangler 程式做虛構測試。設計決策見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)。
+社群媒體管理提供七個技能的 [`INSTALL.md`](skill-packs/social-media/INSTALL.md) 與本機候選 manifest（候選版 0.7.0）。靜態結構、虛構生命週期與 Codex 本機技能發現已通過；登入／OAuth、平台讀取、測試發布、其他用戶端、另一臺電腦與正式公開支援都尚未通過。官網打造目前提供第一版五個技能與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構與虛構生命週期已通過，技能發現、真實 Wrangler 登入、部署與網域都尚未執行，範本建置以環境變數選擇性驗證，部署流程以假的 wrangler 程式做虛構測試。設計決策見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)。
 
 AI Agent 規則與技能盤點提供 [`INSTALL.md`](skill-packs/agent-inventory/INSTALL.md) 與本機候選 manifest。它不含自有技能，只用固定 tag `v0.2.1` 安裝上游 [iamraven-tw/agent-inventory](https://github.com/iamraven-tw/agent-inventory)（MIT）的六個技能，安裝器不連網、不掃描、不修改任何既有規則或技能。靜態結構、虛構資料生命週期與乾淨 clone 的雜湊核對及實際安裝已在維護者機器通過；技能發現、實際盤點與另一臺電腦驗收都尚未執行。整合決策見 [`docs/decisions/0004-agent-inventory-integration.md`](docs/decisions/0004-agent-inventory-integration.md)。
 

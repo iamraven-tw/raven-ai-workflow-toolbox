@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-09-06",
+  "primary_interface": "google_sheets_v4_official_rest",
+  "api_adapter": "scripts/official_sheets_api.py",
+  "transaction_coordinator": "scripts/community_sheets.py",
+  "write_operation": "spreadsheets.values.update",
+  "write_method": "PUT",
+  "value_input_option": "RAW",
+  "read_operation": "spreadsheets.get",
+  "read_value_field": "CellData.userEnteredValue",
+  "target_policy": "one confirmed spreadsheetId plus numeric sheetId plus exact title; whole dedicated sheet must be empty before claim",
+  "transaction_policy": "preflight empty then local export then single claim then one PUT then independent GET; a claim is never issued twice",
+  "unknown_result_policy": "read the exact bound range only; do not resend PUT, append, clear, or switch interface",
+  "reply_policy": "reread A:F when the user approves and again immediately before every API or controlled-browser reply",
+  "authorization": {
+    "scope": "https://www.googleapis.com/auth/spreadsheets",
+    "token_input": "injected in memory by an existing authorized Google workflow",
+    "optional_provider": "existing google-auth Application Default Credentials only; not installed or configured by this skill",
+    "oauth_setup": "outside this skill; hand off to the existing Google automation workflow",
+    "social_oauth_is_not_google_sheets_oauth": true
+  },
+  "observed_local_cli": {
+    "name": "Google Workspace CLI",
+    "command": "gws",
+    "observed_version": "0.6.0",
+    "official_upstream": "https://github.com/googleworkspace/cli",
+    "used_as_default": false,
+    "reason": "cell values are supplied through a process argument and the upstream describes the CLI as an actively developed tool that is not an officially supported Google product"
+  },
+  "official_references": [
+    "https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/update",
+    "https://developers.google.com/workspace/sheets/api/samples/writing",
+    "https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/get",
+    "https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets/cells",
+    "https://developers.google.com/workspace/sheets/api/guides/field-masks"
+  ],
+  "implementation_status": "official_rest_adapter_and_transaction_coordinator_local_fictional_tests_live_pending",
+  "live_status": "not_performed"
+}

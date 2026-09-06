@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "input_ref": "fictional-image-acceptance-square",
+  "platform": "instagram",
+  "kind": "single",
+  "width": 1080,
+  "height": 1080,
+  "visual": "虛構工作室的方形重點摘要；沿用深青、橘色、米白與深色文字",
+  "sources": [
+    {
+      "ref": "fictional-original-ai-agent-copy",
+      "rights": "公開套件自製的虛構測試文字，未使用第三方品牌或私人素材"
+    }
+  ],
+  "pages": [
+    {
+      "id": "summary",
+      "exact_text": "AI Agent\n目標 → 工具 → 行動 → 驗證",
+      "alt_text": "方形資訊圖卡，以箭頭呈現 AI Agent 從目標、工具、行動到驗證的流程"
+    }
+  ],
+  "layout": {
+    "font_size": 68,
+    "margin": 72,
+    "background": "#F7F4EC",
+    "foreground": "#1E2A2A"
+  }
+}
+

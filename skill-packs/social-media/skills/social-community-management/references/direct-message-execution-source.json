@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "mode": "explicit_on_demand_facebook_instagram_inbound_24h_text_no_webhook",
+  "implementation_status": "implemented_local_fictional_tests_live_not_performed",
+  "programs": {
+    "queue": "scripts/direct_message_queue.py",
+    "official_api_adapter": "scripts/official_direct_message_api.py",
+    "transaction_coordinator": "scripts/direct_message_execute.py",
+    "manual_review": "scripts/manual_review.py"
+  },
+  "limits": {
+    "max_conversations_per_fetch": 20,
+    "max_recent_text_messages_per_conversation": 20,
+    "reply_window_hours": 24,
+    "content": "plain_text_only",
+    "webhook": false,
+    "background_monitoring": false,
+    "google_sheets": false,
+    "automatic_retry_after_claim": false
+  },
+  "platforms": {
+    "facebook": {
+      "login_route": "facebook_pages",
+      "host": "graph.facebook.com",
+      "conversation_owner": "facebook_page_id",
+      "message_actor": "facebook_page_id",
+      "token": "page_access_token_from_social_media_setup_runtime",
+      "required_permissions": [
+        "pages_manage_metadata",
+        "pages_read_engagement",
+        "pages_messaging"
+      ],
+      "read_edges": [
+        "/{page-id}/conversations",
+        "/{conversation-id}?fields=messages",
+        "/{message-id}?fields=id,created_time,from,to,message"
+      ],
+      "write_edge": "POST /{page-id}/messages",
+      "write_body": "messaging_type=RESPONSE, recipient.id, message.text",
+      "official_references": [
+        "https://www.postman.com/meta/messenger-platform-api/folder/7cc3gd2/send-api",
+        "https://www.postman.com/meta/messenger-platform-api/folder/22794852-255610cd-47f5-4f4d-b3fa-71aec360be9a",
+        "https://www.postman.com/meta/messenger-platform-api/request/poazquh/text-message"
+      ]
+    },
+    "instagram_login": {
+      "login_route": "instagram_login",
+      "host": "graph.instagram.com",
+      "conversation_owner": "instagram_professional_account_id",
+      "message_actor": "instagram_professional_account_id",
+      "token": "instagram_user_access_token_from_social_media_setup_runtime",
+      "required_permissions": [
+        "instagram_business_basic",
+        "instagram_business_manage_messages"
+      ],
+      "read_edges": [
+        "/{ig-user-id}/conversations?platform=instagram",
+        "/{conversation-id}?fields=messages",
+        "/{message-id}?fields=id,created_time,from,to,message"
+      ],
+      "write_edge": "POST /{ig-user-id}/messages",
+      "official_references": [
+        "https://www.postman.com/meta/instagram/folder/23987686-6a91368f-1fa8-4614-9ed6-7d1e08c21e62",
+        "https://www.postman.com/meta/instagram/folder/uxudqu0/send-api"
+      ]
+    },
+    "instagram_facebook_login": {
+      "login_route": "instagram_facebook_login",
+      "host": "graph.facebook.com",
+      "conversation_owner": "linked_facebook_page_id",
+      "message_actor": "instagram_professional_account_id",
+      "token": "linked_page_access_token_from_social_media_setup_runtime",
+      "required_permissions": [
+        "instagram_basic",
+        "instagram_manage_messages",
+        "pages_manage_metadata"
+      ],
+      "read_edges": [
+        "/{linked-page-id}/conversations?platform=instagram",
+        "/{conversation-id}?fields=messages",
+        "/{message-id}?fields=id,created_time,from,to,message"
+      ],
+      "write_edge": "POST /{ig-user-id}/messages",
+      "official_references": [
+        "https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api?entity=request-23987686-8365d531-b49f-4e07-8e76-19f8608947a3",
+        "https://www.postman.com/meta/instagram/request/23987686-10b67009-a274-47dc-8d6d-64d1e762205c"
+      ]
+    }
+  },
+  "completion": "checkpointed_message_id_then_independent_readback_receipt",
+  "unknown_result": "stop_and_bind_only_one_exact_independent_observation_without_resend",
+  "live_status": "not_performed"
+}

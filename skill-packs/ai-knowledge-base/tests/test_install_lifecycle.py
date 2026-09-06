@@ -81,6 +81,14 @@ class InstallLifecycleTest(unittest.TestCase):
             package / "template" / "sources" / "strategy" / "solopreneur-profile.md",
             "---\nstatus: not_configured\n---\n",
         )
+        write_text(
+            package
+            / "template"
+            / "sources"
+            / "strategy"
+            / "social-media-strategy-and-insights.md",
+            "---\nstatus: not_configured\n---\n",
+        )
         skills_toml = "\n".join(
             "[[skills]]\n"
             f'id = "{skill_name}"\n'
@@ -442,12 +450,24 @@ path = "<workspace>/.agents/skills"
         self.assertEqual(preview["result"], "preview")
         self.assertIn("AGENTS.md", preview["preserved_existing"])
         self.assertIn("sources/strategy/solopreneur-profile.md", preview["create_files"])
+        self.assertIn(
+            "sources/strategy/social-media-strategy-and-insights.md",
+            preview["create_files"],
+        )
         self.assertEqual((workspace / "AGENTS.md").read_text(encoding="utf-8"), custom_agents)
 
         initialized = self.assert_success(self.workspace_manager("init-workspace", workspace))
         self.assertEqual(initialized["result"], "initialized_missing_items")
         self.assertEqual((workspace / "AGENTS.md").read_text(encoding="utf-8"), custom_agents)
         self.assertTrue((workspace / "sources" / "strategy" / "solopreneur-profile.md").is_file())
+        self.assertTrue(
+            (
+                workspace
+                / "sources"
+                / "strategy"
+                / "social-media-strategy-and-insights.md"
+            ).is_file()
+        )
 
         repeated = self.assert_success(self.workspace_manager("init-workspace", workspace))
         self.assertEqual(repeated["result"], "noop")

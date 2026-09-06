@@ -1,6 +1,6 @@
 # Instagram 平台初始化
 
-查證日期：2026-09-05。Instagram 權限、登入路線與 App Review 會變動，實際設定前重查官方文件。
+查證日期：2026-09-06。Instagram 權限、登入路線與 App Review 會變動，實際設定前重查官方文件。
 
 執行本文件前先讀 `../meta-api-setup.md`。使用者只要選取 Facebook、Instagram 或 Threads 任一平台，就在同一次 Meta 初始化中詢問是否也設定另外兩個；共用的是引導、盤點與預覽，不預設三者共用同一個 App、OAuth、Token 或驗證結果。
 
@@ -62,7 +62,7 @@ Instagram Login 目前不支援廣告或標註能力。使用者選取這些延�
 2. 使用者可在 OAuth 前刪除任何核心 permission；刪減後把 Instagram 記為 `custom`，並列出失去的功能。
 3. Agent 依實際帳號關係選定一條登入路線，完成可安全代辦的 App、callback、產品／use case 與 permission 設定。
 4. 使用者本人完成必要登入、安全驗證、條款與 OAuth 同意；Agent 不要求使用者把 Secret、授權碼或 Token 貼進對話。
-5. Agent 讀回實際授權 scope、專業帳號類型與目標帳號關係；若採 Facebook Login，另讀回相連 Page 與 Instagram 帳號。
+5. Instagram Login 使用 [專用 OAuth 程式](../instagram-threads-oauth.md)，核對初次交換 scope、當前專業帳號類型及兩種 ID。2026-09-06 查證的官方資料沒有文件化全部當前 scope 重新列舉介面；交接必須標成初次授權證據，並由發布、留言、成效與私訊的實際功能端點各自驗證。Facebook Login 使用 [Page Token 專用程式](../instagram-facebook-login-oauth.md)，核對 Facebook User、唯一相連 Page、Page Token 與 Instagram 帳號；不能借用 Facebook Page 的目標身分驗證。
 6. 只把實際完成的 App、OAuth 與安全唯讀資源讀回標為已驗證。發布、留言寫入、insights 查詢與私訊收發分別等待後續技能實測。
 
 ## 官方來源

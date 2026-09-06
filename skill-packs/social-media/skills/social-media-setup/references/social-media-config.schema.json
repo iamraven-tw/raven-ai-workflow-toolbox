@@ -6,7 +6,38 @@
   "additionalProperties": false,
   "required": ["schema_version", "strategy", "integrations"],
   "properties": {
-    "schema_version": {"const": 3},
+    "schema_version": {"enum": [3, 4, 5]},
+    "brand_visual": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "primary_color", "secondary_color", "background_color", "text_color", "font_family", "style_notes", "logo_ref", "main_visual_ref"],
+      "properties": {
+        "status": {"enum": ["not_configured", "confirmed"]},
+        "primary_color": {"$ref": "#/$defs/color"},
+        "secondary_color": {"$ref": "#/$defs/color"},
+        "background_color": {"$ref": "#/$defs/color"},
+        "text_color": {"$ref": "#/$defs/color"},
+        "font_family": {"type": ["string", "null"], "minLength": 1, "maxLength": 100},
+        "style_notes": {"type": ["string", "null"], "minLength": 1, "maxLength": 1000},
+        "logo_ref": {"$ref": "#/$defs/assetRef"},
+        "main_visual_ref": {"$ref": "#/$defs/assetRef"}
+      },
+      "allOf": [{
+        "if": {"properties": {"status": {"const": "not_configured"}}},
+        "then": {"properties": {"primary_color": {"type": "null"}, "secondary_color": {"type": "null"}, "background_color": {"type": "null"}, "text_color": {"type": "null"}, "font_family": {"type": "null"}, "style_notes": {"type": "null"}, "logo_ref": {"type": "null"}, "main_visual_ref": {"type": "null"}}},
+        "else": {"anyOf": [{"properties": {"primary_color": {"type": "string"}}}, {"properties": {"secondary_color": {"type": "string"}}}, {"properties": {"background_color": {"type": "string"}}}, {"properties": {"text_color": {"type": "string"}}}, {"properties": {"font_family": {"type": "string"}}}, {"properties": {"style_notes": {"type": "string"}}}, {"properties": {"logo_ref": {"type": "string"}}}, {"properties": {"main_visual_ref": {"type": "string"}}}]}
+      }]
+    },
+    "image_production": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default_method", "information_dense_method", "web_provider", "icon_source"],
+      "properties": {
+        "default_method": {"enum": ["not_configured", "codex", "antigravity", "web", "html_css"]},
+        "information_dense_method": {"enum": ["inherit", "html_css"]},
+        "web_provider": {"type": ["string", "null"], "minLength": 1, "maxLength": 100},
+        "icon_source": {"enum": ["heroicons", "none"]}
+      }
+    },
     "strategy": {
       "type": "object",
       "additionalProperties": false,
@@ -44,7 +75,18 @@
       }
     }
   },
+  "allOf": [{
+    "if": {"properties": {"schema_version": {"enum": [4, 5]}}},
+    "then": {"required": ["image_production"]},
+    "else": {"not": {"required": ["image_production"]}}
+  }, {
+    "if": {"properties": {"schema_version": {"const": 5}}},
+    "then": {"required": ["brand_visual"]},
+    "else": {"not": {"required": ["brand_visual"]}}
+  }],
   "$defs": {
+    "color": {"type": ["string", "null"], "pattern": "^#[0-9A-Fa-f]{6}$"},
+    "assetRef": {"type": ["string", "null"], "minLength": 1, "maxLength": 300, "pattern": "^(?![/~])(?!.*[:\\\\])(?!.*(?:^|/)\\.\\.(?:/|$))(?!\\.$).+$"},
     "integration": {
       "type": "object",
       "additionalProperties": false,

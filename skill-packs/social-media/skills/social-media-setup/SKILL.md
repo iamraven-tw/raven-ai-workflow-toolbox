@@ -10,6 +10,8 @@ description: "建立或調整社群媒體工作流的策略與平台整合。當
 ## 責任
 
 - 盤點既有一般設定、策略來源與已選功能。
+- 實際初始化專案時，依 [圖片製作偏好](references/image-production-preferences.md) 一次設定 Codex、Antigravity、網頁模型或 HTML＋CSS、資訊密集圖卡方式，以及使用者已有的品牌色、字型與主視覺參考；後續製圖不每次重問。缺少品牌可留空，推測先預覽、確認才保存。這是一般設定，不建立生圖 API、不呼叫模型。
+- 實際初始化專案時，預設準備 OpenCLI；下載前揭露作者 GitHub、固定版本、用途、位置、依賴與擴充權限，依同一份預覽核准範圍由 Agent 代辦，不要求使用者自行下載。
 - 只收集目前決策真正需要的資訊，一次詢問一個主要問題。
 - 依使用者選取的平台，查核目前官方能力、完整核心權限、相依權限、延伸權限與人工步驟。
 - 預設提出該平台所有已支援核心功能的完整權限；逐項說明用途、可執行能力、寫入影響與不同意後失去的功能，並讓使用者在 OAuth 前刪減。
@@ -44,6 +46,8 @@ description: "建立或調整社群媒體工作流的策略與平台整合。當
    - 沒有，且設定不足：一次只問一個最重要的問題。第一個問題應先判斷要走策略初始化，還是設定某個平台功能。
    - 沒有，且設定足夠：摘要目前狀態，詢問這次要修改哪一部分。
 3. 選擇一個主要模式；若兩種模式都需要，先完成當前任務的必要部分，再明確交接另一模式。
+   - 實際初始化專案時，一併讀 [圖片製作偏好](references/image-production-preferences.md)，從對話已有選擇填入；缺少才問一個製圖方式問題，連同資訊密集圖卡預設併入同一份設定預覽。已有明確非圖片任務不強制補問。只修改製圖偏好時，不重新跑平台整合或 OpenCLI 安裝。
+   - 使用者要求實際初始化專案時，同時讀取 [OpenCLI 初始化流程](references/opencli-initialization.md)，預設納入工具準備，先提醒再下載；取得一次涵蓋完整影響的安裝確認後，AI 執行可代辦步驟，不逐條命令重問。已有可用安裝先沿用；拒絕或延後不阻擋仍可完成的工作。只討論策略、讀設定或做既有任務，不強制安裝。
 4. 讀取該模式的參考文件：
    - 策略初始化：`references/strategy-mode.md`
    - 平台整合初始化：先讀 `references/integration-mode.md`、`references/permission-selection.md` 與 `references/local-credential-storage.md`，並且只讀使用者選取的 `references/platforms/<platform>.md`
@@ -66,7 +70,7 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
 
 ## 實際整合執行
 
-目前候選版已提供本機憑證保存、恢復、Terminal 交接，以及 Facebook Pages／YouTube 的 OAuth callback、交換與有效性執行器。實際執行前必讀 `references/oauth-runtime.md`：Facebook 使用 HTTPS Web server code flow；YouTube 使用 Desktop loopback／PKCE 與 refresh。程式僅通過虛構測試，尚未完成真實 OAuth 驗收；Instagram／Threads 沒有專用執行器，不能借用 Facebook 路徑。缺少相容 callback、原生憑證庫或平台必要條件時停在預覽，不得臨時用未查證端點取得秘密。
+目前候選版已提供本機憑證保存、恢復、Terminal 交接，以及 Facebook Pages／YouTube／Instagram Login／Instagram via Facebook Login／Threads 的 OAuth callback、交換與有效性執行器。實際執行前必讀 `references/oauth-runtime.md`：Facebook 使用 HTTPS Web server code flow；YouTube 使用 Desktop loopback／PKCE 與 refresh。Instagram Login／Threads 另讀 [專用交換與刷新契約](references/instagram-threads-oauth.md)，使用各自的長期 User Token；Instagram via Facebook Login 讀 [專用 Page Token 契約](references/instagram-facebook-login-oauth.md)，不能與直接登入混用。程式僅通過虛構測試，尚未完成真實 OAuth 驗收。缺少相容 callback、原生憑證庫或平台必要條件時停在預覽，不得臨時用未查證端點取得秘密。
 
 平台整合不是只產生操作說明。獲得使用者對同一份外部變更預覽的明確授權後：
 
@@ -77,7 +81,7 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
 5. Agent 啟動 OAuth；使用者本人檢查帳號、資源與權限並同意。Agent 不代按同意，也不要求使用者複製 Secret、授權碼或 Token 到對話。
 6. Agent 驗證 OAuth `state` 與 callback，交換 Token，直接透過 `store_secret()` 寫入已預覽的秘密儲存，並確保命令、日誌、預覽與錯誤輸出不含秘密值。只有平台把 App Secret／API key 限制在人類可見畫面、Agent 安全取得會造成洩漏時，才依 `local-credential-storage.md` 使用 `credential_terminal.py launch` 開啟可見 Terminal，並查詢不含秘密的收據；已開好的 Terminal 可直接執行 `credential_store.py put`。使用者只在不回顯欄位貼上一次，不得要求貼進對話或命令列。儲存中斷則依該文件的恢復分支處理，不把 `pending_write` 交給後續平台技能使用。
 
-   Facebook／YouTube 必須使用 `oauth_callback.py` 的 `preview → configure → run → status`，不得另寫臨時接收器繞過 state、PKCE、儲存及不明結果保護。後續技能依 `oauth-runtime.md` 透過 `Runtime.access()` 在記憶體取用、檢查並依授權刷新；原生 `verified` 不等於平台憑證有效，`ready` 也不代表所有內容功能均已驗證。
+   五條 OAuth 路徑都必須使用 `oauth_callback.py` 的 `preview → configure → run → status`，不得另寫臨時接收器繞過 state、適用路線的 PKCE、儲存及不明結果保護。後續技能依 `oauth-runtime.md` 透過 `Runtime.access()` 在記憶體取用、檢查並依授權刷新；原生 `verified` 不等於平台憑證有效，`ready` 也不代表所有內容功能均已驗證。Instagram Login 的權限清單來自初次交換；目前官方資料未文件化全部當前 scope 讀回，因此當次基本帳號讀回不證明額外功能仍有權限。交接必須標示初次授權證據，發布、留言、insights 與私訊再由各自正式端點判定，明確拒絕或結果不明即停止且不重送。Instagram via Facebook Login 必須明傳 `--login-route instagram_facebook_login`，舊設定不自動改路線。
 7. 以正式 API 讀回目標帳號、資源、授權範圍與可判斷的有效期限。解析含 Token 的原始回應時只輸出遮蔽後結果。
 8. 只有讀回結果與使用者指定目標一致才標示平台讀取已驗證。遠端發布、回覆或排程仍保持未測試，除非另有明確授權。
 
@@ -92,6 +96,7 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
 - 不要求使用者手動選 use case、填 redirect URI、複製識別碼或 Token、執行 API 指令、解析 JSON 或判斷成功。
 - OAuth callback 可取得的 Token 由 Agent 直接存入原生憑證庫。若平台強制由人取得 App Secret／API key，Agent 先開啟可見 Terminal 並啟動隱藏輸入；使用者只貼上一次，不自行組命令，也不把秘密交給 Agent 對話。
 - 每次只交回一個當下必要的人工作業，說明完成後如何將控制權交回 Agent。
+- OpenCLI 下載、核對與建置由 Agent 完成；擴充功能啟用只在現有工具無法代辦或瀏覽器要求本人操作時交回。這是本機工具關卡，不混入 Meta／YouTube 的 OAuth 同意，也不要求先登入五個平台。
 
 ## 寫入流程
 
@@ -124,6 +129,7 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
 - 權限設定模式、要求與刪減的 permission，以及每個刪減項目的功能影響。
 - 設定預覽或寫入後的工作區相對路徑。
 - 各層狀態：本機設定、本機憑證儲存、API／App、使用者登入／OAuth、平台讀取、遠端寫入。
+- 有準備 OpenCLI 時，另列來源下載、依賴建置、CLI 版本、擴充功能、Bridge 與平台讀取狀態，不把下載成功當成瀏覽器或搜尋已可用。
 - 尚缺資訊、停止原因與下一個唯一建議動作。
 - 後續技能交接需要的已核准輸入；不得把未核准推測包裝成設定。
 - 憑證只回報 backend、平台、名稱、是否可用與讀回驗證時間；不得輸出值或完整原生目標名稱。
@@ -137,6 +143,7 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
 - `.local/social-media/credential-references.json`：原生憑證庫的非敏感 namespace、平台／憑證名稱與驗證狀態；不含秘密值。
 - `.local/social-media/credential-store.lock` 與 `.local/social-media/credential-input/`：單程序鎖與 Terminal 一次性非敏感結果收據，不含秘密值、不作為新任務指令。
 - `.local/social-media/oauth-runtime.lock` 與 `.local/social-media/oauth/`：OAuth 作業鎖及非敏感狀態；私人連線設定、Token 與分段 bundle 只留原生憑證庫。schema 與恢復規則見 `references/oauth-runtime.md`。
+- `.local/social-media/opencli-state.json`：核准目的地、來源、版本與分層驗證紀錄，不含帳號或分頁內容；來源與擴充產物放在已核准且不提交的 `.local/tools/opencli/`，細節依 `references/opencli-initialization.md`。npm cache、Chrome 擴充資料及 OpenCLI 使用者層級狀態不在專案內，只有在同份安裝預覽已揭露並核准時才可由對應工具建立；不得覆蓋既有共享設定。
 
 一般檔案不得寫入技能目錄、公開 Toolbox、策略洞察檔、平台內容或排程。未取得外部變更預覽的明確授權時，不得修改任何外部服務；取得授權後，也只可建立或調整預覽內列出的開發者 App、OAuth 與連線設定，不得發布、回覆或排程。平台私人識別碼與憑證值只能寫入使用者選定的秘密儲存；上述參照檔只記錄可重新定位秘密的非敏感資訊。使用者未另行指定時，外部變更預覽確認同時涵蓋原生憑證庫寫入；保存憑證不代表已授權發布，也不取代後續發布或管理技能的遠端確認。若使用者另行要求更新策略洞察，交給未來的 `social-performance-analysis`，並保留其預覽與再次確認關卡。
 

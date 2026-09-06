@@ -63,7 +63,7 @@ def sha256_entry(entry: Path) -> str:
 
 
 def read_manifest(manifest_path: Path) -> tuple[dict[str, Any], Path]:
-    """讀取並驗證第一技能本機候選 manifest。"""
+    """讀取本機候選 manifest，保留第一版快照的回復相容性。"""
 
     resolved = manifest_path.expanduser().resolve(strict=True)
     try:
@@ -74,13 +74,18 @@ def read_manifest(manifest_path: Path) -> tuple[dict[str, Any], Path]:
     expected = {
         "schema_version": 1,
         "manifest_type": "social-media-install",
-        "status": "local_candidate_first_skill",
         "installable": True,
-        "support_level": "first_skill_installable_candidate_not_formally_supported",
     }
     for key, value in expected.items():
         if manifest.get(key) != value:
             raise InstallError(f"manifest.{key} 不符合本機候選契約")
+    allowed = {
+        ("local_candidate_first_skill", "first_skill_installable_candidate_not_formally_supported"),
+        ("local_candidate_partial_pack", "partial_pack_installable_candidate_not_formally_supported"),
+        ("local_candidate_full_pack", "full_pack_installable_candidate_not_formally_supported"),
+    }
+    if (manifest.get("status"), manifest.get("support_level")) not in allowed:
+        raise InstallError("manifest 不是受支援的本機候選")
     version = manifest.get("installation", {}).get("candidate_version")
     if not isinstance(version, str) or not version:
         raise InstallError("manifest 缺少 candidate_version")
@@ -268,7 +273,8 @@ def stage_entries(entries: dict[str, tuple[Path, str]], transaction: Path) -> Pa
     return staged
 
 
-def replace_entries(client_root: Path, names: list[str], staged: Path, transaction: Path) -> None:
+def replace_entries(client_root: Path, names: list[str], staged: Path, transaction: Path,
+                    remove_names: list[str] | None = None) -> None:
     """將舊入口移入交易區後換入完整新入口。"""
 
     old = transaction / "old"
@@ -277,7 +283,7 @@ def replace_entries(client_root: Path, names: list[str], staged: Path, transacti
     moved_old: list[str] = []
     moved_new: list[str] = []
     try:
-        for name in names:
+        for name in names + (remove_names or []):
             target = client_root / name
             if os.path.lexists(target):
                 target.replace(old / name)
@@ -351,6 +357,13 @@ def install_or_update(args: argparse.Namespace, *, update: bool) -> dict[str, An
         elif update:
             raise InstallError("目前安裝已移除，請使用 install")
 
+        # 新增技能不能覆蓋不屬於舊版 active 的同名入口。
+        managed_before = set((active or {}).get("entries", {}))
+        if any(actual[name] is not None for name in set(names) - managed_before):
+            raise InstallError("新增技能與非受管理入口衝突，未變更")
+
+    removed_names = sorted(set((state.get("active") or {}).get("entries", {})) - set(names))
+
     transaction = state_root / "transactions" / uuid.uuid4().hex
     snapshot: dict[str, Any] | None = None
     try:
@@ -359,13 +372,13 @@ def install_or_update(args: argparse.Namespace, *, update: bool) -> dict[str, An
         if previous_active:
             snapshot = make_snapshot(state_root, previous_active, client_root)
             state.setdefault("history", []).append(snapshot)
-        replace_entries(client_root, names, staged, transaction)
+        replace_entries(client_root, names, staged, transaction, removed_names)
         state["active"] = active_record(version, manifest_path, hashes)
         try:
             write_json_atomic(file_path, state)
         except Exception as state_error:
             old = transaction / "old"
-            for name in names:
+            for name in names + removed_names:
                 target = client_root / name
                 if target.exists():
                     shutil.rmtree(target)
@@ -404,6 +417,10 @@ def rollback(args: argparse.Namespace) -> dict[str, Any]:
     snapshot = history[-1]
     content = state_root / "snapshots" / snapshot["snapshot_id"] / "content"
     names = list(snapshot["entries"])
+    removed_names = sorted(set(active["entries"]) - set(names))
+    # 快照要恢復的入口若已被其他來源占用，不能以回復為名覆蓋。
+    if any(os.path.lexists(client_root / name) for name in set(names) - set(active["entries"])):
+        raise InstallError("回復技能與非受管理入口衝突，未變更")
     for name, digest in snapshot["entries"].items():
         if sha256_entry(content / name) != digest:
             raise InstallError(f"回復快照缺少或損壞：{name}")
@@ -412,7 +429,7 @@ def rollback(args: argparse.Namespace) -> dict[str, Any]:
     entries = {name: (content / name, snapshot["entries"][name]) for name in names}
     try:
         staged = stage_entries(entries, transaction)
-        replace_entries(client_root, names, staged, transaction)
+        replace_entries(client_root, names, staged, transaction, removed_names)
         state["history"] = history[:-1]
         state["active"] = {
             "version": snapshot["version"],
@@ -424,7 +441,7 @@ def rollback(args: argparse.Namespace) -> dict[str, Any]:
             write_json_atomic(file_path, state)
         except Exception as state_error:
             old = transaction / "old"
-            for name in names:
+            for name in names + removed_names:
                 target = client_root / name
                 if target.exists():
                     shutil.rmtree(target)
@@ -498,6 +515,9 @@ def status(args: argparse.Namespace) -> dict[str, Any]:
         return {"result": "removed", "verification": "no_active_entries"}
     verify_active(client_root, active)
     source_version = str(manifest["installation"]["candidate_version"])
+    conflicts = [name for name in entries if name not in active["entries"] and actual[name] is not None]
+    if conflicts:
+        return {"result": "blocked", "conflicts": conflicts}
     if active.get("version") != source_version or active.get("entries") != hashes:
         return {
             "result": "installed_update_available",

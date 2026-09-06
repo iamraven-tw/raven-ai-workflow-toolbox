@@ -1,6 +1,6 @@
 # OAuth 接收、交換與憑證有效性
 
-查證日期：2026-09-05。選取 Facebook Pages 或 YouTube，且要實際授權或取用既有憑證時讀取本文件。這是 `social-media-setup` 的共用執行器，不是新技能。程式與虛構測試已建立；真實 OAuth、原生憑證庫與平台讀取尚未驗收。
+查證日期：2026-09-06。選取 Facebook Pages、YouTube、Instagram Login 或 Threads，且要實際授權或取用既有憑證時讀取本文件。這是 `social-media-setup` 的共用執行器，不是新技能。程式與虛構測試已建立；真實 OAuth、原生憑證庫與平台讀取尚未驗收。
 
 ## 路徑與界線
 
@@ -8,7 +8,13 @@
 |---|---|---|
 | YouTube Desktop app | 本機 HTTP loopback、state、PKCE S256、code 交換、refresh、頻道讀回 | 已核准 client、API 啟用、登入同意、scope／審查資格 |
 | Facebook Pages 的 Web server code flow | HTTPS callback、state、短期 User Token 換長期 User Token、選定 Page Token、權限與身分檢查 | 相容 Facebook Login App、精確註冊 HTTPS redirect、既有受控 TLS 入口、Page 工作權限與審查 |
-| Instagram／Threads | 本輪沒有專用執行器 | 不得把 Facebook 程式改個平台名稱就使用；共用規劃不等於共用 Token 流程 |
+| Instagram Login | HTTPS callback、code 換短 Token、長 Token 交換、按需刷新、雙 ID 與專業帳號核對 | 專用 App ID／Secret、Instagram 專業帳號、HTTPS；官方已查資料未文件化全部當前 scope 讀回，功能權限需由各正式端點判定 |
+| Threads | HTTPS callback、code 換短 Token、長 Token 交換、按需刷新、debugger scope 與帳號核對 | Threads 專用 App ID／Secret、HTTPS、App 角色／審查 |
+| Instagram via Facebook Login | Facebook User code／長 Token、唯一相連 Page Token、Page／IG 身分與 scope 讀回 | Facebook Login for Business、相連 Page 與專業 IG 帳號；Page Token 不套用其他刷新流程 |
+
+選取 Instagram Login／Threads 時，續讀 [專用交換與刷新契約](instagram-threads-oauth.md)。這兩條也採使用者控制的受信任程序，不散布 App Secret；HTTPS 接收條件與下方 Meta 代理規則相同。
+
+選取 Instagram via Facebook Login 時，續讀 [Page Token 專用契約](instagram-facebook-login-oauth.md)，並在同一個 `instagram` 平台明傳 `login_route=instagram_facebook_login`。省略欄位的舊 Instagram 設定維持直接 Instagram Login，不自動改路線。
 
 Facebook 這條路徑是伺服器端交換，**不能把 App 設成 Native/Desktop 後套用**。App Secret 只留在使用者控制的本機程序與原生憑證庫，不能打包給其他使用者。同一套公開工具可以由每位使用者各自設定 App，但不散布共用 App Secret。Meta 的 HTTPS 條件與 Google Desktop app 的 HTTP loopback 不相同。
 
@@ -18,7 +24,7 @@ Facebook 這條路徑是伺服器端交換，**不能把 App 設成 Native/Deskt
 2. 把目標帳號／Page／頻道、App 類型、callback、秘密庫、連線代稱、將保存的值與唯讀檢查列入同一份外部變更預覽。明確說明日後可自動讀取憑證、檢查有效性與在核准範圍內刷新；不包含發布、回覆、排程或自動再授權。
 3. Agent 代辦已授權的後台填寫；本人只處理登入、安全／法律確認、資源選擇及 OAuth 同意。不要求使用者貼授權碼。
 4. App Secret／client secret 能安全直接取得時由程式保存；否則依 `local-credential-storage.md` 由 Agent 開 Terminal，使用者只在隱藏提示貼上一次。預先存成該平台的 `app-secret`，不可傳到命令列或對話。
-5. Agent 以 `preview` 產生連線設定摘要與 digest，在私人介面向使用者補充核對確切目標與 callback；确認後才以相同參數 `configure --confirm-config --preview-digest <digest>` 保存。取代既有設定還要確認並加入 `--confirm-replace`。這不是另一張問卷，可以納入同一份初始化預覽。
+5. Agent 以 `preview` 產生連線設定摘要與 digest，在私人介面向使用者補充核對確切目標與 callback；確認後才以相同參數 `configure --confirm-config --preview-digest <digest>` 保存。取代既有設定還要確認並加入 `--confirm-replace`。這不是另一張問卷，可以納入同一份初始化預覽。
 6. Agent 啟動 `run`，只開啟輸出的短期本機 `launch_url`；由接收器導向官方授權頁。本人同意後，程式交換、原生保存、讀回驗證；Agent 查看非敏感結果。
 7. 只有 `ready` 才代表這一次身分／授權讀回成功。最後一般設定仍依 `manage_workspace.py` 顯示寫入預覽並確認，不能由 OAuth 程式自動修改。
 
@@ -45,6 +51,8 @@ Facebook 額外參數：`--platform facebook --graph-version <當下已核對版
 - `oauth_callback.py`：短期單使用者接收器，僅監聽 `127.0.0.1`，15 分鐘失效，state／PKCE／code 僅留記憶體；拒絕不符 Host、重複欄位、錯誤 state、過期及重播。Callback 處理後導向不含 code 的本機結果頁，不輸出平台原始錯誤。
 - `oauth_http.py`：只允許固定官方 HTTPS 主機與端點、TLS 驗證、不使用系統代理、不跟隨 redirect、不重試、不記錄 URL／回應。Google 使用表單 POST 與 Bearer header；Facebook 官方 GET 參數可能含秘密，但只在受控程序內經 TLS 傳輸，絕不送到瀏覽器導覽、工具輸出或 URL 日誌。
 - `oauth_runtime.py`：交換、分段保存、有效性與身分讀回；共用 `credential_store.py` 的原生讀寫與驗證。不下載 SDK，不存 `.env`。
+- `meta_user_oauth.py`：Instagram Login／Threads 的專用交換、期限與刷新；IG code 使用 multipart POST，Threads code 使用表單 POST。長期交換／刷新為固定官方 GET，秘密參數同樣不得出現在瀏覽器或日誌。
+- `instagram_facebook_oauth.py`：Facebook User Token 交換、權限讀回與相連 Page／IG 核對；只保存唯一目標 Page Token，短期／長期 User Token 及其他 Page Token 不落盤。
 - 連線設定（含私人 ID／TLS 路徑）留在原生庫 `oauth-<connection>-config`；token bundle 留在 `oauth-<connection>-<revision>-p<index>`，每段不超過 2000 ASCII 字元，避開 Windows 單筆大小上限。參照檔只保存名稱、狀態與來源。
 - `.local/social-media/oauth/<platform>-<connection>.json` 只保存版本、平台、代稱、狀態、分段數、隨機 revision／attempt、時間與不含憑證聲明；schema 見 `oauth-state.schema.json`。`.local/social-media/oauth-runtime.lock` 序列化同一工作區的交換與取用。
 - 舊世代保留在原生庫，避免未確認刪除與無法恢復。需要清理時先預覽確切舊世代，使用既有單筆刪除流程並另行確認；不得刪除現行 revision 或正在寫入的值。不把舊世代自動切回當備援。
@@ -69,6 +77,10 @@ Facebook：先驗短期及長期 User Token 的 App、使用者、類型與期�
 
 Scope 要求與實際讀回不一致（少授予或多出未同意項目）一律停止，不自行擴權。Facebook 隱含的 `public_profile` 必須在預覽揭露，程式將其納入核對。
 
+Instagram Login／Threads：每次取用先做當前身分檢查；長 Token 剩最後七天、已持有至少 24 小時、仍有效且刷新已獲核准時才按需刷新一次。七天是本套件策略，不是平台硬性要求；不建立背景排程。過期不能刷新，回到本人重新同意。Instagram 的 scope 清單是初次交換證據，**不是每次重新核對所有權限**；Threads 另讀官方 debugger 的當前 scope。Instagram 的發布、留言、insights 與私訊必須由選定功能的正式端點處理權限不足、撤權與未知結果，且一項成功不得推定其他項目成功；細節見專用契約。`ready` 只涵蓋各路徑明列的讀回範圍。
+
+Instagram via Facebook Login：初次以長期 User Token 精確核對 `/me/permissions`，再只保存唯一相連 IG 目標的 Page Token。每次取用重新核對 Page Token 的 App、類型、scope、期限、Page 與 IG 關係；失效要重新 Facebook OAuth，不套用 Instagram Login／Threads／Google refresh。`expires_at=0` 仍不等於永久有效。
+
 ## 停止、恢復與最小 MVP
 
 - `configured`：只有本機連線設定，未授權；`authorizing`：等待本人；`exchanging`／`refreshing`：已開始一次交換。
@@ -89,4 +101,4 @@ YouTube 的 `quotaExceeded` 會歸入 `rate_limited`，不建議以擴權解決�
 
 已直接讀取的當前官方文件：[Google Desktop OAuth](https://developers.google.com/identity/protocols/oauth2/native-app)、[Google 官方 refresh 實作](https://github.com/googleapis/google-auth-library-python/blob/main/google/oauth2/_client.py)、[YouTube channels.list](https://developers.google.com/youtube/v3/docs/channels/list)、[Facebook manual flow](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow/)、[長期 Token](https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived/)、[Facebook Login 安全規則](https://developers.facebook.com/docs/facebook-login/security/)、[Meta Token 類型](https://developers.facebook.com/documentation/facebook-login/guides/access-tokens)、[Meta 官方 Page Token 範例](https://www.postman.com/meta/facebook/request/bqfxwbp/get-access-tokens-of-pages-you-manage)。只作行為查證，未複製或安裝官方 SDK。
 
-`tests/test_oauth_runtime.py` 使用虛構 backend／HTTP 回應，涵蓋交換、長 Token 分段、刷新、scope／目標不符、撤銷、state、PKCE、重播、中斷及不明結果。Loopback HTTP 測試只連本機，讀取官方 Location 但不跟隨，不開瀏覽器；不是平台 OAuth 實測。TLS、反向代理、原生庫、使用者同意及實際權限讀回全部留到最後集中驗收。
+`tests/test_oauth_runtime.py`、`tests/test_meta_user_oauth.py` 與 `tests/test_instagram_facebook_oauth.py` 使用虛構 backend／HTTP 回應，涵蓋五條登入路徑的交換、選定資源、分段保存、刷新、scope／目標不符、撤銷、state、PKCE、重播、中斷及不明結果。Loopback HTTP 測試只連本機，讀取官方 Location 但不跟隨，不開瀏覽器；不是平台 OAuth 實測。TLS、反向代理、原生庫、使用者同意及實際權限讀回全部留到最後集中驗收。

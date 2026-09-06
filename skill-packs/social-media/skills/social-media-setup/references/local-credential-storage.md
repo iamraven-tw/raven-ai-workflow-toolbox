@@ -83,7 +83,7 @@ python3 <skill-directory>/scripts/credential_terminal.py status \
 - `pending_delete`：再次確認刪除同一筆後執行 `remove --confirm-delete`；先檢查存在性，值已不在時只完成該筆參照移除，不再送第二次刪除。
 - 鎖檔與 `.local/social-media/credential-input/` 的收據只供本機協調；安裝器不刪除它們，不含秘密。程序結束會釋放作業系統鎖，不需要手動刪鎖檔。
 
-本 helper 只處理本機保存與恢復；平台到期、撤銷、交換與更新交給 [OAuth 執行器](oauth-runtime.md)。Facebook Pages／YouTube 已有程式與虛構測試，後續技能必須透過其 `Runtime.access()` 讀回驗證；不能因原生 `verified` 就宣稱平台憑證可長期使用。Instagram／Threads 不套用 Facebook 執行器，真實原生庫與 OAuth 均留到最後驗收。
+本 helper 只處理本機保存與恢復；平台到期、撤銷、交換與更新交給 [OAuth 執行器](oauth-runtime.md)。Facebook Pages、YouTube、Instagram Login、Instagram via Facebook Login、Threads 五條路徑已有程式與虛構測試，後續技能必須透過其 `Runtime.access()` 讀回驗證；不能因原生 `verified` 就宣稱平台憑證可長期使用。Instagram Login／Threads 使用各自專用交換與刷新，Instagram via Facebook Login 使用相連 Page Token 且不套用其他刷新，真實原生庫與 OAuth 均留到最後驗收。
 
 ## 驗證邊界
 

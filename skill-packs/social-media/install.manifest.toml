@@ -3,31 +3,33 @@ manifest_type = "social-media-install"
 project_id = "social-media"
 display_name = "社群媒體管理工作流"
 entrypoint = "INSTALL.md"
-checked_on = "2026-09-05"
-status = "local_candidate_first_skill"
+checked_on = "2026-09-06"
+status = "local_candidate_full_pack"
 installable = true
 requires_network = false
-support_level = "first_skill_installable_candidate_not_formally_supported"
+support_level = "full_pack_installable_candidate_not_formally_supported"
 license_spdx = "Apache-2.0"
 
 [runtime]
 local_strategy_requires_network = false
+project_initialization_defaults_opencli = true
+opencli_download_requires_notice_and_approval = true
 platform_capability_refresh_requires_network = true
 external_account_actions_require_explicit_authorization = true
 
 [installation]
-candidate_version = "0.1.0"
+candidate_version = "0.7.0"
 manager = "scripts/manage_install.py"
 manager_requires_python = ">=3.11"
 manager_network_access = false
 state_schema_version = 1
 conflict_policy = "stop_without_overwrite"
-managed_entries = ["social-media-setup"]
+managed_entries = ["social-media-setup", "social-content-planning", "social-content-writing", "social-image-production", "social-content-publishing", "social-community-management", "social-performance-analysis"]
 
 [workspace]
 configuration_manager = "skills/social-media-setup/scripts/manage_workspace.py"
 configuration_schema = "skills/social-media-setup/references/social-media-config.schema.json"
-configuration_schema_version = 3
+configuration_schema_version = 5
 state_schema = "skills/social-media-setup/references/setup-state.schema.json"
 template_path = "skills/social-media-setup/assets/default-config.json"
 configuration_target = "<workspace>/social-media/config.json"
@@ -51,19 +53,243 @@ live_acceptance = "deferred_until_all_toolboxes_complete"
 default_tests = "fictional_local_only"
 native_test_opt_in = "SOCIAL_NATIVE_ACCEPTANCE=1"
 
+[workflow_review]
+status = "all_seven_reviewed_and_allowed_to_continue"
+meaning = "described_user_flow_only_not_agent_behavior_live_account_or_formal_support"
+record = "docs/workflow-review-status.md"
+reviewed_skills = ["social-media-setup", "social-content-planning", "social-content-writing", "social-image-production", "social-content-publishing", "social-community-management", "social-performance-analysis"]
+live_acceptance = "not_performed"
+
+[package_preflight]
+status = "current_root_agent_fictional_forward_test_passed_independent_and_live_not_performed"
+transcript = "tests/agent-dialogue-preflight.md"
+validator = "tests/test_agent_dialogue_preflight.py"
+verification = "docs/agent-dialogue-preflight-local-verification.md"
+case_count = 10
+external_actions = false
+independent_agent_evaluation = "not_performed"
+live_installed_agent_discovery = "not_performed"
+
+[package_regression]
+status = "passed_local_static_install_and_fictional_suite_live_not_performed"
+verification = "docs/package-regression-local-verification.md"
+full_suite_total = 382
+full_suite_passed = 381
+full_suite_skipped = 1
+install_lifecycle_total = 13
+install_lifecycle_passed = 13
+skill_format_passed = 7
+broken_symlinks = 0
+diff_check = "passed"
+
+[candidate_handoff]
+status = "local_candidate_closeout_complete_live_acceptance_pending"
+record = "docs/local-candidate-handoff.md"
+local_sections = ["initialization_and_document_alignment", "publishing", "community", "performance", "package_preflight_image_preparation_and_regression"]
+conditional_scope_policy = "active_only_when_a_real_extension_need_appears"
+public_private_sync = "disabled_independent_snapshots"
+live_acceptance = "deferred_requires_separate_authorization"
+commit = "not_performed"
+push = "not_performed"
+release = "not_performed"
+
+[live_acceptance_plan]
+status = "prepared_not_authorized_not_started"
+runbook = "docs/live-acceptance-runbook.md"
+result_template = "docs/live-acceptance-result-template.json"
+result_schema_version = 1
+stages = ["LIVE-01", "LIVE-02", "LIVE-03", "LIVE-04", "LIVE-05", "LIVE-06", "LIVE-07", "LIVE-08"]
+per_stage_authorization = true
+external_actions_performed = false
+
 [oauth_runtime]
 entrypoint = "skills/social-media-setup/scripts/oauth_callback.py"
 engine = "skills/social-media-setup/scripts/oauth_runtime.py"
 transport = "skills/social-media-setup/scripts/oauth_http.py"
+meta_user_adapter = "skills/social-media-setup/scripts/meta_user_oauth.py"
+instagram_facebook_adapter = "skills/social-media-setup/scripts/instagram_facebook_oauth.py"
 state_schema = "skills/social-media-setup/references/oauth-state.schema.json"
-routes = ["facebook", "youtube"]
+routes = ["facebook", "youtube", "instagram", "threads"]
+instagram_flow = "instagram_login_https_code_long_token_refresh_professional_identity"
+instagram_facebook_flow = "facebook_login_https_code_selected_linked_page_token_instagram_identity"
+threads_flow = "threads_https_code_long_token_refresh_debugger_identity"
+instagram_permission_evidence = "initial_exchange_exact_scopes_current_basic_identity_function_endpoint_required"
 facebook_flow = "web_server_https_code_exchange_selected_page_token"
 youtube_flow = "desktop_loopback_pkce_code_exchange_refresh"
 status = "implemented_fictional_tests_live_deferred"
 
 [implementation_gaps]
-instagram_threads_oauth_adapters = "not_implemented_do_not_reuse_facebook_runtime"
 messenger_webhook_and_message_actions = "not_implemented_in_setup_requires_community_skill_and_authorized_infrastructure"
+
+[capability_limits]
+instagram_login_current_full_scope_list = "not_documented_in_official_sources_checked_2026_09_06"
+instagram_login_function_scope_status = "verify_at_selected_official_endpoint_each_use"
+
+[image_production]
+preference_field = "image_production"
+routes = ["codex", "antigravity", "web", "html_css"]
+router = "skills/social-image-production/scripts/image_routing.py"
+web_default = "prompt_handoff_browser_only_on_current_explicit_request"
+html_export = "existing_authorized_local_renderer_only_live_not_verified"
+legacy_config = "schema_3_4_read_compatible_schema_5_brand_preview_confirm_write"
+brand_field = "brand_visual"
+acceptance_brief = "skills/social-image-production/assets/acceptance-test-brief.json"
+acceptance_square_brief = "skills/social-image-production/assets/acceptance-test-square-brief.json"
+acceptance_overflow_brief = "skills/social-image-production/assets/acceptance-overflow-brief.json"
+acceptance_web_prompts = "skills/social-image-production/assets/acceptance-web-prompts.md"
+acceptance_html = "skills/social-image-production/assets/acceptance-information-card.html"
+acceptance_result_template = "skills/social-image-production/assets/acceptance-result-template.json"
+acceptance_reference = "skills/social-image-production/references/acceptance-testing.md"
+acceptance_test = "tests/test_image_acceptance_preparation.py"
+acceptance_status = "prepared_local_fixtures_routes_and_static_tests_live_generation_not_performed"
+
+[publishing]
+helper = "skills/social-content-publishing/scripts/publish_job.py"
+official_api_adapter = "skills/social-content-publishing/scripts/official_publish_api.py"
+transaction_coordinator = "skills/social-content-publishing/scripts/publish_execute.py"
+execution_sources = "skills/social-content-publishing/references/execution-sources.json"
+official_spec_review = "docs/publishing-official-specs-local-verification.md"
+platform_documents = ["youtube", "instagram", "facebook", "threads", "substack"]
+official_api_platforms = ["youtube", "facebook", "instagram", "threads"]
+substack_primary_interface = "controlled_browser_opencli"
+execution = "agent_calls_transaction_coordinator_or_controlled_browser_after_begin"
+local_helper = "preview_binding_lock_deduplication_stage_claim_checkpoint_readback_ledger"
+network_access_by_helper = false
+network_access_by_official_api_adapter = true
+network_access_by_transaction_coordinator = true
+api_adapter_status = "implemented_local_fictional_tests_live_not_performed"
+transaction_integration = "implemented_local_fictional_tests_live_not_performed"
+format_routing_status = "verified_official_sources_local_contract_tests_live_not_performed"
+live_status = "not_performed"
+
+[community]
+helper = "skills/social-community-management/scripts/community_queue.py"
+official_api_adapter = "skills/social-community-management/scripts/official_community_api.py"
+transaction_coordinator = "skills/social-community-management/scripts/community_execute.py"
+execution_sources = "skills/social-community-management/references/execution-sources.json"
+sheets_api_adapter = "skills/social-community-management/scripts/official_sheets_api.py"
+sheets_coordinator = "skills/social-community-management/scripts/community_sheets.py"
+sheets_execution_source = "skills/social-community-management/references/sheets-execution-source.json"
+manual_review_helper = "skills/social-community-management/scripts/manual_review.py"
+review_execution_source = "skills/social-community-management/references/review-execution-source.json"
+end_to_end_test = "tests/test_community_end_to_end.py"
+platform_documents = ["youtube", "instagram", "facebook", "threads", "substack"]
+scope = "owned_public_top_level_comments_and_approved_text_replies"
+sheet_columns = ["訪客名稱", "原貼文內容", "原訪客留言", "原貼文摘要", "訪客留言網址", "AI 回覆草稿"]
+sheet_input_option = "RAW"
+sheets_interface = "official_rest_with_injected_existing_google_auth"
+sheets_transport_status = "implemented_local_fictional_tests_live_not_performed"
+sheets_oauth = "external_existing_google_workflow_not_implemented_here"
+official_api_platforms = ["youtube", "facebook", "instagram", "threads"]
+hybrid_permalink_platforms = ["youtube", "instagram"]
+substack_primary_interface = "controlled_browser_opencli"
+local_helper = "quarantine_review_mapping_confirmation_lock_dedup_sheet_claim_stage_claim_checkpoint_readback"
+network_access_by_helper = false
+network_access_by_official_api_adapter = true
+network_access_by_transaction_coordinator = true
+network_access_by_sheets_api_adapter = true
+network_access_by_sheets_coordinator = true
+execution = "agent_calls_sheets_coordinator_then_community_coordinator_after_separate_approvals"
+api_adapter_status = "implemented_local_fictional_tests_live_not_performed"
+transaction_integration = "implemented_local_fictional_tests_live_not_performed"
+review_mode = "human_review_only_local_loopback"
+manual_review_status = "implemented_local_fictional_tests_live_not_performed"
+classifier = "isolated_ai_disabled_not_bundled_or_selectable"
+network_access_by_manual_review_helper = false
+end_to_end_status = "implemented_local_fictional_tests_live_not_performed"
+unknown_result_resolution = "independent_observation_binds_original_claim_without_resend"
+direct_message_research = "docs/community-direct-messaging-mvp-research.md"
+direct_message_contract = "skills/social-community-management/references/direct-messaging-contract.md"
+direct_message_execution_source = "skills/social-community-management/references/direct-message-execution-source.json"
+direct_message_queue = "skills/social-community-management/scripts/direct_message_queue.py"
+direct_message_api_adapter = "skills/social-community-management/scripts/official_direct_message_api.py"
+direct_message_coordinator = "skills/social-community-management/scripts/direct_message_execute.py"
+direct_message_end_to_end_test = "tests/test_direct_message_end_to_end.py"
+direct_message_mode = "explicit_on_demand_facebook_instagram_inbound_24h_text_no_webhook"
+direct_message_review_surface = "private_local_manual_review_no_google_sheets"
+network_access_by_direct_message_queue = false
+network_access_by_direct_message_api_adapter = true
+network_access_by_direct_message_coordinator = true
+direct_messages = "implemented_local_fictional_tests_live_not_performed"
+live_status = "not_performed"
+
+[performance]
+helper = "skills/social-performance-analysis/scripts/performance_review.py"
+collector = "skills/social-performance-analysis/scripts/performance_collect.py"
+official_api_adapter = "skills/social-performance-analysis/scripts/official_performance_api.py"
+metric_catalog = "skills/social-performance-analysis/references/metric-catalog.json"
+metric_catalog_validator = "skills/social-performance-analysis/scripts/metric_catalog.py"
+source_contract = "skills/social-performance-analysis/references/performance-source-contract.md"
+execution_sources = "skills/social-performance-analysis/references/execution-sources.json"
+end_to_end_test = "tests/test_performance_end_to_end.py"
+platform_documents = ["youtube", "instagram", "facebook", "threads", "substack"]
+modes = ["weekly", "monthly", "quarterly", "yearly"]
+network_access_by_helper = false
+network_access_by_collector = false
+network_access_by_official_api_adapter = true
+official_api_platforms = ["youtube", "facebook", "instagram", "threads"]
+substack_execution = "official_read_only_mcp_then_official_export_then_controlled_browser_imported_evidence"
+execution = "official_api_or_hash_bound_imported_evidence_then_existing_analysis_contract"
+data_sources = "implemented_metric_catalog_local_fictional_tests_live_not_performed"
+end_to_end_status = "implemented_four_modes_local_fictional_tests_live_not_performed"
+strategy_write = "human_judgment_then_preview_then_separate_confirmation_hash_bound_append"
+raw_data_target = "<workspace>/social-media/performance/"
+live_status = "not_performed"
+
+[optional_assets.heroicons]
+type = "official_upstream_svg_reference_not_bundled"
+upstream_url = "https://github.com/tailwindlabs/heroicons"
+source_url = "https://github.com/tailwindlabs/heroicons/tree/v2.2.0"
+ref = "v2.2.0"
+license_spdx = "MIT"
+license_url = "https://github.com/tailwindlabs/heroicons/blob/v2.2.0/LICENSE"
+bundled = false
+installable = false
+selection_policy = "existing_or_selected_files_after_download_notice_and_authorization"
+verification = "record_per_file_hash_and_license_before_static_svg_use"
+alternative = "self_authored_css_geometry_or_no_icons"
+
+[[dependencies]]
+id = "opencli"
+type = "official_upstream_not_social_platform_api"
+required = false
+default_for = "project_initialization"
+installation_stage = "agent_runtime_after_notice_and_approval"
+source_contract = "skills/social-media-setup/references/opencli-source.json"
+procedure = "skills/social-media-setup/references/opencli-initialization.md"
+installable = true
+status = "pinned_source_candidate_live_installation_not_performed"
+bundled = false
+managed_by_skill_installer = false
+supported_environment = "macos_windows_candidate_requires_git_node_npm_chrome"
+capacity = "extension_45776_bytes_source_and_npm_dependencies_not_measured"
+fees = "no_subscription_required_for_this_install_platform_fees_separate"
+verification = "source_hashes_then_cli_then_extension_then_bridge_then_separate_platform_read"
+lifecycle = "preview_side_by_side_update_preserve_old_stop_conflicts_separate_removal"
+alternative = "existing_authorized_tools_public_search_or_manual_preview"
+
+[[dependencies]]
+id = "pillow"
+type = "official_upstream_existing_runtime_only"
+required = false
+purpose = "image_text_fallback_and_artifact_decode"
+upstream_url = "https://github.com/python-pillow/Pillow"
+source_url = "https://github.com/python-pillow/Pillow/tree/12.3.0"
+version = "12.3.0"
+tested_existing_versions = ["12.1.1", "12.3.0"]
+license_spdx = "MIT-CMU"
+license_url = "https://github.com/python-pillow/Pillow/blob/12.3.0/LICENSE"
+installable = false
+bundled = false
+managed_by_skill_installer = false
+installation_stage = "none_existing_environment_only"
+status = "existing_runtime_fictional_tests_new_installation_contract_not_ready"
+supported_environment = "python_3.11_plus_existing_pillow_and_authorized_font"
+capacity = "no_download_render_in_memory_max_20_pages_4096_pixels_per_side"
+fees = "local_cpu_no_account_no_inference_fee"
+verification = "fictional_png_decode_dimensions_hash_overflow_handoff_tests"
+lifecycle = "no_install_update_remove_environment_unchanged"
+alternative = "authorized_image_tool_or_preserve_brief_report_missing_runtime"
 
 [registrations.agents_workspace]
 clients = ["codex", "google-antigravity-desktop", "google-antigravity-cli"]
@@ -100,37 +326,49 @@ id = "social-media-setup"
 source_path = "skills/social-media-setup"
 required = true
 install_order = 10
-status = "local_candidate"
+status = "local_candidate_flow_reviewed_live_pending"
 
-[[planned_skills]]
+[[skills]]
 id = "social-content-planning"
-status = "not_implemented"
-sequence = 2
+source_path = "skills/social-content-planning"
+required = true
+install_order = 20
+status = "local_candidate_flow_reviewed_live_pending"
 
-[[planned_skills]]
+[[skills]]
 id = "social-content-writing"
-status = "not_implemented"
-sequence = 3
+source_path = "skills/social-content-writing"
+required = true
+install_order = 30
+status = "local_candidate_flow_reviewed_live_pending"
 
-[[planned_skills]]
+[[skills]]
 id = "social-image-production"
-status = "not_implemented"
-sequence = 4
+source_path = "skills/social-image-production"
+required = true
+install_order = 40
+status = "local_candidate_flow_reviewed_live_pending"
 
-[[planned_skills]]
+[[skills]]
 id = "social-content-publishing"
-status = "not_implemented"
-sequence = 5
+source_path = "skills/social-content-publishing"
+required = true
+install_order = 50
+status = "local_candidate_flow_reviewed_live_pending"
 
-[[planned_skills]]
+[[skills]]
 id = "social-community-management"
-status = "not_implemented"
-sequence = 6
+source_path = "skills/social-community-management"
+required = true
+install_order = 60
+status = "local_candidate_flow_reviewed_live_pending"
 
-[[planned_skills]]
+[[skills]]
 id = "social-performance-analysis"
-status = "not_implemented"
-sequence = 7
+source_path = "skills/social-performance-analysis"
+required = true
+install_order = 70
+status = "local_candidate_flow_reviewed_live_pending"
 
 [[readiness_gates]]
 id = "static_structure_and_documents"
@@ -138,11 +376,15 @@ status = "complete_local"
 
 [[readiness_gates]]
 id = "local_skill_discovery"
-status = "complete_codex_0_144_1_other_clients_not_tested"
+status = "setup_prior_codex_evidence_other_six_isolated_entry_tests_only"
 
 [[readiness_gates]]
 id = "api_packages_installable"
-status = "not_applicable_no_third_party_api_packages_in_first_skill"
+status = "not_applicable_no_third_party_api_packages"
+
+[[readiness_gates]]
+id = "opencli_installation"
+status = "source_contract_checked_live_download_build_extension_bridge_not_performed"
 
 [[readiness_gates]]
 id = "local_credential_storage"
@@ -150,7 +392,7 @@ status = "implementation_and_fictional_backend_tests_complete_macos_windows_live
 
 [[readiness_gates]]
 id = "oauth_runtime_fictional"
-status = "facebook_pages_youtube_passed_no_live_evidence"
+status = "facebook_pages_youtube_instagram_login_threads_passed_no_live_evidence"
 
 [[readiness_gates]]
 id = "user_login_and_oauth"

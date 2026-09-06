@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "input_ref": "fictional-direct-request",
+  "platform": "instagram",
+  "kind": "carousel",
+  "width": 1080,
+  "height": 1350,
+  "visual": "虛構室內植物系列，深綠底、白字、清楚留白",
+  "sources": [{"ref": "fictional-original-copy", "rights": "虛構自製文字，無第三方素材"}],
+  "pages": [
+    {"id": "cover", "exact_text": "室內植物照顧筆記", "alt_text": "深綠底白字的室內植物照顧筆記封面"},
+    {"id": "light", "exact_text": "先觀察光線\n再選擇適合的植物", "alt_text": "提醒先觀察室內光線再選植物的文字圖卡"}
+  ],
+  "layout": {"font_size": 76, "margin": 90, "background": "#17382D", "foreground": "#FFFFFF"}
+}

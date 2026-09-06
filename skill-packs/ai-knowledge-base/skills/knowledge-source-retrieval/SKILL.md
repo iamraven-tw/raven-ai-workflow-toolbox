@@ -46,6 +46,8 @@ description: "知識來源檢索與外部索引管理。當使用者要找既有
 
 創業方向、產品定位、目標客群或一人公司決策相關問題，若 `sources/strategy/solopreneur-profile.md` 存在，先讀取該設定檔；不存在時只有在目前沒有更明確任務時，才交給 `/solopreneur-profile` 引導建立。
 
+社群經營策略、平台角色、內容規劃、互動原則或成效判斷相關問題，若 `sources/strategy/social-media-strategy-and-insights.md` 存在，同時讀取該檔案。`status: not_configured` 不得阻擋已提出的明確任務。逐篇數據與定期報告只是證據來源，不能在沒有使用者討論、補充與確認時被描述為已確認洞察。
+
 ### 步驟 2：查本地核心知識
 
 - 定向搜尋 `sources/book-notes/`、`sources/wiki/` 與已知相關檔案。

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; font-src 'self'">
+  <title>AI Agent 虛構驗收圖卡</title>
+  <style>
+    /* 驗收原稿沒有遠端資源；真正渲染前仍須核對本機中文字型與授權。 */
+    :root {
+      --primary: #174a4a;
+      --secondary: #e9a23b;
+      --background: #f7f4ec;
+      --text: #1e2a2a;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #d9ded8; color: var(--text); }
+    body { font-family: "Noto Sans TC", sans-serif; }
+    .card {
+      width: 1080px;
+      height: 1350px;
+      padding: 76px;
+      overflow: visible;
+      background: var(--background);
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 44px;
+      border-top: 22px solid var(--primary);
+    }
+    .eyebrow { color: var(--primary); font-size: 28px; font-weight: 700; letter-spacing: .08em; }
+    h1 { margin: 18px 0 0; font-size: 78px; line-height: 1.18; letter-spacing: -.03em; }
+    h2 { margin: 0; font-size: 46px; line-height: 1.25; }
+    p { margin: 0; font-size: 34px; line-height: 1.55; }
+    .accent { color: var(--primary); }
+    .body { display: grid; align-content: center; gap: 30px; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .panel { border: 3px solid var(--primary); border-radius: 26px; padding: 34px; display: grid; gap: 18px; }
+    .panel.agent { background: var(--primary); color: var(--background); }
+    .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .step { padding: 28px; border-radius: 22px; background: #e5ece9; font-size: 34px; font-weight: 700; }
+    .number { color: var(--secondary); margin-right: 12px; }
+    footer { border-top: 3px solid #c9c5bb; padding-top: 22px; font-size: 27px; line-height: 1.45; }
+  </style>
+</head>
+<body>
+  <article class="card" data-page="cover" aria-label="AI Agent 是什麼封面">
+    <header><div class="eyebrow">虛構測試 · 01</div><h1>AI Agent 是什麼？<br><span class="accent">從目標到行動</span>的工作流程</h1></header>
+    <div class="body"><p>這一頁測試繁體中文、英文字母、問號、換行與手機縮圖可讀性。</p></div>
+    <footer>1080 × 1350 測試畫布；不是平台官方規格保證。</footer>
+  </article>
+  <article class="card" data-page="comparison" aria-label="聊天機器人與 AI Agent 比較">
+    <header><div class="eyebrow">虛構測試 · 02</div><h1>兩者有什麼不同？</h1></header>
+    <div class="body compare">
+      <section class="panel"><h2>聊天機器人</h2><p>回答當下問題</p></section>
+      <section class="panel agent"><h2>AI Agent</h2><p>根據目標選擇工具並完成多步驟工作</p></section>
+    </div>
+    <footer>比較欄必須完整顯示，不可用裁切或極小字藏掉溢位。</footer>
+  </article>
+  <article class="card" data-page="workflow" aria-label="AI Agent 四步驟">
+    <header><div class="eyebrow">虛構測試 · 03</div><h1>Agent 的四個步驟</h1></header>
+    <div class="body steps">
+      <div class="step"><span class="number">1</span>接收目標</div>
+      <div class="step"><span class="number">2</span>選擇工具</div>
+      <div class="step"><span class="number">3</span>執行任務</div>
+      <div class="step"><span class="number">4</span>讀回驗證</div>
+    </div>
+    <footer>重要動作保留人工確認</footer>
+  </article>
+</body>
+</html>

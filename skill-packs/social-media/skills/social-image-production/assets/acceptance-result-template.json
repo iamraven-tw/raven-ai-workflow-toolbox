@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "social_image_acceptance_results",
+  "fixture": "assets/acceptance-test-brief.json",
+  "all_external_actions_authorized": false,
+  "routes": [
+    {
+      "route": "codex",
+      "route_selection": "not_run",
+      "tool_available": "not_run",
+      "generation_or_render": "not_run",
+      "dimensions": "not_run",
+      "text_and_visual_review": "not_run",
+      "user_images_approval": "not_run",
+      "handoff_check": "not_run",
+      "manifest_ref": null,
+      "notes": null
+    },
+    {
+      "route": "antigravity",
+      "route_selection": "not_run",
+      "tool_available": "not_run",
+      "generation_or_render": "not_run",
+      "dimensions": "not_run",
+      "text_and_visual_review": "not_run",
+      "user_images_approval": "not_run",
+      "handoff_check": "not_run",
+      "manifest_ref": null,
+      "notes": null
+    },
+    {
+      "route": "web",
+      "route_selection": "not_run",
+      "tool_available": "not_run",
+      "generation_or_render": "not_run",
+      "dimensions": "not_run",
+      "text_and_visual_review": "not_run",
+      "user_images_approval": "not_run",
+      "handoff_check": "not_run",
+      "manifest_ref": null,
+      "notes": null
+    },
+    {
+      "route": "html_css",
+      "route_selection": "not_run",
+      "tool_available": "not_run",
+      "generation_or_render": "not_run",
+      "dimensions": "not_run",
+      "text_and_visual_review": "not_run",
+      "user_images_approval": "not_run",
+      "handoff_check": "not_run",
+      "manifest_ref": null,
+      "notes": null
+    }
+  ],
+  "live_status": "not_performed"
+}
+

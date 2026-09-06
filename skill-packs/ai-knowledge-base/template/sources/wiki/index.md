@@ -5,6 +5,7 @@
 開始檢索前先讀：
 
 - [一人公司設定](../strategy/solopreneur-profile.md)（創業方向相關問題）
+- [社群媒體策略與洞察](../strategy/social-media-strategy-and-insights.md)（社群策略、內容規劃與成效判斷）
 - [讀書筆記](../book-notes/README.md)
 - [次級資料](../references/README.md)
 - [Notebook 路由索引](../references/notebooks/index.md)

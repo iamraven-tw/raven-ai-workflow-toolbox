@@ -19,7 +19,8 @@ from urllib.parse import parse_qs, urlencode, urlsplit
 
 import credential_store as vault
 from oauth_http import OAuthError
-from oauth_runtime import Runtime, validate_config
+from oauth_runtime import Runtime, validate_config, ROUTES
+from meta_user_oauth import AUTH_URLS
 
 
 class CallbackSession:
@@ -63,6 +64,10 @@ class CallbackSession:
                 code_challenge=base64.urlsafe_b64encode(hashlib.sha256(self.verifier.encode()).digest()).decode().rstrip("="),
                 code_challenge_method="S256", access_type="offline")
             endpoint = "https://accounts.google.com/o/oauth2/v2/auth"
+        elif (self.config["platform"] in AUTH_URLS
+              and self.config["login_route"] != "instagram_facebook_login"):
+            params["scope"] = ",".join(self.config["scopes"])
+            endpoint = AUTH_URLS[self.config["platform"]]
         else:
             params["scope"] = ",".join(self.config["scopes"])
             endpoint = f"https://www.facebook.com/{self.config['graph_version']}/dialog/oauth"
@@ -92,7 +97,8 @@ class CallbackSession:
                     raise OAuthError("invalid_callback")
                 if "error" in values:
                     raise OAuthError("cancelled")
-                if "iss" in values and values["iss"] != ["https://accounts.google.com"]:
+                if "iss" in values and (self.config["platform"] != "youtube"
+                                       or values["iss"] != ["https://accounts.google.com"]):
                     raise OAuthError("invalid_callback")
                 code = values.get("code", [""])[0]
                 if not code or len(code) > 8192 or any(ord(c) < 32 for c in code):
@@ -239,8 +245,9 @@ def main():
     parser = SafeParser(description="社群 OAuth 設定、接收與有效性檢查")
     parser.add_argument("command", choices=["preview", "configure", "run", "status", "check"])
     parser.add_argument("--workspace-root", required=True)
-    parser.add_argument("--platform", required=True, choices=["facebook", "youtube"])
+    parser.add_argument("--platform", required=True, choices=sorted(ROUTES))
     parser.add_argument("--connection", default="main")
+    parser.add_argument("--login-route")
     parser.add_argument("--client-id")
     parser.add_argument("--target-id")
     parser.add_argument("--scope", action="append", default=[])
@@ -258,9 +265,12 @@ def main():
     args = parser.parse_args()
     try:
         if args.command in {"preview", "configure"}:
-            config = validate_config({key: getattr(args, key) for key in (
+            config = {key: getattr(args, key) for key in (
                 "platform", "client_id", "target_id", "secret_ref", "graph_version", "redirect_uri",
-                "callback_port", "callback_mode", "tls_cert", "tls_key")} | {"scopes": args.scope})
+                "callback_port", "callback_mode", "tls_cert", "tls_key")} | {"scopes": args.scope}
+            if args.login_route:
+                config["login_route"] = args.login_route
+            config = validate_config(config)
             if not re.fullmatch(r"[a-z][a-z0-9-]{0,19}", args.connection):
                 raise OAuthError("invalid_configuration")
             # 確認不可跨工作區或連線代稱挪用；預覽只解析路徑，不碰原生憑證。
@@ -269,7 +279,8 @@ def main():
             digest = hashlib.sha256(json.dumps(preview, sort_keys=True).encode()).hexdigest()
             if args.command == "preview":
                 print(json.dumps({"platform": args.platform, "connection": args.connection,
-                    "scopes": args.scope, "callback_mode": args.callback_mode, "preview_digest": digest,
+                    "login_route": config["login_route"], "scopes": args.scope,
+                    "callback_mode": args.callback_mode, "preview_digest": digest,
                     "contains_credentials": False}))
                 return 0
             if args.preview_digest != digest:

@@ -1,0 +1,152 @@
+{
+  "schema_version": 2,
+  "checked_on": "2026-09-06",
+  "caller": "social-content-publishing Agent invokes publish_execute.py after publish_job begin",
+  "transaction_coordinator": "scripts/publish_execute.py",
+  "live_status": "not_performed",
+  "routing_policy": "select_the_exact_format_and_variant_route_before_preview_and_begin_never_switch_after_an_unknown_write",
+  "version_policy": "youtube_uses_data_api_v3_meta_graph_version_comes_from_private_connection_config_and_must_be_rechecked_against_current_official_docs_before_live_use",
+  "limit_policy": "use_current_official_runtime_quota_endpoints_or_account_values_when_available_do_not_treat_document_examples_as_permanent_limits",
+  "platforms": {
+    "youtube": {
+      "primary_interface": "official_api",
+      "primary_source": "scripts/official_publish_api.py",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://developers.google.com/youtube/v3/docs/videos/insert",
+      "credential_route": "social-media-setup Runtime.access youtube",
+      "implemented_formats": ["video"],
+      "implemented_actions": ["resumable_session", "single_put", "video_readback"],
+      "format_routes": {
+        "video": {
+          "route": "official_api",
+          "official_capability": "documented",
+          "local_adapter": "implemented",
+          "accepted_upload_mime_types": ["video/*", "application/octet-stream"],
+          "maximum_file_size": "256_GB",
+          "maximum_duration": "12_hours_platform_limit",
+          "longer_than_15_minutes": "requires_verified_youtube_account",
+          "quota": "default_100_videos_insert_calls_per_day_and_1_video_upload_quota_unit_per_call_subject_to_change",
+          "runtime_checks": ["account_feature_eligibility", "current_project_quota", "unverified_api_project_private_only_restriction"]
+        }
+      },
+      "supported_file_extensions_reference": "https://support.google.com/youtube/troubleshooter/2888402",
+      "fallback": "controlled_browser_then_manual",
+      "known_gap": "thumbnail_caption_playlist_and_cross_process_upload_resume_are_outside_the_current_MVP"
+    },
+    "facebook": {
+      "primary_interface": "official_api",
+      "primary_source": "scripts/official_publish_api.py",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://www.postman.com/meta/facebook/documentation/r56bjfd/facebook-api?entity=request-23987686-0b79260c-96bd-49de-875b-6076213785fc",
+      "credential_route": "social-media-setup Runtime.access facebook",
+      "implemented_formats": ["text", "image", "carousel"],
+      "implemented_actions": ["feed_create", "photo_url_create", "post_readback"],
+      "format_routes": {
+        "text": {"route": "official_api", "official_capability": "documented", "local_adapter": "implemented"},
+        "image": {
+          "route": "official_api",
+          "official_capability": "documented",
+          "local_adapter": "implemented_for_authorized_https_source",
+          "local_file_route": "controlled_browser"
+        },
+        "carousel": {
+          "route": "official_api",
+          "official_capability": "documented_for_attached_photos",
+          "local_adapter": "implemented_for_authorized_https_sources"
+        },
+        "video": {
+          "route": "controlled_browser",
+          "official_capability": "reels_upload_api_documented",
+          "local_adapter": "not_implemented",
+          "documented_api_phases": ["start", "binary_or_hosted_upload", "status_read", "finish"],
+          "legacy_collection_constraints_not_enforced": "540x960_9_to_16_23fps_or_more_4_to_60_seconds",
+          "current_limit_status": "refresh_required_due_to_legacy_api_examples_and_2025_all_videos_become_reels_rollout"
+        }
+      },
+      "fallback": "controlled_browser_then_manual",
+      "known_gap": "facebook_video_and_reels_low_level_adapter_and_current_exact_api_media_constraints_are_not_in_the_MVP"
+    },
+    "instagram": {
+      "primary_interface": "official_api",
+      "primary_source": "scripts/official_publish_api.py",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://www.postman.com/meta/instagram/documentation/6yqw8pt/instagram-api?entity=request-23987686-ab559ffb-8e2c-4b0a-b43a-5737b6d2f672",
+      "credential_route": "social-media-setup Runtime.access instagram with login_route host selection",
+      "implemented_formats": ["image", "carousel_image_only", "reel"],
+      "implemented_actions": ["media_container", "container_status", "media_publish", "media_readback"],
+      "format_routes": {
+        "image": {
+          "route": "official_api",
+          "official_capability": "documented",
+          "local_adapter": "implemented_for_authorized_https_source",
+          "accepted_image_format": "JPEG_only_no_MPO_or_JPS"
+        },
+        "carousel": {
+          "route": "official_api",
+          "official_capability": "documented_up_to_10_mixed_images_and_videos",
+          "local_adapter": "implemented_for_image_only_authorized_https_sources",
+          "image_only_route": "official_api",
+          "mixed_image_video_route": "controlled_browser",
+          "maximum_items": 10
+        },
+        "reel": {
+          "route": "official_api",
+          "official_capability": "documented",
+          "local_adapter": "implemented_for_authorized_https_source",
+          "container_formats": ["MOV", "MP4"],
+          "duration": "3_seconds_to_15_minutes",
+          "maximum_file_size": "1_GB",
+          "frame_rate": "23_to_60_FPS"
+        }
+      },
+      "publishing_limit_endpoint": "/{ig-user-id}/content_publishing_limit",
+      "fixed_daily_limit_status": "do_not_hardcode_official_collection_currently_contains_conflicting_50_and_100_posts_per_24_hours_statements",
+      "fallback": "controlled_browser_then_manual",
+      "known_gap": "api_media_requires_authorized_public_https_source_and_mixed_carousel_is_not_implemented"
+    },
+    "threads": {
+      "primary_interface": "official_api",
+      "primary_source": "scripts/official_publish_api.py",
+      "implementation_status": "transaction_integrated_local_fictional_tests_live_pending",
+      "official_reference": "https://www.postman.com/meta/threads/documentation/dht3nzz/threads-api",
+      "credential_route": "social-media-setup Runtime.access threads",
+      "implemented_formats": ["text", "image", "video"],
+      "implemented_actions": ["media_container", "container_status", "threads_publish", "thread_readback"],
+      "format_routes": {
+        "text": {"route": "official_api", "official_capability": "documented", "local_adapter": "implemented"},
+        "image": {"route": "official_api", "official_capability": "documented", "local_adapter": "implemented_for_authorized_https_source"},
+        "video": {"route": "official_api", "official_capability": "documented", "local_adapter": "implemented_for_authorized_https_source"},
+        "carousel": {
+          "route": "controlled_browser",
+          "official_capability": "documented_for_2_to_20_mixed_images_and_videos",
+          "local_adapter": "not_implemented",
+          "documented_api_phases": ["child_containers", "carousel_parent_container", "threads_publish", "thread_readback"],
+          "minimum_items": 2,
+          "maximum_items": 20
+        }
+      },
+      "publishing_limit_endpoint": "/me/threads_publishing_limit?fields=quota_usage,config,reply_quota_usage,reply_config",
+      "fixed_daily_limit_status": "do_not_hardcode_read_current_config_at_runtime",
+      "fallback": "controlled_browser_then_manual",
+      "known_gap": "carousel_is_officially_documented_but_not_implemented_and_remote_media_requires_authorized_https_source"
+    },
+    "substack": {
+      "primary_interface": "controlled_browser",
+      "primary_source": "OpenCLI pinned source through social-media-setup",
+      "implementation_status": "browser_handoff_claim_and_observation_integrated_live_pending",
+      "official_reference": "https://support.substack.com/hc/en-us/articles/360037831771-How-do-I-publish-a-new-post-on-Substack",
+      "credential_route": "user_login_in_agent_controlled_Chrome_not_API_token",
+      "implemented_formats": ["article"],
+      "documented_actions": ["browser_editor", "browser_publish_or_schedule", "browser_reload_readback"],
+      "format_routes": {
+        "article": {
+          "route": "controlled_browser",
+          "official_capability": "official_dashboard_documented_public_write_api_not_found",
+          "local_adapter": "browser_handoff_only"
+        }
+      },
+      "fallback": "manual",
+      "known_gap": "official_MCP_is_read_only_and_no_official_public_write_API_was_found"
+    }
+  }
+}

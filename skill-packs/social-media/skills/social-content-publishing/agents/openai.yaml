@@ -1,0 +1,4 @@
+interface:
+  display_name: "社群內容發布"
+  short_description: "核准文案與媒體後逐平台發布，讀回網址、時間與狀態，結果不明即停止"
+  default_prompt: "使用 $social-content-publishing 整理這次要發布的內容，先展示完整預覽並等我確認，再逐平台執行與讀回驗證。"
