@@ -202,8 +202,10 @@ class CredentialStoreTests(unittest.TestCase):
         local.mkdir()
         try:
             (local / "social-media").symlink_to(outside, target_is_directory=True)
-        except OSError:
-            self.skipTest("目前環境不允許建立 symlink")
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows 未授予建立 symlink 權限；此防護案例未實測")
+            raise
         with self.assertRaises(CREDENTIAL_STORE.CredentialStoreError):
             CREDENTIAL_STORE.store_secret(
                 self.workspace,
@@ -349,15 +351,25 @@ class CredentialStoreTests(unittest.TestCase):
             self.assertEqual(CREDENTIAL_STORE.remove_secret(self.workspace, "facebook", "app-secret",
                 confirmed=True, backend=self.backend)["status"], "deleted")
 
-    def test_broken_symlink_and_lock_contention_stop(self):
-        """失效 symlink 與同時寫入都必須在碰憑證庫前停止。"""
+    def test_broken_symlink_stops(self):
+        """失效 symlink 必須在碰憑證庫前停止。"""
 
         path = self.workspace / CREDENTIAL_STORE.REGISTRY_RELATIVE
         path.parent.mkdir(parents=True)
-        path.symlink_to(self.workspace / "missing.json")
+        try:
+            path.symlink_to(self.workspace / "missing.json")
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows 未授予建立 symlink 權限；此防護案例未實測")
+            raise
         with self.assertRaises(CREDENTIAL_STORE.CredentialStoreError):
             CREDENTIAL_STORE.load_registry(self.workspace)
         path.unlink()
+        self.assertFalse(self.backend.values)
+
+    def test_lock_contention_stops_without_writing(self):
+        """鎖競爭獨立測試，不能因缺少 symlink 權限而被跳過。"""
+
         with CREDENTIAL_STORE.workspace_lock(self.workspace):
             with self.assertRaises(CREDENTIAL_STORE.CredentialStoreError):
                 CREDENTIAL_STORE.store_secret(self.workspace, "facebook", "app-secret",

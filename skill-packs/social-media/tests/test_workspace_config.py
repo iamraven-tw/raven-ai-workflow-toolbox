@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -153,7 +154,7 @@ class WorkspaceConfigurationTests(unittest.TestCase):
         """呼叫設定管理器。"""
 
         arguments = [
-            "python3",
+            sys.executable,
             str(MANAGER),
             command,
             "--workspace-root",
@@ -519,7 +520,12 @@ class WorkspaceConfigurationTests(unittest.TestCase):
         outside = self.root / "outside"
         outside.mkdir()
         self.workspace.mkdir()
-        (self.workspace / "social-media").symlink_to(outside, target_is_directory=True)
+        try:
+            (self.workspace / "social-media").symlink_to(outside, target_is_directory=True)
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows 未授予建立 symlink 權限；此防護案例未實測")
+            raise
         result = self.command("preview")
         self.assertEqual(result.returncode, 2)
         self.assertIn("父路徑不得是 symlink", result.stderr)
