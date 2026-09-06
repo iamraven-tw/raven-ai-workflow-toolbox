@@ -1,0 +1,21 @@
+# 統一用 LF 換行，避免 Windows 端的 autocrlf 把文字檔轉成 CRLF 造成整檔差異與雜湊不一致
+* text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+*.astro text eol=lf
+*.ts text eol=lf
+*.mjs text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+# 二進位檔不做任何轉換
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.mp4 binary
