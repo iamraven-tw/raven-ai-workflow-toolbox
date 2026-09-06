@@ -13,7 +13,7 @@ AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計�
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於早期開發階段。AI 知識庫、AI 剪片與 Google 工具自動化的 Agent 端候選版可供外部驗收，但都尚未正式支援；各套件仍有另一臺電腦、外部帳號或人工成果驗收關卡。社群媒體技能包尚未完成；官網打造技能包已完成第一版五個本機候選技能，本 repository 也尚未公開發布。
+> 本專案目前處於早期開發階段。AI 知識庫、AI 剪片與 Google 工具自動化的 Agent 端候選版可供外部驗收，但都尚未正式支援；各套件仍有另一臺電腦、外部帳號或人工成果驗收關卡。社群媒體技能包尚未完成；官網打造技能包已完成第一版五個本機候選技能；AI Agent 規則與技能盤點技能包已鎖定上游 v0.2.1 為本機候選。本 repository 也尚未公開發布。
 
 ## 專案要解決的問題
 
@@ -40,6 +40,7 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 | AI 知識庫 | Agent 端候選版可供外部驗收；本機生命週期與三種桌面／開發用戶端技能發現已通過，尚未正式支援 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
 | 社群媒體管理工作流 | 有個人化實驗與自動化經驗，但公開版本需要重新設計 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
 | 官網打造工作流 | 第一版五個技能（設定、文案、風格挑選、建置、部署）與起始範本為可安裝的本機候選；第二版兩個技能尚未建立，尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到 `workers.dev` 上線與自訂網域 |
+| AI Agent 規則與技能盤點 | 上游 v0.2.1 已鎖定並以乾淨 clone 核對雜湊，本套件為可安裝的本機候選；技能發現、實際盤點與另一臺電腦驗收尚未執行，尚未正式支援 | 讓 Agent 盤點本機所有 AI coding agent 的規則與技能，寫成中文摘要並用本機網站呈現，協助使用者看懂並整理自己的工作流設定 |
 
 ### 1. AI 剪片工作流
 
@@ -313,6 +314,8 @@ AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INST
 AI 剪片已建立 [`skill-packs/ai-video/`](skill-packs/ai-video/README.md) 的完整 Agent 安裝與生命週期契約，並發布鎖定的 [Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1)。manifest 標示 `installable = true`，代表可安裝為外部驗收候選版；`officially_supported` 仍為空，直到使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收。根專案的套件分流見 [`INSTALL.md`](INSTALL.md)。
 
 社群媒體管理技能包尚未提供安裝方式。官網打造目前提供第一版五個技能與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構與虛構生命週期已通過，技能發現、真實 Wrangler 登入、部署與網域都尚未執行，範本建置以環境變數選擇性驗證，部署流程以假的 wrangler 程式做虛構測試。設計決策見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)。
+
+AI Agent 規則與技能盤點提供 [`INSTALL.md`](skill-packs/agent-inventory/INSTALL.md) 與本機候選 manifest。它不含自有技能，只用固定 tag `v0.2.1` 安裝上游 [iamraven-tw/agent-inventory](https://github.com/iamraven-tw/agent-inventory)（MIT）的六個技能，安裝器不連網、不掃描、不修改任何既有規則或技能。靜態結構、虛構資料生命週期與乾淨 clone 的雜湊核對及實際安裝已在維護者機器通過；技能發現、實際盤點與另一臺電腦驗收都尚未執行。整合決策見 [`docs/decisions/0004-agent-inventory-integration.md`](docs/decisions/0004-agent-inventory-integration.md)。
 
 ## 貢獻
 

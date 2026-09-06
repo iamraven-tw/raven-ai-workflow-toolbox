@@ -1,0 +1,199 @@
+schema_version = 1
+manifest_type = "agent-inventory-install"
+project_id = "agent-inventory"
+display_name = "AI Agent 規則與技能盤點"
+entrypoint = "INSTALL.md"
+checked_on = "2026-09-06"
+status = "local_candidate_external_source_pinned"
+installable = true
+requires_network = true
+support_level = "installable_candidate_not_formally_supported"
+
+[mvp]
+implementation_policy = "register_upstream_skills_without_vendoring_source"
+public_skills = "upstream_only_no_toolbox_owned_skill"
+release_policy = "manual_version_snapshots_pinned_to_upstream_tags"
+out_of_scope = [
+  "modifying_user_rules_or_skills_by_the_installer",
+  "running_the_inventory_scan_during_installation",
+  "uploading_any_scan_result_or_summary",
+  "supporting_agent_tools_not_declared_by_upstream_adapters",
+]
+
+[integration.agent_inventory]
+decision = "fixed_tag_external_dependency_and_skill_registration"
+decision_record = "../../docs/decisions/0004-agent-inventory-integration.md"
+repository = "https://github.com/iamraven-tw/agent-inventory"
+tag = "v0.2.1"
+ref = "c162b0adce4d1519b60f76de15bc00df85d611ce"
+tree = "9ccdd73635bb74b95e6d2a111c994758602f5a23"
+license = "MIT"
+license_sha256 = "8e30b10020d068a10bf4376e97df27bf34c9a52b01de5c3d0f6e26f594353dac"
+vendor_source = false
+auto_update = false
+skills_relative_path = ".agents/skills"
+
+[installation]
+kind = "ai_agent_executed_local_source_registration"
+candidate_version = "0.1.0"
+manager = "scripts/manage_install.py"
+manager_requires_python = ">=3.11"
+manager_network_access = false
+default_state_root_macos = "$HOME/Library/Application Support/ai-workflow-toolbox/agent-inventory"
+state_root_policy = "explicit_path_outside_any_agent_skill_scan_root"
+registration = "verified_directory_copy"
+modifies_shell_profile = false
+modifies_user_rules_or_skills = false
+modifies_upstream_clone = false
+writes_user_config_repo_root = "by_the_agent_after_confirmation_not_by_the_manager"
+existing_entry_conflict_policy = "stop_without_overwrite"
+state_policy = "store_only_paths_versions_hashes_and_validation_results"
+managed_entries = [
+  "inventory",
+  "inventory-setup",
+  "inventory-scan",
+  "inventory-summarize",
+  "inventory-flow",
+  "inventory-serve",
+]
+
+[managed_sources]
+upstream_skills = [
+  "inventory",
+  "inventory-setup",
+  "inventory-scan",
+  "inventory-summarize",
+  "inventory-flow",
+  "inventory-serve",
+]
+
+[registrations.agents_workspace]
+clients = ["codex", "google-antigravity"]
+scope = "workspace"
+path = "<workspace>/.agents/skills"
+
+[registrations.claude_workspace]
+clients = ["claude-code"]
+scope = "workspace"
+path = "<workspace>/.claude/skills"
+
+[registrations.codex_user]
+clients = ["codex"]
+scope = "user"
+path = "$HOME/.agents/skills"
+
+[registrations.claude_user]
+clients = ["claude-code"]
+scope = "user"
+path = "$HOME/.claude/skills"
+
+[registrations.antigravity_user]
+clients = ["google-antigravity"]
+scope = "user"
+path = "$HOME/.gemini/config/skills"
+
+[[client_targets]]
+id = "codex"
+workspace_path = "<workspace>/.agents/skills"
+user_path = "$HOME/.agents/skills"
+official_documentation = "https://learn.chatgpt.com/docs/build-skills"
+discovery_status = "not_performed"
+
+[[client_targets]]
+id = "claude-code"
+workspace_path = "<workspace>/.claude/skills"
+user_path = "$HOME/.claude/skills"
+official_documentation = "https://code.claude.com/docs/en/slash-commands"
+discovery_status = "not_performed"
+
+[[client_targets]]
+id = "google-antigravity"
+workspace_path = "<workspace>/.agents/skills"
+user_path = "$HOME/.gemini/config/skills"
+official_documentation = "https://antigravity.google/docs/skills"
+discovery_status = "not_performed"
+
+[lifecycle]
+repeat_install = "verify_source_and_active_hashes_then_no_op"
+conflict = "stop_on_unknown_symlink_file_directory_or_modified_managed_entry"
+update = "snapshot_active_entries_then_transactionally_replace_from_new_verified_sources"
+rollback = "restore_latest_verified_history_snapshot"
+remove = "move_only_verified_managed_entries_to_recoverable_quarantine"
+source_repository_removal = "separate_explicit_action_not_performed_by_manager"
+user_data_removal = "never"
+
+[human_authorization_gates]
+clone_upstream_repository = "explicit_confirmation_before_any_network_download"
+scan_scope_selection = "upstream_inventory_setup_asks_which_tools_and_project_roots"
+summary_generation_reads_rule_contents = "explicit_confirmation_before_the_agent_reads_full_rule_files"
+delete_rule_or_skill_to_trash = "upstream_site_api_delete_requires_typed_confirmation_never_performed_by_this_installer"
+overwrite_rule_or_skill_from_the_web_editor = "upstream_site_api_save_writes_real_files_never_performed_by_this_installer"
+edit_summary_or_flowchart_in_web_ui = "upstream_site_api_summary_and_api_flow_write_only_data_user_summaries_and_user_flows_json_not_real_rule_files"
+open_file_with_external_editor = "upstream_site_api_open_launches_local_applications"
+write_repo_root_into_user_config = "explicit_confirmation_before_the_agent_creates_or_updates_config_json_repo_root_key_only"
+
+[privacy]
+scan_reads = "rule_and_skill_files_declared_by_upstream_adapters"
+scan_writes = "upstream_clone_data_directory_only_including_flows_and_user_flows_json"
+network_during_scan = false
+network_in_web_ui = "site_loads_codemirror_6_from_esm_sh_and_falls_back_to_plain_text_editor_when_offline"
+server_binding = "127.0.0.1"
+uploads = "none"
+secrets_policy = "upstream_summary_specification_forbids_writing_passwords_tokens_or_account_identifiers"
+
+[environment]
+requires = ["python3>=3.9", "git"]
+locally_tested = ["macos-26.6.2-arm64", "python-3.14.7", "git-2.52.0"]
+officially_supported = []
+
+[[dependencies]]
+id = "agent-inventory"
+role = "ai_agent_rule_and_skill_inventory_skill_pack"
+required = true
+source_type = "public_git_repository"
+source = "https://github.com/iamraven-tw/agent-inventory"
+tag = "v0.2.1"
+ref = "c162b0adce4d1519b60f76de15bc00df85d611ce"
+verification = "git_commit_tree_license_sha256_and_clean_worktree"
+license = "MIT"
+bundle_source = false
+runtime_requirements = "python3_standard_library_only"
+status = "pinned_and_fresh_github_clone_verified_locally"
+
+[[known_limitations]]
+id = "skills_locate_clone_via_config_repo_root"
+detail = "上游 v0.2.1 起，六個技能開頭都先從 ~/.config/agent-inventory/config.json 的 repoRoot 取得 clone 路徑，再以絕對路徑執行；沒有 repoRoot 且目前目錄不是 clone 時會問使用者。安裝到全域技能目錄後要能直接使用，設定檔必須先有 repoRoot。"
+workaround = "本套件 INSTALL.md 的最後一步由 Agent 在使用者確認後把 clone 路徑寫進 repoRoot（設定檔不存在就只建立這一個鍵）；上游 inventory-setup 與 scan.py 之後也會維護它。"
+
+[[known_limitations]]
+id = "upstream_paths_not_verified_on_all_tools"
+detail = "上游宣告 Cursor 與 OpenClaw 的路徑來自官方文件，尚未在真機驗證；Antigravity 的對話紀錄是二進位資料庫，使用次數無法對應。"
+workaround = "本套件不宣稱這些工具已驗證；驗收關卡維持未通過。"
+
+[[readiness_gates]]
+id = "static_structure_and_documents"
+status = "complete_local"
+
+[[readiness_gates]]
+id = "upstream_pinned_and_verified"
+status = "fresh_clone_of_tag_matched_commit_tree_and_license_sha256_local_macos_only"
+
+[[readiness_gates]]
+id = "install_repeat_conflict_update_rollback_remove"
+status = "fictional_lifecycle_tests_passed_and_real_tag_clone_install_noop_remove_verified_local_macos_only"
+
+[[readiness_gates]]
+id = "agent_discovery"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "end_to_end_inventory_run"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "second_computer_acceptance"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "formal_public_support"
+status = "not_supported"

@@ -46,6 +46,15 @@
 - `template/` 是自有的 Astro 起始範本，只能含虛構品牌與佔位素材；依賴鎖定確切版本並附 lockfile，不得提交 `node_modules/`、`dist/` 或 `.astro/`。
 - 修改套件後執行其 `tests/validate_package.py` 與 `python3 -m unittest skill-packs.website-building.tests.test_install_lifecycle skill-packs.website-building.tests.test_workspace_config skill-packs.website-building.tests.test_scaffold_site skill-packs.website-building.tests.test_check_site skill-packs.website-building.tests.test_style_gallery skill-packs.website-building.tests.test_deploy_site skill-packs.website-building.tests.test_content_writer`；改動範本後另以 `WEBSITE_NODE_ACCEPTANCE=1` 跑真實建置。
 
+## AI Agent 規則與技能盤點
+
+- `skill-packs/agent-inventory/` 只負責安裝與說明上游 `iamraven-tw/agent-inventory`，不得複製其原始碼，也不建立自有技能目錄。
+- 上游一律鎖定 tag 與完整 commit，並記錄 tree 與 LICENSE 的 SHA-256；不追蹤未鎖定的 `main`，不因上游有新版就自動升級。
+- 安裝流程不得執行掃描、讀取使用者規則內容、產生摘要或修改任何既有規則與技能。
+- 上游具備刪除檔案、改寫原檔與啟動外部程式的能力，必須維持在 manifest 的 `[human_authorization_gates]` 明列，文件不得暗示安裝器會代為執行。
+- 上游的對外網路行為（網頁編輯器從 `esm.sh` 載入 CodeMirror 6）必須保留在隱私文件與第三方聲明中。
+- 修改套件後執行其 `tests/validate_package.py` 與 `python3 -m unittest discover -s skill-packs/agent-inventory/tests -p 'test_*.py'`。
+
 ## 程式與驗證
 
 - 新增程式優先使用 Python 或 TypeScript，並加入繁體中文註解。
