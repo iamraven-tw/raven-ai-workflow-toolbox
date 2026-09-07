@@ -52,4 +52,4 @@ Desktop client 建立成功的對話方塊可能提示：關閉後無法再查�
 
 ## 虛構驗證
 
-桌面 client 路徑、API key 誤選、Audience 不確定、缺少安全 OAuth 程式、scope 偏離及頻道不符的流程審查案例見套件 `tests/behavior-cases.md`。自動化虛構交換、刷新與 loopback HTTP 測試見 `tests/test_oauth_runtime.py`；不等於真實平台 OAuth。全部真實後台及平台操作集中到最後實機驗收。
+桌面 client 路徑、API key 誤選、Audience 不確定、缺少安全 OAuth 程式、scope 偏離及頻道不符的流程審查案例見套件 `tests/behavior-cases.md`。自動化虛構交換、刷新與 loopback HTTP 測試見 `tests/test_oauth_runtime.py`；不等於真實平台 OAuth。Windows 獨立專案的實機範圍與限制見 [驗收紀錄](../../../tests/youtube-initialization-acceptance.md)：已完成本人 OAuth、原生保存及新程序共用連線的內容／單一成效指標讀取；不代表 macOS、到期刷新或完整下游技能已驗收。
