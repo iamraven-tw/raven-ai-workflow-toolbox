@@ -15,6 +15,8 @@ description: 依經營目標回顧 YouTube、Facebook、Instagram、Threads 或 
 
 ## 執行順序
 
+YouTube 預設沿用初始化時供選題與成效共用的 [官方 API 連線](../social-media-setup/references/youtube-api-setup.md)，優先走既有 Analytics adapter。缺少 Analytics scope、API 啟用或有效憑證時交 setup 補足，不能因 Studio 已登入就省略 API 檢查。使用者延後初始化或 API 無法涵蓋需求時，說明缺口並按來源契約使用已授權匯出／瀏覽器證據，不標為 API 驗證通過。
+
 1. 讀適用工作區規則、既有設定及策略。沿用已確認的平台角色與時區，不能替使用者擅定成長或營收目標。說明這次會讀哪些帳號、哪個期間，以及私人產物位置；已有明確授權就直接做可安全代辦的讀取。
 2. 選 weekly、monthly、quarterly 或 yearly；依 [週期與資料契約](references/metrics-contract.md) 定義已完整結束的本期及前期。每次都是當次任務，不建立背景排程。使用者指定進行中期間可出暫報，但不得假裝完整期增減。
 3. 多平台只讀被選取的 [YouTube](references/platforms/youtube.md)、[Instagram](references/platforms/instagram.md)、[Facebook](references/platforms/facebook.md)、[Threads](references/platforms/threads.md)、[Substack](references/platforms/substack.md)，再逐一取得資料。依 [成效資料來源與正規化契約](references/performance-source-contract.md)、[機器可讀指標目錄](references/metric-catalog.json)與機器可讀來源表選介面：前四平台可走套件的最小正式 API adapter；Substack 優先使用合資格的官方唯讀 MCP，再以官方匯出或已核准受控瀏覽器建立來源 artifact。先確認現有工具實際能力；缺工具不虛構指令，不自動安裝、不擴權。可信 API adapter 必須在同一程序透過 `social-media-setup` 的 `Runtime.access()` 取用並驗證 Token，不直接讀原生秘密庫分段。登入、刷新或憑證問題交 setup，不在報告中記錄秘密；runtime 成功、SDK 欄位存在或 OAuth scope 已取得，都不替代當次 insights 回應、期間、來源資格與資料完整性檢查。

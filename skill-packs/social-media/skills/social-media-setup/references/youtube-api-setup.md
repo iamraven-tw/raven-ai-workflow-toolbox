@@ -1,6 +1,24 @@
 # YouTube API 實際初始化
 
-查證日期：2026-09-05。只在選取 YouTube 整合時讀取；核心與延伸 scope 以 [YouTube 平台文件](platforms/youtube.md) 為準。本文件處理後台操作，接收、交換與更新使用 [OAuth 執行器](oauth-runtime.md)。已有程式及虛構測試，不代表實機驗收。
+查證日期：2026-09-07。只在選取 YouTube 整合時讀取；核心與延伸 scope 以 [YouTube 平台文件](platforms/youtube.md) 為準。本文件處理後台操作，接收、交換與更新使用 [OAuth 執行器](oauth-runtime.md)。已有程式及虛構測試，不代表實機驗收。
+
+## 選題與成效共用初始化
+
+選取 YouTube 的實際初始化，預設一次準備 YouTube Data API v3 與 YouTube Analytics API，供 `social-content-planning` 和 `social-performance-analysis` 共用同一私人工作區、目標頻道及 OAuth connection。不是等到做成效報告才補開 Analytics。使用者明確拒絕或延後的部分保持未完成，繼續可完成的工作。
+
+僅選題／成效唯讀用途時，提出 `youtube.readonly` 與 `yt-analytics.readonly` 兩個完整 URI scope；不為讀取加入上傳、刪除或營收權限。完整管理初始化仍依平台文件提出核心權限。已有連線先檢查實際 scope、目標與刷新能力；足夠就沿用，不重建 project/client、不重跑 OAuth。缺 scope 時在同一預覽說明增量變更及重新同意需求，不默默取代既有連線。
+
+Windows 與 macOS 共用 Desktop loopback／PKCE 執行器；秘密分別存 Windows Credential Manager 與 macOS Keychain。瀏覽器登入僅是後台操作前提，不能替代 API OAuth。
+
+### 初始化完成前的唯讀驗收
+
+以下請求列入同一初始化預覽，經授權後執行；這是整合驗收，不產生成效策略報告。
+
+1. **帳號與內容。** 在可信程序以 `Runtime.access()` 取得憑證，呼叫 `channels.list(mine=true, part=id,snippet,contentDetails)` 核對目標，取得 uploads 播放清單；用 `playlistItems.list(part=snippet,contentDetails, playlistId=..., maxResults=5)` 讀一頁樣本。需要完整清單時另按任務範圍處理分頁，不用搜尋結果冒充完整歷史。無影片的有效空清單記為空，不是失敗。[channels.list](https://developers.google.com/youtube/v3/docs/channels/list)、[playlistItems.list](https://developers.google.com/youtube/v3/docs/playlistItems/list)
+2. **成效。** 使用同一連線的 Analytics `reports.query`，核對自有頻道，讀預覽內已結束的一小段美西日期與單一非金額指標。沿用套件 [成效收集契約](../../social-performance-analysis/references/performance-source-contract.md) 的 `collect-official` 與 scope／目標檢查，不另寫取得 Token 的方法；可保存私人驗收證據，但不啟動策略討論或寫回。空 rows 記為資料不可用，成功回應只證明端點可讀，不能推定資料完整或把空值補零。[reports.query](https://developers.google.com/youtube/analytics/reference/reports/query)
+3. **分開交接。** 回報 API 啟用、OAuth、持久保存／刷新條件、帳號、內容樣本與 Analytics 各自結果及驗證時間。只通過 `channels.list` 不得宣稱兩個技能已可完整使用。一般設定沿用現有 schema，細項證據留私人驗收產物，不新增未支援欄位或存 Token。
+
+後續兩個技能優先取用這組官方 API 連線。缺少可信 Data API 呼叫工具時，明列執行工具缺口，不能因為文件列出端點就宣稱已有 adapter；目前成效有既有 adapter，內容讀取須確認當前受信任工具能力。API 配額、權限或工具受限時先報告原因，再依使用者接受的範圍用官方匯出或受控瀏覽器補充，並保留來源差異；不因瀏覽器已登入就跳過可用 API。
 
 ## 前提與一次預覽
 

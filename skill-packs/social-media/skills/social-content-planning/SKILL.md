@@ -13,6 +13,8 @@ description: "規劃社群選題、調查當前相似題材並製作內容行事
 
 ## 流程
 
+YouTube 自有內容與成效優先沿用 `social-media-setup` 的 [共用 API 初始化](../social-media-setup/references/youtube-api-setup.md)，不因已登入網頁就直接改走 Computer Use。內容使用 Data API；成效依既有 Analytics 收集契約取用，選題研究不等於正式成效報告。缺少連線先交 setup 補足，使用者延後時明列限制再採替代來源；不重建另一組 OAuth、不把公開累積數字當期間成效。
+
 1. **建立最低限度脈絡。** 確認使用者指定的私人工作區，不從目前 shell 或技能安裝位置猜測。讀取 `social-media/config.json`（若有）、`sources/strategy/social-media-strategy-and-insights.md`，再從 `sources/wiki/index.md` 與歷史內容索引定向找相關文章／筆記。必要時使用已安裝的 `knowledge-source-retrieval`，僅採檢索，不同步、建立集合或上傳。缺檔／`not_configured` 不阻擋明確任務；使用者當前說法與策略衝突先指出，不改策略檔。
 2. **提出研究方向，而非定案題目。** 由目標、受眾問題、過往已談／未談內容整理少量暫定方向。只把可公開的抽象題目轉成查詢詞；私人策略、客戶名稱、未公開產品或文章不得直接送進搜尋服務。
 3. **先調查當前社群。** 必讀 [調查規範](references/social-research.md)。預設 Facebook、Instagram、Threads、YouTube 為主要平台，X 補充；先做一輪粗查，再精讀總共 3–5 個有用案例，不是每平台各 5 個。沒有結果、權限不足或無法確認原文要誠實列出，不湊數。使用者可縮限平台／期間；Substack 可是規劃目的地，但不是預設調查平台，X 則僅為研究來源、不加入發布設定。
