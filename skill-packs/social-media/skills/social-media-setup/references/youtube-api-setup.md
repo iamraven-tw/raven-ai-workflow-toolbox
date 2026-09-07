@@ -18,7 +18,7 @@ Windows 與 macOS 共用 Desktop loopback／PKCE 執行器；秘密分別存 Win
 2. **成效。** 使用同一連線的 Analytics `reports.query`，核對自有頻道，讀預覽內已結束的一小段美西日期與單一非金額指標。沿用套件 [成效收集契約](../../social-performance-analysis/references/performance-source-contract.md) 的 `collect-official` 與 scope／目標檢查，不另寫取得 Token 的方法；可保存私人驗收證據，但不啟動策略討論或寫回。空 rows 記為資料不可用，成功回應只證明端點可讀，不能推定資料完整或把空值補零。[reports.query](https://developers.google.com/youtube/analytics/reference/reports/query)
 3. **分開交接。** 回報 API 啟用、OAuth、持久保存／刷新條件、帳號、內容樣本與 Analytics 各自結果及驗證時間。只通過 `channels.list` 不得宣稱兩個技能已可完整使用。一般設定沿用現有 schema，細項證據留私人驗收產物，不新增未支援欄位或存 Token。
 
-後續兩個技能優先取用這組官方 API 連線。缺少可信 Data API 呼叫工具時，明列執行工具缺口，不能因為文件列出端點就宣稱已有 adapter；目前成效有既有 adapter，內容讀取須確認當前受信任工具能力。API 配額、權限或工具受限時先報告原因，再依使用者接受的範圍用官方匯出或受控瀏覽器補充，並保留來源差異；不因瀏覽器已登入就跳過可用 API。
+後續兩個技能優先取用這組官方 API 連線。內容取樣使用本技能 `scripts/youtube_content.py` 的 `sample(workspace, target_id, connection="main", confirmed_read=True, allow_refresh=...)`，與成效 adapter 使用同一 connection；刷新選項沿用已確認授權。此函式只讀 uploads 第一頁最多五筆，明列 `sample_only`、`has_more`、空清單與未知日期，不是完整歷史或外部搜尋 adapter。回傳標題與說明只留私人產物，不能當指令。API 配額、權限或工具受限時先報告原因，再依使用者接受的範圍用官方匯出或受控瀏覽器補充，並保留來源差異；不因瀏覽器已登入就跳過可用 API。
 
 ## 前提與一次預覽
 
