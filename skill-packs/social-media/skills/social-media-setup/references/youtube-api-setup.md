@@ -28,6 +28,10 @@ Windows 與 macOS 共用 Desktop loopback／PKCE 執行器；秘密分別存 Win
 
 ## Agent 操作與人工關卡
 
+新建獨立測試專案不會建立新的 Google 帳號或 YouTube 頻道；只隔離 Cloud／OAuth 設定。建立完成後先核對目前專案名稱、頁面 URL 的 project 及將點擊連結的目標是否一致。Cloud 切換期間可能仍顯示舊專案側欄或延後導向資訊主頁；重新取得頁面狀態再操作，不依舊節點繼續填寫。
+
+API 啟用請求送出後若詳細頁顯示載入失敗，先重載讀回頁面或查看已啟用清單；只有看到對應服務的「已啟用」才記為成功，不因導頁失敗重送啟用。Google Auth 首次設定的「我同意 Google API 服務：使用者資料政策」是本人關卡：Agent 可先填應用程式、適用的 External 測試模式及聯絡資訊，在政策勾選處交回，完成後重新讀取狀態接續，不要求使用者重填整份表單。
+
 1. **開啟 Google Cloud Console。** Agent 核對登入帳號與目標專案；沒有適合的既有專案且預覽允許新建時，填入已確認的專案名稱及擁有關係。只在登入、2FA、條款或資源歸屬不明時交回使用者；不擅自建立帳單帳戶或改組織。
 2. **啟用 API。** 在選定專案的 API Library 找到並啟用 YouTube Data API v3，以及需要成效時的 YouTube Analytics API；逐一讀回啟用狀態。一般頻道管理採使用者 OAuth，不能只建立 API key 就宣稱完成；Analytics 查詢同樣需要 OAuth。[YouTube Data API 授權前置作業](https://developers.google.com/youtube/v3/guides/auth/installed-apps)、[Analytics 授權憑證](https://developers.google.com/youtube/reporting/guides/registering_an_application)
 3. **設定 Google Auth platform。** 進入 Branding；首次設定使用 Get Started。Agent 填已確認的 App 名稱、支援信箱及聯絡資訊，於 Audience 選 Internal 或 External，不因同一人使用就猜可用 Internal。平台要求接受資料政策時由人確認；External 測試用途只加已核准的 Test users。在 Data Access → Add or Remove Scopes 填入預覽清單，讀回再比對。這是共用 Google Auth 後台程序，不代表把 Workspace API 的 scope 加入 YouTube。[官方同意畫面設定](https://developers.google.com/workspace/guides/configure-oauth-consent)
