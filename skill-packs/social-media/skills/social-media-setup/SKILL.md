@@ -91,6 +91,7 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
 1. 先確認受控瀏覽器、OAuth callback 與秘密儲存均可用。使用者沒有另行指定時，執行 `scripts/credential_store.py inspect`，預設選目前作業系統帳號的 macOS Keychain 或 Windows Credential Manager；兩者皆不可用時，在顯示或取得 App Secret、授權碼或 Token 前停止，不得退回明文檔案。
 2. Agent 開啟正確的官方後台並辨識目前登入帳號；不要叫使用者自行尋找頁面。若未登入或帳號不明，暫停並只要求使用者完成登入、Passkey、2FA 或帳號選擇。
 3. Agent 填寫並操作已核准的 App 建立、use case／產品、redirect URI、完整核心權限、使用者選取的延伸權限與測試設定。建立 App 是外部變更，但取得授權後應由 Agent 執行，不再要求使用者逐步點擊。
+   - 新增 Meta 測試角色時，若帳號欄提供搜尋結果，選取與已確認目標精確相符的結果後再提交；只輸入名稱不代表已選定帳號。提交後讀回角色表的目標與邀請狀態，再到平台端核對邀請。待確認不等於測試角色已生效；接受畫面若附帶條款同意，依下一步交由本人操作。
 4. 平台要求接受開發者條款、身分／企業驗證或重新輸入密碼時，交回使用者；完成後從原位置繼續，不重做前面步驟。
 5. Agent 啟動 OAuth；使用者本人檢查帳號、資源與權限並同意。Agent 不代按同意，也不要求使用者複製 Secret、授權碼或 Token 到對話。
 6. Agent 驗證 OAuth `state` 與 callback，交換 Token，直接透過 `store_secret()` 寫入已預覽的秘密儲存，並確保命令、日誌、預覽與錯誤輸出不含秘密值。只有平台把 App Secret／API key 限制在人類可見畫面、Agent 安全取得會造成洩漏時，才依 `local-credential-storage.md` 使用 `credential_terminal.py launch` 開啟可見 Terminal，並查詢不含秘密的收據；已開好的 Terminal 可直接執行 `credential_store.py put`。使用者只在不回顯欄位貼上一次，不得要求貼進對話或命令列。儲存中斷則依該文件的恢復分支處理，不把 `pending_write` 交給後續平台技能使用。
