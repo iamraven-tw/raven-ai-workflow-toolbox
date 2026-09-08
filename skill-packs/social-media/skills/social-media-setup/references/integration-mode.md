@@ -31,7 +31,7 @@
 1. 使用者完成登入、安全驗證、首次開發者條款或帳號選擇。
 2. 使用者在 OAuth 畫面檢查權限與資源並同意。
 
-外部 App 建立與一般設定寫入仍各有一次對話確認，但使用者不必親自操作技術後台。Agent 不得要求使用者手動尋找設定頁、貼上授權碼、執行 API 指令或解讀原始 JSON。平台只允許人類看到 Secret／API key 時，可增加一個 Terminal 隱藏輸入關卡；Agent 先開好 Terminal 與提示，使用者只貼上一次，值不進入對話、命令歷史或程序參數。平台臨時要求的重新驗證另計並明確標示。
+外部 App 建立、HTTPS、權限、原生保存／刷新、讀取驗收及已能形成的完整一般設定候選，依 [主技能的最小化人類操作](../SKILL.md#最小化人類操作) 集中在最早一次確認；不將 App 建立與設定寫入硬拆成兩次對話。同一範圍已有確認便沿用，新差異才補問。Agent 不得要求使用者手動尋找設定頁、貼上授權碼、執行 API 指令或解讀原始 JSON。平台只允許人類看到 Secret／API key 時，Agent 先開好 Terminal 與隱藏輸入，使用者只貼上一次；這是操作交接，不是重新詢問是否保存。平台強制驗證另計並明確標示。
 
 選取 Facebook、Instagram 或 Threads 時，另外讀 `meta-api-setup.md`。三者可在同一次設定工作中規劃、預覽及依序代辦，但 Facebook Pages、Instagram Login、Facebook Login 與 Threads use case 的帳號關係、OAuth、App ID／Secret、Token、審查與驗證證據不得互相推定。
 

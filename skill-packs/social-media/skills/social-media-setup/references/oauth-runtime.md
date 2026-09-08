@@ -26,7 +26,9 @@ Facebook 這條路徑是伺服器端交換，**不能把 App 設成 Native/Deskt
 4. App Secret／client secret 能安全直接取得時由程式保存；否則依 `local-credential-storage.md` 由 Agent 開 Terminal，使用者只在隱藏提示貼上一次。預先存成該平台的 `app-secret`，不可傳到命令列或對話。
 5. Agent 以 `preview` 產生連線設定摘要與 digest，在私人介面向使用者補充核對確切目標與 callback；確認後才以相同參數 `configure --confirm-config --preview-digest <digest>` 保存。取代既有設定還要確認並加入 `--confirm-replace`。這不是另一張問卷，可以納入同一份初始化預覽。
 6. Agent 啟動 `run`，只開啟輸出的短期本機 `launch_url`；由接收器導向官方授權頁。本人同意後，程式交換、原生保存、讀回驗證；Agent 查看非敏感結果。
-7. 只有 `ready` 才代表這一次身分／授權讀回成功。最後一般設定仍依 `manage_workspace.py` 顯示寫入預覽並確認，不能由 OAuth 程式自動修改。
+7. 只有 `ready` 才代表這一次身分／授權讀回成功。一般設定依 `manage_workspace.py` 處理；完整候選已在初始化總預覽確認且未變更時直接套用，不重問。候選有未核准差異時只確認差異，仍保留雜湊及來源檢查，不能由 OAuth 程式自動修改。
+
+本文件所有「確認」沿用 [主技能的最早一次完整確認](../SKILL.md#最小化人類操作)。App 建立後產生的 ID、連線 digest 與驗證結果由 Agent 核對並摘要回報；只要屬於已確認的目標與操作，不增加一次許可問題。登入／OAuth／隱藏輸入是必要操作交接，不是重新取得相同的保存、讀取或刷新授權。
 
 下列命令是 Agent 在授權後操作的介面，不是要求使用者自行組命令。`<...>` 是私人環境中的替代值，不得直接照貼；範例的唯讀 scope 只示範語法，不是預設權限清單。
 
