@@ -30,5 +30,8 @@
 - 內建 Windows PowerShell 拒絕執行腳本；改用本環境已有且允許腳本的 PowerShell 完成 hosts 修改，未變更執行原則。
 - 獨立健康檢查服務只監聽 IPv4 loopback；Python 以系統信任庫、正常主機名稱與憑證驗證完成 HTTPS 請求。此服務不接收 OAuth code 或交換 Token，不取代正式 OAuth runtime。
 - Codex 內建瀏覽器開啟測試主機時回報 `net::ERR_BLOCKED_BY_CLIENT`。尚未判定阻擋原因，不關閉安全檢查，也不以程式端成功宣稱瀏覽器 callback 已通過。
+- 使用者在外部瀏覽器回報健康檢查成功文字，完成瀏覽器 HTTPS 人工驗收；尚非 OAuth 驗收。首次健康檢查因服務五分鐘到期而拒絕連線，確認程序已結束後延長至三十分鐘並重新驗證成功；交接時應檢查服務存活及剩餘時間。
+- Instagram Login 回呼已保存，後台產生的授權網址包含正確 redirect URI。未直接使用缺少 runtime state 保護的後台範例網址進行 OAuth。
+- Threads 回呼填入並儲存後，重新載入仍為空白；改用鍵盤輸入並選取網址選項也未讀回持久結果，介面未顯示明確錯誤。原因未確認，暫不標示回呼設定成功，不開始該路線 OAuth。
 
 以上是部分初始化證據，不能標示整個 Meta 整合或技能已通過。實際後台可能隨 App 條件改變，仍以當次介面及正式 API 驗收為準。
