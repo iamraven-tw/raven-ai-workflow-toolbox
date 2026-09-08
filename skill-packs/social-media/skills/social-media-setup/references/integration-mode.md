@@ -1,5 +1,22 @@
 # 平台整合初始化模式
 
+## 操作方式
+
+依 [主技能啟動流程](../SKILL.md#啟動流程)，先讓使用者選擇 AI 操作或人類自行操作，並在同一次詢問告知 AI 操作可能較慢、人類路線會直接提供申請步驟。已有明確選擇就沿用。本文件後續的後台代辦與最小人工介入規定適用於 AI 操作；人類路線依下節交付，不因平台 reference 要求 Agent 代辦而覆蓋使用者選擇。
+
+## 人類自行操作
+
+平台已知時直接列出完整申請步驟；未知時只補問平台，預設提案維持 Meta 與 YouTube。查核所選平台 reference 與當下官方入口後，按順序提供：
+
+1. 所需帳號類型、資源管理權限與申請前提。
+2. 官方後台連結、建立 App／專案的步驟、use case／產品選擇；YouTube 同時列 Data API 與 Analytics API。
+3. 預設 permission／scope 的實際名稱、用途、可刪減項及功能影響。
+4. 適用登入路線、精確 callback 設定、HTTPS 前提與 Windows／macOS 差異；缺少私人值使用明確佔位，不捏造帳號 ID 或網址。
+5. 測試者加入／接受邀請、本人登入與 OAuth 同意順序、Secret 及 Token 的安全保存方式。憑證不貼對話；使用技能工具時沿用原生憑證庫與正式 OAuth runtime，不另造臨時接收器。
+6. 帳號、內容與成效各自的驗收方式、成功畫面或非敏感輸出，以及常見失敗的下一步；App Review 與公開支援另列。
+
+一次交付清單，不要求每完成一步回覆一次。清楚標示為「操作指引，尚未驗證」，不把使用者自行完成的口述當成 Agent 已讀回。只提供指引不需要使用者先授權 AI 遠端操作；實際要 Agent 接手時，沿用既有授權並只確認尚未涵蓋的差異。
+
 ## 決策單位與預設授權
 
 驗證仍以「平台 × 功能」為單位，例如「Instagram 發布」或「YouTube 公開留言」，不要把整個平台標成一次完成。功能分成：`account_read`、`publish`、`public_comments`、`analytics`、`direct_messages`。`account_read` 只用於驗證登入帳號與平台資源，不能替代其他四種功能的驗收。
@@ -18,7 +35,7 @@
    - 使用者登入／OAuth 同意
    - 平台讀取驗證
    - 遠端寫入驗證
-6. 使用者只要求規劃時，交付權限與執行預覽並停在 `planned`。使用者授權外部整合後，Agent 要實際建立與設定開發者 App、OAuth、已確認權限及 API 讀取，不能改成交給使用者自行照文件操作。
+6. 使用者選擇人類自行操作時，依上節直接交付申請清單；只要求規劃時，交付權限與執行預覽並停在 `planned`。選擇 AI 操作且授權外部整合後，Agent 要實際建立與設定開發者 App、OAuth、已確認權限及 API 讀取，不能改成交給使用者自行照文件操作。
 7. Agent 先檢查可用受控瀏覽器、callback 與秘密儲存。專案初始化的 OpenCLI 準備依 `opencli-initialization.md`，先告知作者來源及影響，在核准範圍內由 Agent 下載與驗證；不把「已有 CLI」當成 Bridge 已連線。使用者未指定秘密管理工具時，依 `local-credential-storage.md` 預設採 macOS Keychain 或 Windows Credential Manager，並把 backend 與憑證名稱列入外部變更預覽；任一必要條件缺少時停止於取得 Secret 或 Token 之前。
 8. Agent 開啟官方後台、填寫欄位、選 use case／產品、設定 redirect URI 與啟動 OAuth。只在登入／2FA／Passkey、法律條款、OAuth 同意及平台強制驗證時把控制權交回使用者。
 9. OAuth 完成後由 Agent 交換並安全保存 Token。callback 可取得的值直接寫入原生憑證庫；只有平台強制由人取得的 Secret／API key 才交由使用者在可見 Terminal 的隱藏提示貼上一次。保存後再用正式 API 分別讀回目標資源與實際授予權限；要求清單、OAuth 畫面與讀回結果不一致時停止。
