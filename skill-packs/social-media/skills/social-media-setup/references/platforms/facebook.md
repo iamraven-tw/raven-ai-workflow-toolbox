@@ -63,7 +63,9 @@ Messenger 的完整核心授權仍受政策限制：收件者必須先向 Page �
 1. 依 `meta-api-setup.md` 顯示包含所有核心 permission、相依關係、可選延伸權限、審查需求及排除動作的外部變更預覽。
 2. 使用者可在 OAuth 前刪除任一核心 permission 或選取延伸權限；刪減後改用 `custom` 並列出受影響功能。
 3. Agent 建立或設定 Meta App、Facebook Login、Pages API、Messenger、OAuth callback 與完整已確認 permission。若 Messenger Webhook 需要尚未授權的公開 HTTPS 服務或部署，先停止該部分，不因此假裝私訊已可用。
+   - 2026-09-09 後台實測：Pages 使用案例沒有 `pages_messaging` 時，回到「使用案例 → 新增使用案例 → 商務式訊息」，選取「透過 Messenger from Meta 與顧客互動」並保存。不要只在 Pages 的「新增更多內容」尋找 Messenger；該入口可能只有 Webhooks。新增後讀回 Messenger 的權限表，本次 `pages_messaging` 已呈現「可供測試」，不需再次點新增。實際名稱與可共存條件以當前 App 畫面為準。
    - 後台採 Facebook Login for Business 時，依 [組態契約](../oauth-runtime.md#facebook-login-for-business-組態) 建立一般／用戶存取權杖組態，讀回 permission 與組態編號，再以 `config_id` 啟動；不把不存在的 Messenger 權限默認為已啟用。
+   - 補上 Messenger 時，編輯既有已核准組態的「權限」，保留原先核心清單並加入 `pages_messaging`；保存後展開組態讀回完整清單，再進行本人 OAuth。同一 App 的舊 Token 不會因後台多了一項 permission 就取得該權限。可先用另一個本機 connection 驗收新增範圍，保留既有已可用連線；通過後才明確交接後續使用哪個 connection。
 4. 使用者本人在 OAuth 畫面核對帳號、Page 與 permission 後同意。
 5. Agent 依 [OAuth 執行器](../oauth-runtime.md) 驗證 callback，於記憶體交換及檢查短期／長期 User access token；再讀回實際授予 permission，逐項與確認清單比較。User Token 不持久保存。
 6. 呼叫 `GET /me/accounts?fields=id,name,access_token,tasks`，僅在記憶體解析回應；安全保存已確認目標的 Page access token，再讀回該 Page 的 `id` 與 `name`。不要保存其他 Page 的 Token。
@@ -151,4 +153,5 @@ Messenger 的完整核心授權仍受政策限制：收件者必須先向 Page �
 - [取得可管理 Page 與 Page access token](https://www.postman.com/meta/facebook/request/bqfxwbp/get-access-tokens-of-pages-you-manage)
 - [Meta 官方 Facebook Postman workspace](https://www.postman.com/meta/facebook/overview)
 - [Messenger Platform 官方 Postman 文件](https://www.postman.com/meta/messenger-platform-api/documentation/iyp204x/messenger-platform-api)
+- [建立 Messenger 使用案例](https://developers.facebook.com/docs/development/create-an-app/messenger-use-case/)
 - [Meta 官方 Facebook Marketing API workspace](https://www.postman.com/meta/facebook-marketing-api/overview)

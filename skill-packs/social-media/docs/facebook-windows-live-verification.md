@@ -18,3 +18,9 @@
 僅保存選定 Page Token；短／長 User Token 與診斷回應只在程序記憶體，不持久保存。診斷程序已結束。一般檔案中的狀態及公開證據均不含秘密。
 
 針對性回歸：OAuth Runtime 35 項、Instagram via Facebook Login 18 項、正式成效 adapter 9 項、指標目錄 6 項，共 68 項通過；套件靜態驗證與差異空白檢查通過。虛構測試涵蓋指定 Page 路徑成功、錯目標、缺 Token、列舉失敗不降級，以及成效請求必須選取官方說明欄位。
+
+## Messenger 後台設定補驗
+
+2026-09-09 接續同一初始化技能：從 App 的新增使用案例之「商務式訊息」分類加入 Messenger，讀回 `pages_messaging` 為可供測試；修改原有一般／用戶權杖組態，保存後展開確認七項 Pages 核心加上 Messenger 共八項明列權限。`public_profile` 仍由 Facebook Login 隱含提供，沒有加入廣告、付費行銷或企業資產權限。
+
+新的本機 connection 已準備，沿用原生 App Secret 與本機 HTTPS；既有 Page 連線保留。此補驗只證明後台設定完成，新增 scope 的本人 OAuth、Token 核對及 Conversations 讀取仍待驗收。沒有發送訊息或部署／訂閱公開 Webhook。
