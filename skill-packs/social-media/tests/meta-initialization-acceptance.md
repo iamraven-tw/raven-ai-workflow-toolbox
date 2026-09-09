@@ -8,9 +8,9 @@
 | 獨立 App 建立 | 已完成；本人接受建立頁的條款後，Agent 讀回新 App 主控板 |
 | 三平台使用案例 | 本次建立精靈允許同時選取「存取 Threads API」、「管理 Instagram 的訊息和內容」、「管理粉絲專頁的所有內容」；建立後均有獨立設定入口 |
 | 商家資產管理組合 | 本次選擇稍後連結；不代表目標資產關係、企業驗證或公開支援已通過 |
-| Windows 原生憑證庫 | inspect 可用；Instagram App Secret 隱藏輸入後保存及讀回收據為 verified；Meta Token 尚未取得 |
+| Windows 原生憑證庫 | Instagram App Secret 與長期 User Token 保存及讀回通過；另一個程序以同一 runtime 取用成功 |
 | HTTPS callback | 本機 TLS 與外部瀏覽器健康檢查通過；實際 OAuth callback 尚未通過，見下方 |
-| OAuth／平台身分／內容／成效 | 尚未實測 |
+| OAuth／平台身分／內容／成效 | Instagram 最小讀取驗收通過，見下方；Facebook／Threads 尚未通過 |
 | 發布、留言、私訊、Webhook | 尚未實測 |
 | macOS | 尚未實機驗收 |
 
@@ -43,3 +43,13 @@
 - 已將搜尋結果選取與邀請讀回要求補入主技能。此項操作修正經真實介面驗證；官方 App Roles 文件另行讀取時回傳 HTTP 429，未以文件抓取失敗推定平台規則。
 
 以上是部分初始化證據，不能標示整個 Meta 整合或技能已通過。實際後台可能隨 App 條件改變，仍以當次介面及正式 API 驗收為準。
+
+## Instagram OAuth 與分層讀取（2026-09-09）
+
+- 本人接受邀請後，重新載入角色表已不再顯示待確認。五項 `instagram_business_*` 核心權限均顯示可供測試，包含 `instagram_business_manage_insights`；未重新送出已生效的權限新增操作。
+- 首次接收器在十五分鐘期限後回報 `timeout`，未進入交換。核對狀態後使用新 state 啟動同範圍 OAuth，不重用舊 callback 或 code。
+- 本次受控瀏覽器成功從本機 TLS 啟動網址進入官方 Instagram 同意畫面；本人允許後回到完成頁。早前的瀏覽器阻擋仍屬既有觀察，不能推定每次皆會阻擋。
+- 正式 runtime 完成 code 交換、長期 Token 交換、目標專業帳號及初始五項 scope 核對、Windows 原生保存與讀回，狀態為 `ready`。
+- 另一個 Python 程序經 `Runtime.access()` 取用同一連線，身分檢查通過；Graph API v25.0 媒體端點 HTTP 200，取得五筆資料且仍有下一頁。此項僅為內容抽樣，不是完整歷史內容驗收。
+- 同一程序使用既有 `OfficialPerformanceAdapter` 與同一 OAuth 連線讀取帳號 insights；`reach`、`period=day`、`metric_type=total_value` 的七日查詢回傳數值。此項證明成效端點可讀；adapter 的期間完整性仍為 `unknown`，未推定為完整覆蓋，也未加總每日去重觸及。
+- API 回應本文、私人帳號與成效值不納入公開證據。未測試發布、留言、私訊、強制刷新、撤權或 macOS；初始 scope 證據也不代表所有寫入功能已驗證。
