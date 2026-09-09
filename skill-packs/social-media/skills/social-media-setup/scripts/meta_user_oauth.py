@@ -101,6 +101,18 @@ def verify(runtime, config, bundle):
             raise OAuthError("reauth_required")
         if "app_id" in info and identifier(info["app_id"]) != config["client_id"]:
             raise OAuthError("target_mismatch")
+        if config.get('callback_mode') == 'token_import':
+            if info.get('is_valid') is not True or info.get('type') != 'USER':
+                raise OAuthError('reauth_required')
+            evidence = bundle.get('app_identity_evidence')
+            if evidence == 'api_app_id':
+                if identifier(info.get('app_id')) != config['client_id']:
+                    raise OAuthError('target_mismatch')
+            elif evidence == 'dashboard_source_and_application':
+                if not bundle.get('application') or info.get('application') != bundle['application']:
+                    raise OAuthError('target_mismatch')
+            else:
+                raise OAuthError('target_mismatch')
         if identifier(info.get("user_id")) != bundle["provider_user_id"]:
             raise OAuthError("target_mismatch")
         if permission_set(info.get("scopes")) != set(config["scopes"]):
@@ -174,6 +186,10 @@ def access_bundle(runtime, config, bundle, allow_refresh):
     response = runtime.http.request("GET", f"https://{HOSTS[runtime.platform]}/refresh_access_token",
         mutation=True, query={"grant_type": prefix + "_refresh_token", "access_token": bundle["access_token"]})
     fresh = token_bundle(runtime, config, response, bundle["provider_user_id"], set(bundle["scopes"]), started)
+    # 刷新不能把人工來源證據升級成 API App ID 證據，亦不能遺失後續核對條件。
+    for key in ('source', 'app_identity_evidence', 'application'):
+        if key in bundle:
+            fresh[key] = bundle[key]
     runtime._save_bundle(fresh)
     verify(runtime, config, fresh)
     return fresh

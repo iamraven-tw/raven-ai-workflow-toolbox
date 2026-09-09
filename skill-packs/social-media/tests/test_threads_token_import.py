@@ -15,6 +15,7 @@ class ThreadsImportTests(unittest.TestCase):
         vault.store_secret(self.workspace, 'threads', 'dashboard-token', 'fictional-import',
                            source='interactive-terminal', backend=self.backend)
         info = {'app_id': '123', 'user_id': '456', 'expires_at': self.now[0] + 5000000,
+                'is_valid': True, 'type': 'USER',
                 'scopes': ['threads_basic', 'threads_manage_insights']}
         user = {'id': '456', 'username': 'fictional'}
         self.http.replies = [{'data': info}, user, {'data': info}, user]
@@ -31,6 +32,7 @@ class ThreadsImportTests(unittest.TestCase):
         self.assertEqual(self.run_import(runtime)['status'], 'ready')
         self.assertEqual(runtime.config()['callback_mode'], 'token_import')
         self.http.replies = [{'data': {'app_id': '123', 'user_id': '456',
+            'is_valid': True, 'type': 'USER',
             'expires_at': self.now[0] + 5000000,
             'scopes': ['threads_basic', 'threads_manage_insights']}},
             {'id': '456', 'username': 'fictional'}]
@@ -62,6 +64,7 @@ class ThreadsImportTests(unittest.TestCase):
 
     def prepare_import_fresh_expiry(self, runtime):
         self.http.replies = [{'data': {'app_id': '123', 'user_id': '456',
+            'is_valid': True, 'type': 'USER',
             'expires_at': self.now[0] + 3600,
             'scopes': ['threads_basic', 'threads_manage_insights']}}]
         return runtime
@@ -74,3 +77,39 @@ class ThreadsImportTests(unittest.TestCase):
         count = len(self.http.calls)
         self.kind('recovery_required', lambda: self.run_import(runtime))
         self.assertEqual(len(self.http.calls), count)
+
+    def test_missing_app_id_requires_dashboard_evidence(self):
+        runtime = self.prepare_import()
+        del self.http.replies[0]['data']['app_id']
+        self.http.replies[0]['data']['application'] = 'Fictional Test'
+        self.kind('authorization_required', lambda: self.run_import(runtime, application='Fictional Test'))
+        self.assertEqual(runtime.status()['status'], 'not_configured')
+
+    def test_dashboard_name_cannot_override_conflicting_app_id(self):
+        runtime = self.prepare_import()
+        self.http.replies[0]['data']['app_id'] = '999'
+        self.kind('target_mismatch', lambda: self.run_import(runtime,
+            application='Fictional Test', confirmed_dashboard_source=True))
+
+    def test_missing_app_id_and_name_mismatch(self):
+        runtime = self.prepare_import()
+        del self.http.replies[0]['data']['app_id']
+        self.http.replies[0]['data']['application'] = 'Other Test'
+        self.kind('target_mismatch', lambda: self.run_import(runtime,
+            application='Fictional Test', confirmed_dashboard_source=True))
+
+    def test_dashboard_evidence_persists_and_is_rechecked_after_refresh(self):
+        runtime = self.prepare_import()
+        info = self.http.replies[0]['data']
+        del info['app_id']
+        info['application'] = 'Fictional Test'
+        user = self.http.replies[1]
+        self.run_import(runtime, application='Fictional Test', confirmed_dashboard_source=True)
+        self.now[0] = info['expires_at'] - 2 * 86400
+        self.http.replies = [{'data': info}, user,
+            meta_tests.long_token(), {'data': info}, user]
+        runtime.access(confirmed_read=True, allow_refresh=True)
+        self.assertEqual(runtime._bundle()['app_identity_evidence'], 'dashboard_source_and_application')
+        self.assertEqual(runtime._bundle()['application'], 'Fictional Test')
+        self.http.replies = [{'data': dict(info, application='Other Test')}]
+        self.kind('target_mismatch', lambda: runtime.access(confirmed_read=True))

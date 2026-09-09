@@ -10,7 +10,8 @@ from meta_user_oauth import identifier, permission_set, DAY
 
 
 def import_token(runtime, *, client_id, username, scopes, version, source_ref,
-                 confirmed_read=False, confirmed_store=False):
+                 confirmed_read=False, confirmed_store=False,
+                 application=None, confirmed_dashboard_source=False):
     """先核對官方 App／帳號／scope／期限，再保存；不覆蓋既有連線。"""
     if not confirmed_read or not confirmed_store:
         raise OAuthError('authorization_required')
@@ -29,10 +30,19 @@ def import_token(runtime, *, client_id, username, scopes, version, source_ref,
                                    query={'input_token': token, 'access_token': token}).get('data')
         if not isinstance(info, dict):
             raise OAuthError('read_failed')
-        # 沒有 code 交換綁定 App 的證據，匯入必須明確核對 debugger app_id。
-        if identifier(info.get('app_id')) != client_id:
-            raise OAuthError('target_mismatch')
-        if info.get('is_valid') is False:
+        # Threads debugger 可能只回 application。名稱不能證明數字 App ID；
+        # 此分支另要求已在指定 App 後台完成的來源交接，不默默推定來源。
+        evidence = 'api_app_id'
+        if 'app_id' in info:
+            if identifier(info['app_id']) != client_id:
+                raise OAuthError('target_mismatch')
+        else:
+            if not confirmed_dashboard_source or not isinstance(application, str) or not application.strip():
+                raise OAuthError('authorization_required')
+            if info.get('application') != application:
+                raise OAuthError('target_mismatch')
+            evidence = 'dashboard_source_and_application'
+        if info.get('is_valid') is not True or info.get('type') != 'USER':
             raise OAuthError('reauth_required')
         if permission_set(info.get('scopes')) != expected:
             raise OAuthError('permission_mismatch')
@@ -50,7 +60,10 @@ def import_token(runtime, *, client_id, username, scopes, version, source_ref,
             'callback_port': 0, 'callback_mode': 'token_import', 'tls_cert': '', 'tls_key': ''})
         bundle = {'platform': 'threads', 'access_token': token, 'provider_user_id': target,
             'client_id': client_id, 'scopes': sorted(expected), 'issued_at': now,
-            'expires_at': expiry, 'source': 'official_dashboard_import'}
+            'expires_at': expiry, 'source': 'official_dashboard_import',
+            'app_identity_evidence': evidence}
+        if evidence == 'dashboard_source_and_application':
+            bundle['application'] = application
         runtime._verify(config, bundle)
         # 設定及所有驗證在同一把鎖中；失敗不交付 ready，也不自動重送。
         runtime.mark('configured')
@@ -65,6 +78,7 @@ def import_token(runtime, *, client_id, username, scopes, version, source_ref,
             runtime.mark('storage_incomplete')
             raise OAuthError('storage_incomplete') from None
     return {'status': 'ready', 'platform': 'threads', 'source': 'official_dashboard_import',
+            'app_identity_evidence': evidence,
             'callback_verified': False, 'contains_credentials': False}
 
 
@@ -79,12 +93,15 @@ def main():
     parser.add_argument('--source-ref', default='dashboard-token')
     parser.add_argument('--confirm-read', action='store_true')
     parser.add_argument('--confirm-store', action='store_true')
+    parser.add_argument('--application')
+    parser.add_argument('--confirm-dashboard-source', action='store_true')
     args = parser.parse_args()
     try:
         result = import_token(Runtime(args.workspace_root, 'threads', connection=args.connection),
             client_id=args.client_id, username=args.username, scopes=args.scope,
             version=args.graph_version, source_ref=args.source_ref,
-            confirmed_read=args.confirm_read, confirmed_store=args.confirm_store)
+            confirmed_read=args.confirm_read, confirmed_store=args.confirm_store,
+            application=args.application, confirmed_dashboard_source=args.confirm_dashboard_source)
     except Exception as error:
         result = {'status': getattr(error, 'kind', 'read_failed'), 'contains_credentials': False}
     print(json.dumps(result))

@@ -44,3 +44,22 @@ SOCIAL_NATIVE_ACCEPTANCE=0 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discove
 ## 後續狀態（2026-09-06）
 
 「Instagram via Facebook Login 尚無專用執行器」保留為 2026-09-05 當時結果。其後已新增專用 Page Token 路徑與虛構測試；直接 Instagram Login 的當前完整 scope 讀回也已完成官方查證，結論是已查資料沒有文件化該介面，因此保留初次交換清單並由各功能端點判定。後續證據分別見 [Instagram via Facebook Login 驗證](instagram-facebook-login-oauth-local-verification.md)、[Instagram Login 當前權限證據](instagram-current-scope-evidence-local-verification.md)及[下游 OAuth 交接驗證](downstream-oauth-handoff-local-verification.md)。
+
+## Threads 官方測試權杖實機驗收（2026-09-09）
+
+範圍仍是 `social-media-setup` 的平台初始化讀取驗收。本人在獨立測試 App 的官方產生器完成同意及 Token 隱藏輸入，Windows Credential Manager 保存與讀回成功；依 [匯入契約](../skills/social-media-setup/references/threads-token-import.md) 建立獨立 Threads 連線。沒有改動既有正式 App。
+
+實機 debugger 回傳有效 USER Token、全部五項已核准核心 scope、期限、user ID 與 `application`，但沒有 `app_id`。修正原匯入器強制要求該欄位的假設：由指定後台的人工作業來源與 API 名稱交叉核對，保存 `dashboard_source_and_application` 證據。這不是 API 數字 App ID 驗證；若回應提供不符的 App ID 仍拒絕。
+
+| 層級 | 實測結果 |
+|---|---|
+| 原生庫／連線 | Windows 隱藏 Terminal 輸入、分段 bundle 保存、讀回及新 Runtime 取用通過 |
+| 帳號 | debugger 與 `/v1.0/me` 的 user ID 相符，username 符合使用者指定目標 |
+| 內容 | 官方 `/{user-id}/threads` 回傳 HTTP 200 與非空貼文樣本；仍有下一頁，只記 `sample_only` |
+| 成效 | 共用 OAuth Runtime 的正式成效 adapter 成功讀取 `/{user-id}/threads_insights?metric=views`；`coverage=unknown`，不宣稱涵蓋指定日期或完整報表 |
+| OAuth callback | 仍未通過；官方後台 Token 匯入不等於回呼表單可保存或 code flow 已修復 |
+| Token 刷新 | 未到刷新窗口，未實機觸發；只測試虛構刷新保留 App 來源證據及後續核對 |
+| 發布／回覆／其他技能 | 未執行，取得核心權限不等於已授權或驗證遠端寫入 |
+| macOS／另一臺電腦／公開使用者 | 未實機驗收；不由 Windows 結果推定通過 |
+
+驗證：匯入器 9 項、Meta User OAuth 30 項、既有 OAuth Runtime 29 項虛構測試全部通過；套件靜態驗證與 `git diff --check` 通過。公開紀錄不含真實帳號、App／資源 ID、貼文、成效數值、憑證或私人路徑。
