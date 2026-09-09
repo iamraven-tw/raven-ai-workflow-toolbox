@@ -61,3 +61,4 @@
 - 回呼欄位形成完整網址標籤後，以 Tab 定位儲存並按 Enter，取得明確提示「無法儲存表單，請確認你輸入的所有資訊皆正確無誤，然後再試一次」。尚未識別被拒絕的欄位，不再把原因描述為單純未按到儲存，也不宣稱回呼已保存。
 - 已重查 [Meta 官方 Threads 範例](https://github.com/fbsamples/threads_api/blob/main/README.md)：本機映射網域、HTTPS 與自訂 port 是範例採用的方式。此來源不能證明本次特定網址已獲後台接受；未填入假的解除安裝／刪除端點來試圖通過表單。
 - Threads Secret、OAuth 與 API 讀取仍未完成；保留既有正式 App 與 Instagram 成功連線。
+- 本人手動儲存也重現相同表單錯誤，排除單純自動化點擊失效；未再要求重按。另查得官方範例倉庫的 [Issue #73](https://github.com/fbsamples/threads_api/issues/73)，由外部開發者回報跨瀏覽器、App 及正式 HTTPS 網域仍無法儲存。查閱時仍開啟且未見修正；這是相似症狀的第一手回報，不是 Meta 官方承認根因，也不證明本次網址本身沒有問題。Threads 初始化保持阻擋，未把推測寫成通用修復步驟。
