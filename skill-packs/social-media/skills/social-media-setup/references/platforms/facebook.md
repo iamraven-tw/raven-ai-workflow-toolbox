@@ -1,5 +1,7 @@
 # Facebook 平台初始化
 
+工具選擇依 [主技能規則](../../SKILL.md#工具選擇與-computer-use-例外)：API → MCP → OpenCLI 優先；本文件的人工清單適用於沒有可用優先路徑的後台步驟。Computer Use 因速度較慢影響體驗，僅在使用者特別要求且優先工具無法完成時作為最後手段。
+
 查證日期：2026-09-05。本文件處理 Facebook 粉絲專頁，不把個人動態牆或社團能力推定為相同 API。
 
 執行本文件前先讀 `../meta-api-setup.md`。Meta 後台與 OAuth 共用步驟依該文件處理；本文件只補 Facebook Pages 的帳號、permission、請求與驗收差異。

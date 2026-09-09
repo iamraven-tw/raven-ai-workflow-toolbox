@@ -1,5 +1,7 @@
 # OAuth 接收、交換與憑證有效性
 
+工具選擇依 [主技能規則](../SKILL.md#工具選擇與-computer-use-例外)：API → MCP → OpenCLI 優先；本文件的人工清單適用於沒有可用優先路徑的後台步驟。Computer Use 因速度較慢影響體驗，僅在使用者特別要求且優先工具無法完成時作為最後手段。
+
 查證日期：2026-09-06。選取 Facebook Pages、YouTube、Instagram Login 或 Threads，且要實際授權或取用既有憑證時讀取本文件。這是 `social-media-setup` 的共用執行器，不是新技能。程式與虛構測試已建立；真實 OAuth、原生憑證庫與平台讀取尚未驗收。
 
 ## 路徑與界線
@@ -30,7 +32,7 @@ Facebook 這條路徑是伺服器端交換，**不能把 App 設成 Native/Deskt
 
 1. Agent 先依平台文件提出完整核心權限，包含平台正式支援的私訊；讓使用者移除不想開放的權限，另外選擇廣告等延伸項目。程式不替使用者決定 scope；每個 `--scope` 必須來自已確認的清單。
 2. 把目標帳號／Page／頻道、App 類型、callback、秘密庫、連線代稱、將保存的值與唯讀檢查列入同一份外部變更預覽。明確說明日後可自動讀取憑證、檢查有效性與在核准範圍內刷新；不包含發布、回覆、排程或自動再授權。
-3. Agent 提供完整文字清單；後台填寫、登入、安全／法律確認、資源選擇及 OAuth 同意一律由人類操作。不要求使用者貼授權碼。
+3. Agent 提供完整文字清單；缺少優先工具的後台填寫預設由人類操作；登入、安全／法律確認、資源選擇及 OAuth 同意仍由本人完成。不要求使用者貼授權碼。
 4. App Secret／client secret 先盤點既有原生庫，缺少時依 `local-credential-storage.md` 由 Agent 開 Terminal，使用者只在隱藏提示貼上一次。預先存成該平台的 `app-secret`，不可傳到命令列或對話。
 5. Agent 以 `preview` 產生連線設定摘要與 digest，在私人介面向使用者補充核對確切目標與 callback；確認後才以相同參數 `configure --confirm-config --preview-digest <digest>` 保存。取代既有設定還要確認並加入 `--confirm-replace`。這不是另一張問卷，可以納入同一份初始化預覽。
 6. Agent 啟動 `run`，將輸出的短期本機 `launch_url` 提供給人類自行開啟；由接收器導向官方授權頁。本人同意後，程式交換、原生保存、讀回驗證；Agent 查看非敏感結果。

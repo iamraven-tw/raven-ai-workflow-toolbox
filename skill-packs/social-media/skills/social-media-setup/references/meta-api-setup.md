@@ -1,5 +1,7 @@
 # Meta API 實際初始化
 
+工具選擇依 [主技能規則](../SKILL.md#工具選擇與-computer-use-例外)：API → MCP → OpenCLI 優先；本文件的人工清單適用於沒有可用優先路徑的後台步驟。Computer Use 因速度較慢影響體驗，僅在使用者特別要求且優先工具無法完成時作為最後手段。
+
 查證日期：2026-09-05。本文件處理 Facebook、Instagram 與 Threads 共用的 Meta 開發者後台作業；平台帳號關係、權限與驗證請求仍以各自平台文件為準。
 
 ## 何時讀取
@@ -62,7 +64,7 @@ Agent 提供 [Meta Apps 入口](https://developers.facebook.com/apps/) 與核對
 - 密碼重新驗證、身分驗證或企業資料證明。
 - 多帳號或多 Business portfolio 且無法依已確認目標唯一判斷。
 
-Agent 一次提供完整步驟，不要求逐頁回覆，也不接管瀏覽器。
+Agent 一次提供完整步驟，不要求逐頁回覆，不自動啟動 Computer Use。
 
 ### 3. 人類建立並設定 App
 

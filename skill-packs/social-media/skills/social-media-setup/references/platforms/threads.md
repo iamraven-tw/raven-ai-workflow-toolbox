@@ -1,5 +1,7 @@
 # Threads 平台初始化
 
+工具選擇依 [主技能規則](../../SKILL.md#工具選擇與-computer-use-例外)：API → MCP → OpenCLI 優先；本文件的人工清單適用於沒有可用優先路徑的後台步驟。Computer Use 因速度較慢影響體驗，僅在使用者特別要求且優先工具無法完成時作為最後手段。
+
 查證日期：2026-09-05。以 Meta 官方 Threads Postman workspace、權限說明與官方範例 repository 為主要依據。
 
 執行本文件前先讀 `../meta-api-setup.md`。使用者只要選取 Facebook、Instagram 或 Threads 任一平台，就在同一次 Meta 初始化中詢問是否也設定另外兩個；共用的是引導、盤點與預覽，Threads 的 App、OAuth、Token 與驗證證據仍分開處理。

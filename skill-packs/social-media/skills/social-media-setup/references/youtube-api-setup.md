@@ -1,5 +1,7 @@
 # YouTube API 實際初始化
 
+工具選擇依 [主技能規則](../SKILL.md#工具選擇與-computer-use-例外)：API → MCP → OpenCLI 優先；本文件的人工清單適用於沒有可用優先路徑的後台步驟。Computer Use 因速度較慢影響體驗，僅在使用者特別要求且優先工具無法完成時作為最後手段。
+
 查證日期：2026-09-07。只在選取 YouTube 整合時讀取；核心與延伸 scope 以 [YouTube 平台文件](platforms/youtube.md) 為準。本文件處理後台操作，接收、交換與更新使用 [OAuth 執行器](oauth-runtime.md)。已有程式及虛構測試，不代表實機驗收。
 
 ## 選題與成效共用初始化

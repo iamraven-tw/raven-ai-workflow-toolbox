@@ -897,8 +897,10 @@ def validate_skill_structure(manifest: dict) -> None:
         "不得把瀏覽器內部請求或第三方套件冒充官方 API",
         "實際整合執行",
         "最小化人類操作",
-        "社群媒體設定一律由人類操作",
-        "不提供 AI 代操作選項",
+        "API → MCP → OpenCLI",
+        "只有使用者特別要求 Computer Use",
+        "速度較慢",
+        "Computer Use 最後手段",
         "不要貼進聊天",
         "macOS Keychain 或 Windows Credential Manager",
         "credential_store.py put",
@@ -915,12 +917,13 @@ def validate_skill_structure(manifest: dict) -> None:
         if phrase not in skill_text:
             raise ValidationError(f"技能契約缺少：{phrase}")
 
-    # 初始化只交付人工後台指引；防止舊代操作分支重新成為執行契約。
+    # 防止回復成先問模式、預設代操作或全面禁止優先工具。
     for setup_doc in [skill / "SKILL.md", *(skill / "references").rglob("*.md")]:
         setup_text = setup_doc.read_text(encoding="utf-8")
         for obsolete in (
             "這次要由「AI 操作」還是「人類自行操作」",
-            "Agent 代辦已授權的後台填寫",
+            "社群媒體設定一律由人類操作",
+            "不提供 AI 代操作選項",
             "不要求使用者手動選 use case",
             "python scripts/credential_browser.py",
         ):

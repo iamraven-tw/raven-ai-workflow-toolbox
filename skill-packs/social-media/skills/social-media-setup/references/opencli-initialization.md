@@ -1,5 +1,7 @@
 # 專案初始化：OpenCLI
 
+工具選擇依 [主技能規則](../SKILL.md#工具選擇與-computer-use-例外)：API → MCP → OpenCLI 優先；本文件的人工清單適用於沒有可用優先路徑的後台步驟。Computer Use 因速度較慢影響體驗，僅在使用者特別要求且優先工具無法完成時作為最後手段。
+
 ## 範圍與入口
 
 使用者要求實際初始化社群專案時，預設把 OpenCLI 列入本機工具準備，不等到搜尋失敗才提出。只討論策略、查閱設定、安裝技能檔案或執行既有明確任務，不因此強制安裝。拒絕／延後者仍可使用可用的正式 API、公開搜尋或手動預覽；不能宣稱瀏覽器整合完成。
@@ -23,7 +25,7 @@ Agent 先做不觸碰瀏覽器帳號的工具版本／路徑檢查，再向使�
 3. **從 GitHub 取得固定來源。** 確认同一份預覽已核准後，以 HTTPS 在新的來源目錄執行 `git clone --depth 1 --single-branch --branch <tag> <download_url> <source-dir>`，所有佔位符由來源契約及核准目標解析。讀回 `git rev-parse HEAD`、`git rev-parse HEAD^{tree}` 與遠端 URL，分別比對完整 commit、tree 與作者來源；再核對 `LICENSE` 與 `package-lock.json` 的 SHA-256。失敗就停止，不能改用最新版本或先執行建置。保留原 LICENSE 及存在時的 NOTICE，不修改上游程式。
 4. **下載擴充功能。** 由 Agent 取得契約的 GitHub Release 資產，先核對 SHA-256 與大小，再檢查 ZIP 路徑不會跳出新目錄、沒有絕對路徑或符號連結，才解壓縮。找到 `manifest.json`、核對版本、權限、`<all_urls>` 與 background 指向檔案存在；與預覽不同就停止重新確認。來源契約的資產雜湊來自 GitHub Release metadata，本機下載時仍必須真正計算比對。
 5. **本機建置 CLI。** 在已核對的 source 目錄使用 npm 鎖檔：`npm ci --ignore-scripts --no-audit --no-fund`，再明確執行 `npm run build`。這會下載依賴並執行已核對專案的建置程式，不是零風險操作。跳過自動安裝腳本，避免上游 postinstall／全域安裝改動其他工具；不執行 `npm link`、`npm install -g`、`npx skills add` 或額外 adapter 安裝。建置若因被略過的相依腳本失敗，停下查明原因，只預覽必要的特定補救，不全面開啟腳本、換版或重裝。以 `node <source-dir>/dist/src/main.js --version` 讀回版本；後續以這個確定入口取代不明的全域 `opencli`。
-6. **啟用 Browser Bridge。** Agent 提供 `chrome://extensions`、已準備好的確切擴充目錄，以及啟用開發人員模式、載入解壓縮目錄、檢查權限的文字步驟，由人類自行操作。不得用 Computer Use、瀏覽器自動化或 OpenCLI 代辦設定；不繞過企業政策。啟用本身不要求社群登入。
+6. **啟用 Browser Bridge。** Agent 提供 `chrome://extensions`、已準備好的確切擴充目錄，以及啟用開發人員模式、載入解壓縮目錄、檢查權限的文字步驟，由人類自行操作。不使用尚未安裝的 OpenCLI 安裝自己；Computer Use 僅限主技能例外，不繞過企業政策。啟用本身不要求社群登入。
 7. **分層驗證。** 完整 CLI 啟動可能建立／改寫使用者層級 `.opencli` 的模組連結、讀取既有自訂 adapter／plugin，並啟動 daemon；這些不屬於純唯讀檔案檢查。執行前確認它們已列入核准範圍，遇到其他來源的衝突停下，不載入來源不明的自訂程式。依固定版 `--help` 與 Browser Bridge 文件，執行 `doctor`、辨識連線中的 Chrome；多個 profile 不能猜。用專供驗證的新分頁讀取不需登入的中性公開頁，核對標題與網址。只有版本輸出或 doctor 成功，不能標示五平台可搜尋；社群登入、各平台搜尋／讀回均為另外驗收。
 8. **記錄與交接。** Agent 在核准的私人 `.local/social-media/opencli-state.json` 保存下方最小狀態；顯示摘要後交回原初始化工作，不要求使用者保存技術資料。後續內容規劃只沿用已驗證的入口與授權，不重新安裝或默默擴權。
 
