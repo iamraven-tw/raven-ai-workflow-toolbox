@@ -69,6 +69,8 @@ Facebook 額外參數：`--platform facebook --graph-version <當下已核對版
 
 ## 有效性與後續技能交接
 
+Facebook 實機補充（2026-09-09）：Graph 請求的 `appsecret_time` 預留 60 秒時間差，HMAC 仍綁定同一 Token 與時間戳，不停用 proof、不修改系統時鐘。短期與長期 User Token、實際 scope 核對後，先完整列舉 `/me/accounts`；只有列舉成功但找不到已確認的目標 ID，才對該 ID 呼叫 `GET /{page-id}?fields=id,name,access_token`。要求回應 ID、名稱與 Token 有效，再照常驗證 PAGE 類型、App、scope、期限及 `/me` 身分。列舉失敗、不完整、目標重複或已列出目標但缺 tasks 時不改路線。指定 Page 路徑不回 tasks，不能捏造管理角色或推定寫入能力。官方 [Page 節點及 access_token 欄位](https://raw.githubusercontent.com/facebook/facebook-python-business-sdk/main/facebook_business/adobjects/page.py)只作介面參考，實際可用性以本次 API 為準。
+
 受信任的發布、互動與成效 adapter 應在自身取得任務授權後，於同一程序呼叫：
 
 ```python

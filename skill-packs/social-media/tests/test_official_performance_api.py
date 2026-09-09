@@ -161,6 +161,7 @@ class OfficialPerformanceAPITests(unittest.TestCase):
                          "https://graph.facebook.com/v99.0/fictional-page/insights")
         self.assertEqual(http.calls[0]["query"]["since"], "2024-01-01")
         self.assertEqual(http.calls[0]["query"]["until"], "2024-01-04")
+        self.assertEqual(http.calls[0]['query']['fields'], 'name,period,values,description_from_api_doc')
         self.assertIs(http.calls[0]["query"]["show_description_from_api_doc"],
                       True)
         self.assertNotIn("fictional-secret", str(result["raw"]))

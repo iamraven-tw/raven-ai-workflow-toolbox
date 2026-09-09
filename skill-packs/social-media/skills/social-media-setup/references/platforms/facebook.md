@@ -8,6 +8,8 @@
 
 Facebook 粉絲專頁管理使用 Facebook Login、使用者授權與 Page access token。先確認使用者對目標 Page 具有相應工作權限；Agent 不靠口述直接標為通過。
 
+2026-09-09 實機補充：`/me/accounts` 完整列舉成功但未包含已確認的目標時，可依 [OAuth 執行契約](../oauth-runtime.md#有效性與後續技能交接)改走官方指定 Page Token 路徑。先由使用者指定或受控官方專頁畫面確認唯一 Page ID，不搜尋或試猜其他 ID；目標 Token 仍須核對 App、PAGE 類型、scope、期限與身分。此路徑沒有 tasks 證據，不能把讀取通過說成所有管理工作已驗收。以下列舉路徑的 tasks 成功條件只適用於 `/me/accounts` 確實列出目標時。
+
 使用者第一次選取 Facebook 且沒有明確縮小範圍時，預設採 `full_management`，一次提出下列完整核心權限。這只是 OAuth 授權預設，不代表 Agent 已獲准立即發布、刪除、回覆或傳送私訊。
 
 ## 預設完整核心權限
@@ -73,7 +75,7 @@ Messenger 的完整核心授權仍受政策限制：收件者必須先向 Page �
 - App 的實際 use case／產品與 callback 已讀回且符合預覽。
 - OAuth `state` 驗證成功，Token 已進入獲准秘密儲存且未出現在輸出。
 - 實際授予 permission 與使用者確認清單完全一致，沒有未說明的多餘權限。
-- `/me/accounts` 回傳指定 Page，tasks 可供判斷 Page 關係，且 Page 唯讀查詢讀回相同 `id` 與 `name`。
+- `/me/accounts` 回傳指定 Page 與 tasks，或已確認 ID 的官方指定 Page Token 路徑通過；兩者都須以 Page Token 讀回相同 `id` 與 `name`。
 - 未把「已取得寫入 permission」誤報成貼文、留言、成效或 Messenger 已完成實測。
 
 ## 明確縮限路徑：粉絲專頁唯讀驗證
@@ -112,11 +114,11 @@ Messenger 的完整核心授權仍受政策限制：收件者必須先向 Page �
 
 - Meta App 的實際 use case／產品與 OAuth callback 已讀回且符合預覽。
 - OAuth callback `state` 驗證成功，Token 已進入獲准秘密儲存且未出現在輸出。
-- `/me/accounts` 實際回傳指定 Page，且 tasks 可供判斷目前帳號的 Page 關係。
+- `/me/accounts` 實際回傳指定 Page 與 tasks，或官方指定 Page Token 路徑已核對已確認的目標 ID。
 - Page 唯讀查詢讀回相同 Page 的 `id` 與 `name`。
 - permission 與本輪縮限預覽一致，沒有取得使用者拒絕的管理貼文、留言或私訊權限。
 
-下列情況都不是成功：只看到 App Dashboard、只取得 App ID 或 Token、HTTP 請求已送出、只收到 HTTP 200、Page 清單為空、目標 Page 不唯一、tasks 不符或原始回應無法安全解析。
+下列情況都不是成功：只看到 App Dashboard、只取得 App ID 或 Token、HTTP 請求已送出、只收到 HTTP 200、Page 清單為空且指定 Page 路徑也未通過、目標 Page 不唯一、列舉資料的 tasks 不符或原始回應無法安全解析。
 
 ### 停止與追問
 

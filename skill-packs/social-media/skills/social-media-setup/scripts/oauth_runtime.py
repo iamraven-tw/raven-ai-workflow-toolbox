@@ -254,7 +254,8 @@ class Runtime:
 
     def _graph(self, config, path, token, query=None):
         """Facebook 正式 GET 與時間戳 appsecret proof；URL 只在程序內傳輸。"""
-        stamp = int(self.clock())
+        # 避免伺服器時間略慢時拒絕當秒 appsecret_time；仍使用短時效時間戳 proof。
+        stamp = max(0, int(self.clock()) - 60)
         proof = hmac.new(self._load(config["secret_ref"]).encode(), f"{token}|{stamp}".encode(), hashlib.sha256).hexdigest()
         params = dict(query or {}, access_token=token, appsecret_proof=proof, appsecret_time=stamp)
         return self.http.request("GET", f"https://graph.facebook.com/{config['graph_version']}/{path}", query=params)
@@ -399,10 +400,20 @@ class Runtime:
                     raise OAuthError("permission_mismatch")
                 pages = self._rows(config, "me/accounts", user, {"fields": "id,name,access_token,tasks"})
                 found = [x for x in pages if str(x.get("id")) == config["target_id"]]
-                if len(found) != 1 or not found[0].get("access_token") or not found[0].get("tasks"):
-                    raise OAuthError("target_mismatch")
+                if not found:
+                    # 已完整列舉卻缺目標時，用官方指定 Page 路徑；不猜 ID、不改目標。
+                    # 此路徑不提供 tasks，不捏造管理角色；Page Token 與身分仍由 _verify 核對。
+                    selected = self._graph(config, config['target_id'], user,
+                                           {'fields': 'id,name,access_token'})
+                    if (str(selected.get('id')) != config['target_id'] or not selected.get('name')
+                            or not isinstance(selected.get('access_token'), str) or not selected['access_token']):
+                        raise OAuthError('target_mismatch')
+                else:
+                    if len(found) != 1 or not found[0].get("access_token") or not found[0].get("tasks"):
+                        raise OAuthError("target_mismatch")
+                    selected = found[0]
                 # 只保存選定 Page Token，不保存其他 Page 或短期 User Token。
-                bundle = {"platform": "facebook", "access_token": found[0]["access_token"]}
+                bundle = {"platform": "facebook", "access_token": selected["access_token"]}
             self._save_bundle(bundle)
             self._verify(config, bundle)
             self.mark("ready")

@@ -542,6 +542,8 @@ class OfficialPerformanceAdapter:
                               until=end.isoformat())
             if query["show_description_from_api_doc"]:
                 params["show_description_from_api_doc"] = True
+                # 該參數不保證欄位出現在預設回應；明確選取驗證所需的官方說明。
+                params['fields'] = 'name,period,values,description_from_api_doc'
             if query["metric_type"]:
                 params["metric_type"] = query["metric_type"]
             payload = _payload(self.http.request_json(

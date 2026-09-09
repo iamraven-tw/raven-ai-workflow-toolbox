@@ -343,7 +343,8 @@ class OAuthTests(unittest.TestCase):
         self.assertTrue(all(urlsplit(call[1]).hostname == "graph.facebook.com" for call in self.http.calls))
         self.assertEqual(self.http.calls[6][2]["query"]["after"], "next-cursor")
         self.assertEqual(self.http.calls[2][2]["query"]["grant_type"], "fb_exchange_token")
-        proof = hmac.new(b"fictional-secret", b"fictional-page|1000", hashlib.sha256).hexdigest()
+        proof = hmac.new(b"fictional-secret", b"fictional-page|940", hashlib.sha256).hexdigest()
+        self.assertEqual(self.http.calls[-1][2]['query']['appsecret_time'], 940)
         self.assertEqual(self.http.calls[-1][2]["query"]["appsecret_proof"], proof)
         self.http.replies = self.facebook_replies()[-2:]
         self.assertEqual(runtime.access(confirmed_read=True), "fictional-page")
@@ -356,6 +357,32 @@ class OAuthTests(unittest.TestCase):
             replies[index]["data"][field] = value
             self.http.replies = replies
             self.assert_kind("target_mismatch", lambda: self.finish(runtime, restart=True))
+
+    def test_facebook_specific_page_when_complete_listing_is_empty(self):
+        runtime = self.runtime('facebook')
+        replies = self.facebook_replies()
+        self.http.replies = replies[:5] + [{'data': []},
+            {'id': '456', 'name': 'Fictional page', 'access_token': 'fictional-page'}] + replies[-2:]
+        self.finish(runtime)
+        self.assertEqual(runtime.status()['status'], 'ready')
+        call = self.http.calls[6]
+        self.assertEqual(call[1], 'https://graph.facebook.com/v25.0/456')
+        self.assertEqual(call[2]['query']['fields'], 'id,name,access_token')
+        self.assertNotIn('fictional-long', ' '.join(self.backend.values.values()))
+
+    def test_facebook_specific_page_rejects_wrong_target_or_missing_token(self):
+        runtime = self.runtime('facebook')
+        for page in ({'id':'999', 'name':'Other', 'access_token':'fictional-other'},
+                     {'id':'456', 'name':'Fictional page'}):
+            self.http.replies = self.facebook_replies()[:5] + [{'data': []}, page]
+            self.assert_kind('target_mismatch', lambda: self.finish(runtime, restart=True))
+            self.assertEqual(runtime.status()['parts'], 0)
+
+    def test_facebook_failed_listing_does_not_trigger_specific_page(self):
+        runtime = self.runtime('facebook')
+        self.http.replies = self.facebook_replies()[:5] + [OAuthError('read_failed')]
+        self.assert_kind('read_failed', lambda: self.finish(runtime))
+        self.assertFalse(any(c[1].endswith('/456') for c in self.http.calls))
 
     def test_facebook_unknown_expiry_revocation_and_permission(self):
         runtime = self.runtime("facebook")

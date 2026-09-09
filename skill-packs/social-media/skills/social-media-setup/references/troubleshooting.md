@@ -10,3 +10,12 @@
 4. 「可供測試」只表示 App 可要求該權限。實際使用者授權、Token scope、Page 關係、內容和成效 API 仍須各自驗收。
 
 這是實測的讀回處理方式，不代表已查明 Meta 錯誤根因，也不能套用為所有表單錯誤都已保存。Threads 回呼表單同樣必須檢查重新載入後的實際值，不能借用 Pages permission 的成功結果。
+
+## Facebook OAuth 已同意，但未交付 Page Token
+
+2026-09-09 Windows 實機遇到兩個獨立問題：當秒 `appsecret_time` 被 Graph API 以時間戳錯誤拒絕，以及 `/me/accounts` 成功回傳空清單。不能把任何 `target_mismatch` 都直接歸因於使用者選錯帳號。
+
+- 診斷只記錄階段、固定錯誤碼、App／使用者是否相符、權限是否相符與目標筆數；不記錄 Token、code、完整 URL、原始回應或未遮蔽錯誤本文。檢查實際授權與目標後再決定恢復方式，不重用授權碼。
+- 時間戳修正保留 HMAC 與 `appsecret_time`，預留 60 秒時間差；不要停用驗證或要求使用者改系統時鐘。這是本次可用的緩衝策略，不宣稱已查明平台內部時鐘根因。
+- 完整列舉成功且缺少已確認目標時，依 OAuth 執行契約直接查詢該 Page；不擴權、不把空清單補成假的 tasks。只有 PAGE Token 與當前身分、scope 等核對都通過才交付連線。
+- 同意頁返回 `/oauth/complete` 只表示接收器已處理回呼；以 runtime 的 `ready` 與下游唯讀驗收為準。

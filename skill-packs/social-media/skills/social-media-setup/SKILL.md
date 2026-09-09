@@ -84,7 +84,7 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
 
 ## 實際整合執行
 
-目前候選版已提供本機憑證保存、恢復、Terminal 交接，以及 Facebook Pages／YouTube／Instagram Login／Instagram via Facebook Login／Threads 的 OAuth callback、交換與有效性執行器。實際執行前必讀 `references/oauth-runtime.md`：Facebook 使用 HTTPS Web server code flow；YouTube 使用 Desktop loopback／PKCE 與 refresh。Instagram Login／Threads 另讀 [專用交換與刷新契約](references/instagram-threads-oauth.md)，使用各自的長期 User Token；Instagram via Facebook Login 讀 [專用 Page Token 契約](references/instagram-facebook-login-oauth.md)，不能與直接登入混用。程式僅通過虛構測試，尚未完成真實 OAuth 驗收。缺少相容 callback、原生憑證庫或平台必要條件時停在預覽，不得臨時用未查證端點取得秘密。
+目前候選版已提供本機憑證保存、恢復、Terminal 交接，以及 Facebook Pages／YouTube／Instagram Login／Instagram via Facebook Login／Threads 的 OAuth callback、交換與有效性執行器。實際執行前必讀 `references/oauth-runtime.md`：Facebook 使用 HTTPS Web server code flow；YouTube 使用 Desktop loopback／PKCE 與 refresh。Instagram Login／Threads 另讀 [專用交換與刷新契約](references/instagram-threads-oauth.md)，使用各自的長期 User Token；Instagram via Facebook Login 讀 [專用 Page Token 契約](references/instagram-facebook-login-oauth.md)，不能與直接登入混用。各路徑依實際驗收紀錄分層判定；[Facebook Windows 實測](../../docs/facebook-windows-live-verification.md)不代表 macOS、其他登入路徑、Messenger 或發布已通過。缺少相容 callback、原生憑證庫或平台必要條件時停在預覽，不得臨時用未查證端點取得秘密。
 
 以下是 AI 操作分支；人類自行操作依申請清單進行。AI 操作不能只產生操作說明。獲得使用者對同一份外部變更預覽的明確授權後：
 

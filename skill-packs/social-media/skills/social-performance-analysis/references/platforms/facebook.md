@@ -18,6 +18,8 @@ Meta 官方 codegen 的 Page 規格可確認 GET `/insights` 及 breakdown、dat
 
 ## 指標選擇與比較
 
+2026-09-09 實機修正：`show_description_from_api_doc=true` 不保證說明欄位包含在預設回應中。adapter 同時明確指定 `fields=name,period,values,description_from_api_doc`，再執行上述嚴格驗證；不能把缺少欄位直接視為指標停用，也不能以一般 `description` 冒充本契約要求的欄位。官方 InsightsResult 定義包含該欄位，實際查詢已讀回；個別 metric 可用不代表所有 metric 可用。
+
 經營角色需要曝光時看當前可用的觸及／觀看；需要討論時看公開互動；需要導流時看實際連結點擊，三者分開。此為分析方向，並非固定 API 欄位承諾。帳號、貼文、Reels、自然／付費要拆開；去重觸及不可每日加總，粉絲總量快照差不等於新增追蹤者。
 
 保存當前版本、官方定義位置、查詢期間、時區、完整性、單位與讀取時間。空資料標 unavailable；權限／執行錯誤分開；欄位改變標 definition_changed。沒有已查證來源就只報限制，不產出假的可比較數字。adapter 已通過假 Runtime／HTTP，不代表真實 Page、metric 或資料完整性已驗收。
