@@ -53,3 +53,11 @@
 - 另一個 Python 程序經 `Runtime.access()` 取用同一連線，身分檢查通過；Graph API v25.0 媒體端點 HTTP 200，取得五筆資料且仍有下一頁。此項僅為內容抽樣，不是完整歷史內容驗收。
 - 同一程序使用既有 `OfficialPerformanceAdapter` 與同一 OAuth 連線讀取帳號 insights；`reach`、`period=day`、`metric_type=total_value` 的七日查詢回傳數值。此項證明成效端點可讀；adapter 的期間完整性仍為 `unknown`，未推定為完整覆蓋，也未加總每日去重觸及。
 - API 回應本文、私人帳號與成效值不納入公開證據。未測試發布、留言、私訊、強制刷新、撤權或 macOS；初始 scope 證據也不代表所有寫入功能已驗證。
+
+## Threads 測試角色與回呼阻擋（2026-09-09）
+
+- 選取精確帳號搜尋結果後送出 Threads 測試角色邀請；本人登入並接受後，重新載入 Meta 角色表已不再顯示待確認，Threads 設定也出現該測試帳號。
+- 網站權限頁的邀請分頁在本次受控點擊後未切換；使用 Tab 定位及 Enter 啟用後成功顯示邀請。這是本次操作證據，不推定為 Threads 普遍故障。
+- 回呼欄位形成完整網址標籤後，以 Tab 定位儲存並按 Enter，取得明確提示「無法儲存表單，請確認你輸入的所有資訊皆正確無誤，然後再試一次」。尚未識別被拒絕的欄位，不再把原因描述為單純未按到儲存，也不宣稱回呼已保存。
+- 已重查 [Meta 官方 Threads 範例](https://github.com/fbsamples/threads_api/blob/main/README.md)：本機映射網域、HTTPS 與自訂 port 是範例採用的方式。此來源不能證明本次特定網址已獲後台接受；未填入假的解除安裝／刪除端點來試圖通過表單。
+- Threads Secret、OAuth 與 API 讀取仍未完成；保留既有正式 App 與 Instagram 成功連線。
