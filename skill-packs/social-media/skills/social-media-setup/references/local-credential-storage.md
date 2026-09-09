@@ -22,11 +22,35 @@
 
 1. Agent 先以 `credential_store.py inspect` 唯讀辨識 backend，不要求使用者挑選 macOS 或 Windows 的內建選項。
 2. OAuth callback、Agent 產生的 verify token，或 Agent 可在不輸出秘密的程式記憶體中取得的值，直接呼叫 `store_secret()` 保存，不要求使用者複製。
-3. 平台只在人類可見畫面揭露 App Secret 或 API key，而且讓 Agent 讀取會使秘密進入畫面記錄、對話或工具輸出時，Agent 在可見的互動式 Terminal 啟動 `put`。使用者只把值貼入一次；輸入不回顯。
+3. 平台只在畫面揭露既有 Secret 時，先依下方「受控瀏覽器自動保存」判斷能否不輸出秘密地直接保存。做不到時才在可見的互動式 Terminal 啟動 `put`；使用者只貼一次，輸入不回顯。
 4. 小程式不得接受 `--value`、命令列參數、環境變數、pipe 或對話中的秘密。秘密只經過隱藏輸入、程序記憶體與原生憑證庫。
 5. 寫入後立即從同一 backend 讀回並在記憶體比對；只輸出平台、憑證名稱、backend、`verified` 與 `contains_credentials: false`。
 
 Keychain 鎖定、Windows 登入工作階段不可用，或作業系統要求解鎖／允許存取時，這是額外的系統安全關卡。Agent 只把當下提示交回使用者，不嘗試降低憑證庫保護或改用明文備援。
+
+## 先盤點再取得：避免重複輸入
+
+- 先對已確認工作區執行 `credential_store.py status`，只讀平台、名稱、available、stored、status；有 Terminal 交接時再核對那份 ticket。程序執行於沙箱的其他 OS 身分時，存取遭拒不能解讀為「使用者沒保存」。先透過工具允許的權限流程，以正確 OS 使用者查核，不改 ACL、不轉存明文。
+- 明確區分 App Secret、OAuth access token、測試後台 Token，以及本機 TLS 私鑰。它們不是同一筆資料；Facebook／Instagram／Threads 的專用 App ID 和秘密也不能互換。只在使用者已指定的工作區與 App 範圍核對，不能廣搜其他帳號憑證。
+- `available: true` 且來源符合的 Secret 直接沿用；既有 OAuth 逾時只重建已獲准的 state／code，不重新索取 Secret。遇到 `pending_write` 走恢復流程，不重新開另一個輸入視窗。
+- `unknown_check_registry` 表示收據逾時或程序狀態未知，不表示原生庫沒有值。先查 registry 和原生存在性；兩者均無保存證據才標為缺少。
+- 將真正需要的人工作業和一般許可分開：密碼重新驗證／2FA 是登入關卡，不是請使用者再複製一次 Secret；完成後由 AI 接續取值、保存和驗收。新的敏感存取仍遵守所用工具的當下確認規則，既有授權不重問。
+
+## 受控瀏覽器自動保存
+
+`credential_browser.py` 接收使用者已授權保存、但尚未存在於原生庫的單筆既有秘密。它不是 OAuth code 接收器，不重設 App Secret，也不接受覆蓋旗標。先核對指定 App、平台、欄位、原生庫及程式可用；只有瀏覽器工具能將欄位值留在執行器記憶體並抑制秘密輸出時才使用。
+
+```text
+python scripts/credential_browser.py --workspace-root <私人工作區> --platform threads --name app-secret --origin https://<已信任的本機.test網域>:<port> --tls-cert <既有憑證> --tls-key <既有私鑰> --confirm-store
+```
+
+1. 沿用已核准的 HTTPS、hosts 與憑證，接收器固定監聽 `127.0.0.1`。只支援本機 `.test`、localhost 或 loopback origin，不開通公開服務或降低 TLS 驗證。不要與同 port 的 OAuth 接收器同時執行。
+2. 確認回傳的表單包含正確平台及名稱後，才傳入秘密。先前同名項目存在時會拒絕啟動；不能因此刪掉原生值或換名稱繞過核對。
+3. 使用受控瀏覽器的可見 DOM 欄位讀取，將值保留在工具執行器記憶體；只輸出欄位是否可用，不回傳值、長度、截圖、原始 AX／DOM、錯誤本文或完整表單。不得讀取隱藏應用程式狀態、Cookie、剪貼簿或拼湊後台內部 API。平台要求密碼／2FA 時保留當下頁面，不搜尋其他密碼來源，也不反覆啟動接收器等待逾時。
+4. 在同一受控工具程序將記憶體值填入本機表單的 password 欄位，經一般表單 POST 保存；不把值放進命令列、URL、環境變數、pipe 或檔案。表單使用精確 Host、同源 Origin、CSRF、15 分鐘有效期、單次提交與大小限制，不載入外部資源。填入秘密後不擷取表單；不因導向逾時重送 POST。
+5. `store_secret()` 完成原生讀回比對才呈現 `verified`，接收器導向無秘密的結果頁並結束。釋放瀏覽器執行器中的值、關閉秘密來源與輸入分頁；重新以 status 核對。任何不明保存結果都先查 registry，不能盲目重送。
+
+此路徑已有虛構 backend、HTTP 邊界與 TLS 表單載入測試；不代表所有平台的秘密取得或 macOS 實機保存均已驗收。Meta 密碼重驗是已觀察到的額外關卡，不能承諾完全無需本人登入。
 
 可見 Terminal 的命令形式如下；`<skill-directory>` 與 `<workspace>` 由 Agent 依實際安裝位置填入，命令本身不包含秘密：
 

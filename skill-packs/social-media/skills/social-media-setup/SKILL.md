@@ -94,13 +94,15 @@ Agent 應完成所有已獲授權且可安全代辦的設定、驗證與文件�
    - 新增 Meta 測試角色時，若帳號欄提供搜尋結果，選取與已確認目標精確相符的結果後再提交；只輸入名稱不代表已選定帳號。提交後讀回角色表的目標與邀請狀態，再到平台端核對邀請。待確認不等於測試角色已生效；接受畫面若附帶條款同意，依下一步交由本人操作。
 4. 平台要求接受開發者條款、身分／企業驗證或重新輸入密碼時，交回使用者；完成後從原位置繼續，不重做前面步驟。
 5. Agent 啟動 OAuth；使用者本人檢查帳號、資源與權限並同意。Agent 不代按同意，也不要求使用者複製 Secret、授權碼或 Token 到對話。
-6. Agent 驗證 OAuth `state` 與 callback，交換 Token，直接透過 `store_secret()` 寫入已預覽的秘密儲存，並確保命令、日誌、預覽與錯誤輸出不含秘密值。只有平台把 App Secret／API key 限制在人類可見畫面、Agent 安全取得會造成洩漏時，才依 `local-credential-storage.md` 使用 `credential_terminal.py launch` 開啟可見 Terminal，並查詢不含秘密的收據；已開好的 Terminal 可直接執行 `credential_store.py put`。使用者只在不回顯欄位貼上一次，不得要求貼進對話或命令列。儲存中斷則依該文件的恢復分支處理，不把 `pending_write` 交給後續平台技能使用。
+6. Agent 驗證 OAuth `state` 與 callback，交換 Token，直接透過 `store_secret()` 寫入已預覽的秘密儲存，並確保命令、日誌、預覽與錯誤輸出不含秘密值。取得任何 App Secret 前，先依 [憑證盤點與自動保存](references/local-credential-storage.md#先盤點再取得避免重複輸入) 核對原生 status、來源與既有收據；OAuth 或輸入視窗逾時不代表已保存的 Secret 過期。已有相符且可用的值直接沿用。使用者已授權 AI 保存，且受控瀏覽器可把官方可見欄位留在執行器記憶體時，可用 `credential_browser.py` 的一次性本機 HTTPS 表單直接入原生庫，不要求使用者重貼。無法避免秘密進入工具輸出時，才以 `credential_terminal.py launch` 交接隱藏輸入；儲存中斷依該文件恢復，不把 `pending_write` 交給後續技能。
 
    五條 OAuth 路徑都必須使用 `oauth_callback.py` 的 `preview → configure → run → status`，不得另寫臨時接收器繞過 state、適用路線的 PKCE、儲存及不明結果保護。後續技能依 `oauth-runtime.md` 透過 `Runtime.access()` 在記憶體取用、檢查並依授權刷新；原生 `verified` 不等於平台憑證有效，`ready` 也不代表所有內容功能均已驗證。Instagram Login 的權限清單來自初次交換；目前官方資料未文件化全部當前 scope 讀回，因此當次基本帳號讀回不證明額外功能仍有權限。交接必須標示初次授權證據，發布、留言、insights 與私訊再由各自正式端點判定，明確拒絕或結果不明即停止且不重送。Instagram via Facebook Login 必須明傳 `--login-route instagram_facebook_login`，舊設定不自動改路線。
 7. 以正式 API 讀回目標帳號、資源、授權範圍與可判斷的有效期限。解析含 Token 的原始回應時只輸出遮蔽後結果。
 8. 只有讀回結果與使用者指定目標一致才標示平台讀取已驗證。遠端發布、回覆或排程仍保持未測試，除非另有明確授權。
 
 外部變更預覽至少列出：平台與功能、將建立或調整的 App、目前官方 use case／產品名稱、完整核心權限及其用途、相依權限與額外影響、可選延伸權限、使用者刪減項目、OAuth callback 類型、偵測到的原生憑證庫、要保存的憑證名稱、未來 Agent 可取用的範圍、預期人工關卡、驗證請求，以及本輪明確排除的遠端操作。預覽要明示使用者可在取得秘密前改選或拒絕持久保存；未提出不同選擇時採原生憑證庫。預覽結尾必須直接告知使用者「如果有任何權限不想開放，請現在告訴我」；後台實際名稱或權限與預覽不同時停止並重新確認，不自行改選相近項目。
+
+若已開好可見 Terminal，`credential_store.py put` 仍是隱藏輸入的直接入口；不要在瀏覽器自動保存可行時要求使用者重貼。
 
 ## Threads 官方測試權杖替代路線
 
