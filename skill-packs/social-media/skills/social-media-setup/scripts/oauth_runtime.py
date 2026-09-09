@@ -53,6 +53,16 @@ def validate_config(config):
         raise OAuthError("invalid_configuration")
     if type(config["callback_port"]) is not int or not 0 <= config["callback_port"] <= 65535:
         raise OAuthError("invalid_configuration")
+    if config["callback_mode"] == "token_import":
+        # 官方測試權杖匯入不假設回呼已設定；仍共用 Threads 身分與刷新驗證。
+        if (config["platform"] != "threads" or config["login_route"] != "threads_login"
+                or not config["client_id"].isdigit() or not config["target_id"].isdigit()
+                or not re.fullmatch(r"v[0-9]+\.0", config["graph_version"])
+                or "threads_basic" not in scopes or any(not s.startswith("threads_") for s in scopes)
+                or config["callback_port"] != 0
+                or any(config[k] for k in ("redirect_uri", "tls_cert", "tls_key"))):
+            raise OAuthError("invalid_configuration")
+        return config
     if config["platform"] in {"facebook", "instagram", "threads"}:
         try:
             uri = urlsplit(config["redirect_uri"])

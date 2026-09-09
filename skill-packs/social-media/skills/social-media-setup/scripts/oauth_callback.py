@@ -31,6 +31,8 @@ class CallbackSession:
             raise OAuthError("authorization_required")
         self.runtime, self.redirect_uri, self.clock = runtime, redirect_uri, clock
         self.config = runtime.config()
+        if self.config["callback_mode"] == "token_import":
+            raise OAuthError("invalid_configuration")
         # 在開啟授權畫面前確認秘密可讀，不把值留在物件或輸出。
         if not runtime._load(self.config["secret_ref"]):
             raise OAuthError("not_configured")
@@ -200,6 +202,8 @@ def serve(runtime, *, confirmed=False, restart=False, https_proxy_confirmed=Fals
     if not confirmed:
         raise OAuthError("authorization_required")
     config = runtime.config()
+    if config["callback_mode"] == "token_import":
+        raise OAuthError("invalid_configuration")
     if config["callback_mode"] == "https_proxy" and not https_proxy_confirmed:
         raise OAuthError("authorization_required")
     context = None
