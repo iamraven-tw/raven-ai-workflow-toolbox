@@ -897,7 +897,9 @@ def validate_skill_structure(manifest: dict) -> None:
         "不得把瀏覽器內部請求或第三方套件冒充官方 API",
         "實際整合執行",
         "最小化人類操作",
-        "不要求使用者手動選 use case",
+        "社群媒體設定一律由人類操作",
+        "不提供 AI 代操作選項",
+        "不要貼進聊天",
         "macOS Keychain 或 Windows Credential Manager",
         "credential_store.py put",
         "使用者只貼上一次",
@@ -912,6 +914,18 @@ def validate_skill_structure(manifest: dict) -> None:
     for phrase in required_phrases:
         if phrase not in skill_text:
             raise ValidationError(f"技能契約缺少：{phrase}")
+
+    # 初始化只交付人工後台指引；防止舊代操作分支重新成為執行契約。
+    for setup_doc in [skill / "SKILL.md", *(skill / "references").rglob("*.md")]:
+        setup_text = setup_doc.read_text(encoding="utf-8")
+        for obsolete in (
+            "這次要由「AI 操作」還是「人類自行操作」",
+            "Agent 代辦已授權的後台填寫",
+            "不要求使用者手動選 use case",
+            "python scripts/credential_browser.py",
+        ):
+            if obsolete in setup_text:
+                raise ValidationError(f"初始化仍含後台代操作指示：{setup_doc.name}")
 
     meta_text = (skill / "references/meta-api-setup.md").read_text(encoding="utf-8")
     facebook_text = (skill / "references/platforms/facebook.md").read_text(encoding="utf-8")

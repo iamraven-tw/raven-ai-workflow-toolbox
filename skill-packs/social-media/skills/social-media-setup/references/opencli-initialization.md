@@ -10,7 +10,7 @@ OpenCLI 是作者維護的開源瀏覽器工具，不是 Meta／Google／X 的�
 
 Agent 先做不觸碰瀏覽器帳號的工具版本／路徑檢查，再向使用者說明：
 
-> 我會從 OpenCLI 作者的 GitHub 開源專案 https://github.com/jackwener/opencli 下載已固定版本的程式與瀏覽器擴充功能，準備讓 AI 操作你指定的 Chrome。它不是社群平台的官方 API；擴充功能有所有網站、分頁、Cookie 與除錯等廣泛存取權限。我會列出版本、保存位置、依賴下載與可能變動，且不因此登入帳號、發布、回覆或排程。你可以拒絕或延後這項安裝。
+> 我會從 OpenCLI 作者的 GitHub 開源專案 https://github.com/jackwener/opencli 下載已固定版本的程式與瀏覽器擴充功能，供後續技能在各自授權範圍使用你指定的 Chrome；社群初始化的後台與擴充設定仍由你依文字指引操作。它不是社群平台的官方 API；擴充功能有所有網站、分頁、Cookie 與除錯等廣泛存取權限。我會列出版本、保存位置、依賴下載與可能變動，且不因此登入帳號、發布、回覆或排程。你可以拒絕或延後這項安裝。
 
 實際提醒必須補上來源契約的版本、完整 commit、GitHub 下載 URL、Apache-2.0 授權、目的地、所需 Git／Node.js／npm／Chrome，以及容量與費用：擴充壓縮檔 45,776 bytes；原始碼與 npm 依賴容量尚未實測，不虛構精確值；沒有此流程要求的付費訂閱，但會下載資料並占用磁碟，平台 API 費用另計。只向 npm registry 取得鎖檔指定的相依套件，不把它們描述成全由 GitHub 下載。
 
@@ -23,7 +23,7 @@ Agent 先做不觸碰瀏覽器帳號的工具版本／路徑檢查，再向使�
 3. **從 GitHub 取得固定來源。** 確认同一份預覽已核准後，以 HTTPS 在新的來源目錄執行 `git clone --depth 1 --single-branch --branch <tag> <download_url> <source-dir>`，所有佔位符由來源契約及核准目標解析。讀回 `git rev-parse HEAD`、`git rev-parse HEAD^{tree}` 與遠端 URL，分別比對完整 commit、tree 與作者來源；再核對 `LICENSE` 與 `package-lock.json` 的 SHA-256。失敗就停止，不能改用最新版本或先執行建置。保留原 LICENSE 及存在時的 NOTICE，不修改上游程式。
 4. **下載擴充功能。** 由 Agent 取得契約的 GitHub Release 資產，先核對 SHA-256 與大小，再檢查 ZIP 路徑不會跳出新目錄、沒有絕對路徑或符號連結，才解壓縮。找到 `manifest.json`、核對版本、權限、`<all_urls>` 與 background 指向檔案存在；與預覽不同就停止重新確認。來源契約的資產雜湊來自 GitHub Release metadata，本機下載時仍必須真正計算比對。
 5. **本機建置 CLI。** 在已核對的 source 目錄使用 npm 鎖檔：`npm ci --ignore-scripts --no-audit --no-fund`，再明確執行 `npm run build`。這會下載依賴並執行已核對專案的建置程式，不是零風險操作。跳過自動安裝腳本，避免上游 postinstall／全域安裝改動其他工具；不執行 `npm link`、`npm install -g`、`npx skills add` 或額外 adapter 安裝。建置若因被略過的相依腳本失敗，停下查明原因，只預覽必要的特定補救，不全面開啟腳本、換版或重裝。以 `node <source-dir>/dist/src/main.js --version` 讀回版本；後續以這個確定入口取代不明的全域 `opencli`。
-6. **啟用 Browser Bridge。** Agent 用環境允許的既有控制工具開啟指定 Chrome 的 `chrome://extensions`，盡可能代辦可操作步驟。首次缺少可用瀏覽器控制入口、瀏覽器保護或企業政策阻擋時，只把「啟用開發人員模式／載入解壓縮目錄／允許擴充權限」中實際必須由人執行的步驟交回；給出已準備好的確切路徑，不叫使用者重新下載或執行命令。不能用尚未安裝的 OpenCLI 安裝它自己，也不繞過企業政策。啟用本身不要求社群登入。
+6. **啟用 Browser Bridge。** Agent 提供 `chrome://extensions`、已準備好的確切擴充目錄，以及啟用開發人員模式、載入解壓縮目錄、檢查權限的文字步驟，由人類自行操作。不得用 Computer Use、瀏覽器自動化或 OpenCLI 代辦設定；不繞過企業政策。啟用本身不要求社群登入。
 7. **分層驗證。** 完整 CLI 啟動可能建立／改寫使用者層級 `.opencli` 的模組連結、讀取既有自訂 adapter／plugin，並啟動 daemon；這些不屬於純唯讀檔案檢查。執行前確認它們已列入核准範圍，遇到其他來源的衝突停下，不載入來源不明的自訂程式。依固定版 `--help` 與 Browser Bridge 文件，執行 `doctor`、辨識連線中的 Chrome；多個 profile 不能猜。用專供驗證的新分頁讀取不需登入的中性公開頁，核對標題與網址。只有版本輸出或 doctor 成功，不能標示五平台可搜尋；社群登入、各平台搜尋／讀回均為另外驗收。
 8. **記錄與交接。** Agent 在核准的私人 `.local/social-media/opencli-state.json` 保存下方最小狀態；顯示摘要後交回原初始化工作，不要求使用者保存技術資料。後續內容規劃只沿用已驗證的入口與授權，不重新安裝或默默擴權。
 

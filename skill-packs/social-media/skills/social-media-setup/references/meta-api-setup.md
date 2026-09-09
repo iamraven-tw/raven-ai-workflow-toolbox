@@ -22,7 +22,7 @@ Agent 在要求使用者登入前完成以下唯讀工作：
 
 1. 重查選定平台所有核心功能的官方文件、Graph API 版本、permission、相依 permission、Standard／Advanced Access、App Review 與 Business Verification 條件。
 2. 確認目標資源種類與可辨識名稱，例如 Facebook Page；若使用者尚未指定唯一目標，只問這一題。
-3. 確認環境具有可由 Agent 操作的受控瀏覽器。公開技能不得硬編維護者的瀏覽器名稱、Profile 或擴充套件路徑。
+3. 確認使用者可自行開啟官方後台，並準備完整文字申請清單。公開技能不得硬編維護者的瀏覽器名稱、Profile 或擴充套件路徑。
 4. 確認有符合當下 Meta 規則的 OAuth callback。若需要公共 HTTPS、正式網域或額外服務，不得自行安裝、部署或開通；先回報缺口並取得授權。
 5. 讀取 `local-credential-storage.md`，執行 `credential_store.py inspect`。使用者沒有另行指定時，預設採目前作業系統帳號的 macOS Keychain 或 Windows Credential Manager，並確認可在不把值放入對話、命令列參數、一般設定或日誌的情況下保存 App Secret 與 Token。
 
@@ -40,33 +40,33 @@ Agent 在要求使用者登入前完成以下唯讀工作：
 - 完整核心 permission、每項用途、讀寫影響、相依關係及使用者要求移除的 permission。
 - 平台自動附帶的基本身分 permission，以及不屬於核心但可選的廣告、企業、商務、商品與其他延伸 permission。
 - OAuth callback 類型、偵測到的原生憑證庫、預計保存的憑證名稱，以及未來受信任 Agent adapter 可取用的範圍；不顯示私人完整目標名稱或秘密值。
-- AI 將執行的後台動作、使用者必須處理的關卡、各功能驗證請求與停止條件。
+- 人類須依文字指引執行的後台動作、使用者必須處理的關卡、各功能驗證請求與停止條件。
 - App Review、Business Verification、公開使用者支援與遠端寫入測試是否排除在本輪之外。
 
 預覽最後直接告知：「以上是我準備申請的權限。如果有任何一項不想開放，請現在告訴我；我會在 OAuth 前移除，並說明哪些功能會因此無法使用。」
 
 預覽確認只授權其中列出的動作。後台沒有預期 use case、要求更多權限或出現未列出的 Business portfolio 時停止並重新預覽。
 
-## 最小人工介入流程
+## 人工設定與 API 驗收流程
 
-### 1. Agent 開啟並檢查後台
+### 1. 人類開啟並檢查後台
 
-Agent 開啟 Meta for Developers 的 Apps 頁面，讀取畫面上可見的登入狀態與帳號標籤。已登入時仍要確認它符合預覽中的 App 擁有者；不可切換帳號、讀取 Cookie 或從密碼管理工具取得密碼。
+Agent 提供 [Meta Apps 入口](https://developers.facebook.com/apps/) 與核對步驟，由人類開啟並核對登入狀態與帳號標籤。已登入時仍要確認它符合預覽中的 App 擁有者；不可切換帳號、讀取 Cookie 或從密碼管理工具取得密碼。
 
 ### 2. 人工關卡一：身分、安全與法律同意
 
-只有遇到下列畫面才交回使用者：
+下列步驟與其他所有後台設定均由人類自行完成：
 
 - Facebook／Meta 帳號登入、Passkey、2FA 或驗證碼。
 - 首次開發者註冊與平台條款接受。
 - 密碼重新驗證、身分驗證或企業資料證明。
 - 多帳號或多 Business portfolio 且無法依已確認目標唯一判斷。
 
-Agent 應先開到正確頁面，只要求使用者完成當下畫面。使用者完成後，Agent 從同一頁繼續。
+Agent 一次提供完整步驟，不要求逐頁回覆，也不接管瀏覽器。
 
-### 3. Agent 建立並設定 App
+### 3. 人類建立並設定 App
 
-取得外部變更授權後，Agent 負責：
+Agent 將以下步驟列入文字清單，由人類操作：
 
 1. 點擊建立 App，填入已預覽的顯示名稱與必要非敏感欄位。
 2. 選取符合目前官方文件的 use case／產品；不得依舊版 UI 名稱盲選相似項目。
@@ -74,17 +74,17 @@ Agent 應先開到正確頁面，只要求使用者完成當下畫面。使用�
 4. 設定 OAuth redirect URI、必要網域、測試角色、完整核心 permission 與使用者明確選取的延伸 permission。
 5. 讀回 App 畫面，確認實際 App、use case／產品與 redirect 設定符合預覽。
 
-App ID 與資產 ID 是私人連線資料，不能寫入公開套件或一般設定。App Secret 只能送入外部變更預覽中的秘密儲存；若顯示 Secret 需要重新驗證密碼，回到人工關卡一。Meta 只在人類可見畫面揭露 Secret、而 Agent 讀取會讓值進入畫面記錄或工具輸出時，Agent 開啟可見互動式 Terminal 並啟動 `credential_store.py put --platform facebook --name app-secret`；使用者只貼上一次，輸入不回顯。不得要求使用者把值貼進對話或命令列。
+App ID 與資產 ID 是私人連線資料，不能寫入公開套件或一般設定。App Secret 只能送入外部變更預覽中的秘密儲存；若顯示 Secret 需要重新驗證密碼，回到人工關卡一。需要提供尚未保存的 Secret 時，Agent 開啟可見互動式 Terminal 並啟動 `credential_store.py put --platform facebook --name app-secret`；使用者只貼上一次，輸入不回顯。不得要求使用者把值貼進對話或命令列。
 
 ### 4. 人工關卡二：OAuth 同意
 
-Agent 建立含防偽 `state` 的授權請求並開啟官方 OAuth 畫面。使用者本人確認：
+Agent 準備含防偽 `state` 的本機接收器並提供短期連結，由人類自行開啟官方 OAuth 畫面。使用者本人確認：
 
 - 目前登入帳號正確。
 - 目標 Page、Instagram 專業帳號或 Threads 帳號正確。
 - permission 與預覽一致，沒有多要求權限。
 
-使用者完成同意後把控制權交回 Agent。Agent 不代按 OAuth 同意，也不引導使用者把授權碼貼入對話。
+使用者完成同意後，Agent 檢查接收器狀態。Agent 不代按 OAuth 同意，也不引導使用者把授權碼貼入對話。
 
 ### 5. Agent 完成 Token 與讀回驗證
 

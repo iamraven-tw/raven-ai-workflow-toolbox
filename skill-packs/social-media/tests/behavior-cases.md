@@ -216,7 +216,7 @@
 
 輸入：虛構新使用者要求初始化專案，已有 Git／相容 Node.js／npm／Chrome，但沒有 OpenCLI。
 
-預期：預設列出作者 GitHub、固定版本、目的地、npm 依賴、容量限制及擴充廣泛權限。沒有同範圍授權就一次確認；已有則先提醒而不逐命令重問。AI 代辦下載、核對、建置，只有實際必須由人啟用擴充時交回。下載不代表 Bridge 或五平台已驗證。本案例未執行真實安裝或 Agent 對話前測。
+預期：預設列出作者 GitHub、固定版本、目的地、npm 依賴、容量限制及擴充廣泛權限。沒有同範圍授權就一次確認；已有則先提醒而不逐命令重問。AI 代辦下載、核對、建置，擴充設定一律提供文字指引由人操作。下載不代表 Bridge 或五平台已驗證。本案例未執行真實安裝或 Agent 對話前測。
 
 ## 36. 拒絕、既有安裝與共用狀態
 
@@ -259,3 +259,14 @@
 輸入：虛構 API 已回傳 reply ID，或受控瀏覽器顯示已送出。
 
 預期：以正式 GET 或真正重載核對 ID、自己帳號、父留言、精確文字、平台時間與精確回覆網址。YouTube／Instagram API 缺網址時保留 pending，透過 `record-observation` 補同一 attempt；Threads 容器 FINISHED 與瀏覽器按鈕成功都不是 replied。只有六項證據齊全才處理下一則。
+
+
+## 社群初始化固定人工操作（流程審查案例）
+
+輸入：使用者要求設定 Meta 與 YouTube，或回報後台表單無法保存。
+
+預期：不詢問 AI／人類模式，不呼叫 Computer Use、瀏覽器 DOM 或 CLI 操作後台。一次交付官方入口、帳號前提、App／use case、權限名稱與用途、callback、測試角色、保存檢查及缺少的金鑰清單；故障只提供修正文字步驟。人類操作完成再接續本機保存、OAuth 接收與 API 驗收。
+
+憑證案例：已有相符且可用的 Secret 時直接沿用；輸入視窗或 OAuth 逾時先查收據與原生狀態。缺少金鑰才請人類在 Terminal 隱藏輸入提供，不貼聊天，不啟動 credential_browser.py。YouTube API key 不代替 Data／Analytics 使用者 OAuth；帳號、內容、成效分別驗收。
+
+本案例是靜態流程審查，未宣稱新的人工平台操作或 Windows／macOS OAuth 實機驗收。

@@ -33,7 +33,7 @@ Threads 目前查證範圍沒有一般私訊管理 API 或 DM permission，所�
 
 1. 在同一份 Meta 外部變更預覽中逐平台列出 Threads App/use case、完整 permission、OAuth、redirect URI 與審查需求。
 2. 使用者可在 OAuth 前刪除任一受支援核心 permission；刪減後把 Threads 記為 `custom`，並列出失去的功能。
-3. Agent 完成可安全代辦的 App、Threads use case、redirect URI 與 permission 設定；登入、安全驗證、條款與 OAuth 同意才交回使用者。
+3. Agent 提供完整文字步驟，由人類完成 App、Threads use case、redirect URI、permission、登入、安全驗證、條款與 OAuth 同意。
 4. 使用 [專用 OAuth 程式](../instagram-threads-oauth.md) 接收 code、換長 Token、原生保存，並由官方 debugger 及 `/me` 讀回實際 scope、期限與 Threads 帳號；缺少、增加或資源不符都停止，不自動重做授權。日後只能在已核准範圍內按需刷新仍有效且至少 24 小時的長 Token。
 5. 只把 App、OAuth 與安全唯讀資源讀回標為已驗證。取得寫入 scope 不代表發布、回覆或 insights 已實測。
 

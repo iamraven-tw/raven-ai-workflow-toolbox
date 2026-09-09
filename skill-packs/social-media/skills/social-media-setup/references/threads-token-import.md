@@ -6,7 +6,7 @@
 
 1. 依主技能沿用已確認的 App、目標 username、確切 scope、原生保存與讀取／刷新範圍。需要的新權限只確認差異，不因更換取得方式重新詢問相同範圍。
 2. 確認 Windows Credential Manager 或 macOS Keychain 可用；用 `credential_terminal.py launch --workspace-root <私人工作區> --platform threads --name dashboard-token --confirm-store` 準備隱藏輸入。
-3. 在 Threads 設定的用戶權杖產生器選定測試帳號。本人完成官方同意畫面，將產生的 Token 貼入隱藏輸入視窗；Agent 不讀取 Token 畫面、剪貼簿或秘密欄，不要求貼進對話。若瀏覽器無法開啟產生器視窗，交接此按鈕，不修改安全設定或拼湊內部請求。
+3. 人類依文字指引開啟 Threads 設定的用戶權杖產生器，選定測試帳號。本人完成官方同意畫面，將產生的 Token 貼入隱藏輸入視窗；Agent 不讀取 Token 畫面、剪貼簿或秘密欄，不要求貼進對話。若人類無法開啟產生器視窗，提供疑難排解文字，不修改安全設定或拼湊內部請求。
 4. 收據 `verified` 只證明暫存原生項目可讀。執行下列匯入命令；參數只含私人識別資料及 scope，不包含 Token。
 
 ```text

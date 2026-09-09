@@ -7,7 +7,7 @@
 - Agent 先依平台文件列出完整核心權限，讓使用者刪減；不要把下方必要的 basic scope 當成預設僅唯讀。
 - 每平台分開確認 App ID、App Secret、目標帳號、scope、API 版本、精確 HTTPS redirect URI、callback 接收方式、原生秘密庫與日後按需刷新授權。登入與 OAuth 同意交由本人。
 - `platform=instagram` 明確指 **Instagram Login**，使用專用 Instagram App ID／Secret、專業帳號及 `instagram_business_*` scope；不接受 Facebook Login 的 `instagram_basic` 或 Page scope。
-- IG `target_id` 是專業帳號 `user_id`，不是 App-scoped `id`；初次 code 回應中的 `user_id` 是 App-scoped ID。程式分別保存並核對，不因欄位同名就混用。Agent 從已授權的官方帳號資料／後台取得目標，不要求人抄 Token，也不以任意登入帳號自動取代已確認目標。
+- IG `target_id` 是專業帳號 `user_id`，不是 App-scoped `id`；初次 code 回應中的 `user_id` 是 App-scoped ID。程式分別保存並核對，不因欄位同名就混用。Agent 從已授權的官方 API 帳號資料或人類提供的後台識別資料核對目標，不要求人抄 Token，也不以任意登入帳號自動取代已確認目標。
 - `platform=threads` 使用 Threads 專用 App ID／Secret；`target_id` 是 Threads App-scoped ID。不得拿 Instagram 或 Facebook 的 ID／Token 代替。
 - API 版本無預設；查證時 IG 官方範例為 `v25.0`，Threads 為 `v1.0`，執行前重新核對。
 - 設定前 `preview`、確認後 `configure`，兩者需相同參數及 digest。Meta 三平台同用既有 HTTPS 接收條件，不建立代理、不安裝隧道、不關閉 TLS 驗證。

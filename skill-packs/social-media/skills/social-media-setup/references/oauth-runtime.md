@@ -30,10 +30,10 @@ Facebook 這條路徑是伺服器端交換，**不能把 App 設成 Native/Deskt
 
 1. Agent 先依平台文件提出完整核心權限，包含平台正式支援的私訊；讓使用者移除不想開放的權限，另外選擇廣告等延伸項目。程式不替使用者決定 scope；每個 `--scope` 必須來自已確認的清單。
 2. 把目標帳號／Page／頻道、App 類型、callback、秘密庫、連線代稱、將保存的值與唯讀檢查列入同一份外部變更預覽。明確說明日後可自動讀取憑證、檢查有效性與在核准範圍內刷新；不包含發布、回覆、排程或自動再授權。
-3. Agent 代辦已授權的後台填寫；本人只處理登入、安全／法律確認、資源選擇及 OAuth 同意。不要求使用者貼授權碼。
-4. App Secret／client secret 能安全直接取得時由程式保存；否則依 `local-credential-storage.md` 由 Agent 開 Terminal，使用者只在隱藏提示貼上一次。預先存成該平台的 `app-secret`，不可傳到命令列或對話。
+3. Agent 提供完整文字清單；後台填寫、登入、安全／法律確認、資源選擇及 OAuth 同意一律由人類操作。不要求使用者貼授權碼。
+4. App Secret／client secret 先盤點既有原生庫，缺少時依 `local-credential-storage.md` 由 Agent 開 Terminal，使用者只在隱藏提示貼上一次。預先存成該平台的 `app-secret`，不可傳到命令列或對話。
 5. Agent 以 `preview` 產生連線設定摘要與 digest，在私人介面向使用者補充核對確切目標與 callback；確認後才以相同參數 `configure --confirm-config --preview-digest <digest>` 保存。取代既有設定還要確認並加入 `--confirm-replace`。這不是另一張問卷，可以納入同一份初始化預覽。
-6. Agent 啟動 `run`，只開啟輸出的短期本機 `launch_url`；由接收器導向官方授權頁。本人同意後，程式交換、原生保存、讀回驗證；Agent 查看非敏感結果。
+6. Agent 啟動 `run`，將輸出的短期本機 `launch_url` 提供給人類自行開啟；由接收器導向官方授權頁。本人同意後，程式交換、原生保存、讀回驗證；Agent 查看非敏感結果。
 7. 只有 `ready` 才代表這一次身分／授權讀回成功。一般設定依 `manage_workspace.py` 處理；完整候選已在初始化總預覽確認且未變更時直接套用，不重問。候選有未核准差異時只確認差異，仍保留雜湊及來源檢查，不能由 OAuth 程式自動修改。
 
 本文件所有「確認」沿用 [主技能的最早一次完整確認](../SKILL.md#最小化人類操作)。App 建立後產生的 ID、連線 digest 與驗證結果由 Agent 核對並摘要回報；只要屬於已確認的目標與操作，不增加一次許可問題。登入／OAuth／隱藏輸入是必要操作交接，不是重新取得相同的保存、讀取或刷新授權。

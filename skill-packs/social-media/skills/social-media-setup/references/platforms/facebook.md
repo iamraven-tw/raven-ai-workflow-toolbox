@@ -8,7 +8,7 @@
 
 Facebook 粉絲專頁管理使用 Facebook Login、使用者授權與 Page access token。先確認使用者對目標 Page 具有相應工作權限；Agent 不靠口述直接標為通過。
 
-2026-09-09 實機補充：`/me/accounts` 完整列舉成功但未包含已確認的目標時，可依 [OAuth 執行契約](../oauth-runtime.md#有效性與後續技能交接)改走官方指定 Page Token 路徑。先由使用者指定或受控官方專頁畫面確認唯一 Page ID，不搜尋或試猜其他 ID；目標 Token 仍須核對 App、PAGE 類型、scope、期限與身分。此路徑沒有 tasks 證據，不能把讀取通過說成所有管理工作已驗收。以下列舉路徑的 tasks 成功條件只適用於 `/me/accounts` 確實列出目標時。
+2026-09-09 實機補充：`/me/accounts` 完整列舉成功但未包含已確認的目標時，可依 [OAuth 執行契約](../oauth-runtime.md#有效性與後續技能交接)改走官方指定 Page Token 路徑。先由使用者自行查核官方專頁畫面後提供唯一 Page ID，不搜尋或試猜其他 ID；目標 Token 仍須核對 App、PAGE 類型、scope、期限與身分。此路徑沒有 tasks 證據，不能把讀取通過說成所有管理工作已驗收。以下列舉路徑的 tasks 成功條件只適用於 `/me/accounts` 確實列出目標時。
 
 使用者第一次選取 Facebook 且沒有明確縮小範圍時，預設採 `full_management`，一次提出下列完整核心權限。這只是 OAuth 授權預設，不代表 Agent 已獲准立即發布、刪除、回覆或傳送私訊。
 
@@ -58,11 +58,11 @@ Messenger 的完整核心授權仍受政策限制：收件者必須先向 Page �
 
 這條路徑建立 Facebook Page 的帳號讀取、內容讀寫、公開留言、成效、Webhook 與 Messenger 技術權限。設定技能只驗證 App、OAuth、實際授權清單與安全的唯讀 Page 讀回；發布、留言寫入與私訊傳送由後續技能各自實測。
 
-### Agent 執行步驟
+### 人工設定與程式驗收步驟
 
 1. 依 `meta-api-setup.md` 顯示包含所有核心 permission、相依關係、可選延伸權限、審查需求及排除動作的外部變更預覽。
 2. 使用者可在 OAuth 前刪除任一核心 permission 或選取延伸權限；刪減後改用 `custom` 並列出受影響功能。
-3. Agent 建立或設定 Meta App、Facebook Login、Pages API、Messenger、OAuth callback 與完整已確認 permission。若 Messenger Webhook 需要尚未授權的公開 HTTPS 服務或部署，先停止該部分，不因此假裝私訊已可用。
+3. 人類依 Agent 的文字清單建立或設定 Meta App、Facebook Login、Pages API、Messenger、OAuth callback 與完整已確認 permission。若 Messenger Webhook 需要尚未授權的公開 HTTPS 服務或部署，先停止該部分，不因此假裝私訊已可用。
    - 2026-09-09 後台實測：Pages 使用案例沒有 `pages_messaging` 時，回到「使用案例 → 新增使用案例 → 商務式訊息」，選取「透過 Messenger from Meta 與顧客互動」並保存。不要只在 Pages 的「新增更多內容」尋找 Messenger；該入口可能只有 Webhooks。新增後讀回 Messenger 的權限表，本次 `pages_messaging` 已呈現「可供測試」，不需再次點新增。實際名稱與可共存條件以當前 App 畫面為準。
    - 後台採 Facebook Login for Business 時，依 [組態契約](../oauth-runtime.md#facebook-login-for-business-組態) 建立一般／用戶存取權杖組態，讀回 permission 與組態編號，再以 `config_id` 啟動；不把不存在的 Messenger 權限默認為已啟用。
    - 補上 Messenger 時，編輯既有已核准組態的「權限」，保留原先核心清單並加入 `pages_messaging`；保存後展開組態讀回完整清單，再進行本人 OAuth。同一 App 的舊 Token 不會因後台多了一項 permission 就取得該權限。可先用另一個本機 connection 驗收新增範圍，保留既有已可用連線；通過後才明確交接後續使用哪個 connection。
@@ -88,7 +88,7 @@ Messenger 的完整核心授權仍受政策限制：收件者必須先向 Page �
 
 - 使用者已指定可辨識的目標 Facebook Page。
 - 登入的 Facebook 個人帳號確實具有該 Page 所需工作權限；Agent 不靠使用者口述直接標為通過。
-- 受控瀏覽器、相容 OAuth callback 與獲准秘密儲存均可用。
+- 人類可操作的瀏覽器、相容 OAuth callback 與獲准秘密儲存均可用。
 - 第一輪只測 App 角色或使用者自有／可管理資產；其他帳號、Advanced Access、App Review 與 Business Verification 另列驗收。
 
 ### 縮限 permission
@@ -97,12 +97,12 @@ Messenger 的完整核心授權仍受政策限制：收件者必須先向 Page �
 
 唯讀驗證不得要求使用者已拒絕的 `pages_manage_posts`、`pages_manage_engagement`、`pages_manage_metadata` 或 `pages_messaging`。後續要新增功能時重新顯示完整權限預覽並取得確認。
 
-### Agent 執行步驟
+### 人工設定與程式驗收步驟
 
 1. 依 `meta-api-setup.md` 顯示外部變更預覽並取得確認。
-2. Agent 開啟 Meta for Developers；只在登入、2FA、首次開發者條款或平台強制驗證時交回使用者。
-3. Agent 建立 Meta App，選取目前官方後台中可支援 Facebook Login 與 Pages API 的 use case／產品，並設定已確認的 OAuth callback 與 `pages_show_list`。
-4. Agent 啟動 OAuth；使用者本人確認 Facebook 帳號、Page 資源與 permission 後同意。
+2. Agent 提供 Meta for Developers 連結；人類自行開啟並完成登入、2FA、首次開發者條款及後台設定。
+3. 人類依文字指引建立 Meta App，選取目前官方後台中可支援 Facebook Login 與 Pages API 的 use case／產品，並設定已確認的 OAuth callback 與 `pages_show_list`。
+4. Agent 啟動本機接收器並提供連結讓人類開啟 OAuth；使用者本人確認 Facebook 帳號、Page 資源與 permission 後同意。
 5. Agent 依 [OAuth 執行器](../oauth-runtime.md) 驗證 callback，於記憶體取得並檢查短期／長期 User access token，不把 Token 放入 URL 紀錄、stdout、對話或一般設定，也不持久保存 User Token。
 6. 以當下支援的 Graph API 版本呼叫 `GET /me/accounts?fields=id,name,access_token,tasks`。官方 GET 所需 Token／appsecret proof 由固定主機的受控 HTTPS 程序傳送，不建立 URL 日誌、不使用代理、不跟隨重新導向，也不在瀏覽器開啟含秘密的 API URL。
 7. 解析回應時僅把已確認目標的 Page access token 送入獲准秘密儲存；不保存其他 Page 的 Token。使用者只看到 Page 名稱、遮蔽識別資訊與 tasks，不顯示原始 Token。

@@ -11,7 +11,7 @@
 1. **Instagram Login**：專業帳號可直接授權，不要求先連結 Facebook 粉絲專頁；使用 Instagram User access token 與 `graph.instagram.com`。
 2. **Facebook Login**：Instagram 專業帳號必須連結使用者可管理的 Facebook 粉絲專頁；使用 Facebook User／Page access token 與 `graph.facebook.com`。
 
-一般消費者帳號不屬於這些專業 API 的支援對象。Agent 應先讀回帳號類型、Page 連結狀態與實際所需功能，再推薦路線；若使用者同時設定 Facebook Page，仍不得只因帳號相連就假定 Facebook Login 必然較適合。
+一般消費者帳號不屬於這些專業 API 的支援對象。Agent 應先根據人類提供的帳號類型、Page 連結狀態與實際所需功能（有連線時再以正式 API 讀回），再推薦路線；若使用者同時設定 Facebook Page，仍不得只因帳號相連就假定 Facebook Login 必然較適合。
 
 ## 預設完整核心權限
 
@@ -60,7 +60,7 @@ Instagram Login 目前不支援廣告或標註能力。使用者選取這些延�
 
 1. 先把 Instagram 與同輪選取的 Facebook／Threads 放進一份 Meta 外部變更預覽，但逐平台列出 App/use case、permission、OAuth 與必要審查。
 2. 使用者可在 OAuth 前刪除任何核心 permission；刪減後把 Instagram 記為 `custom`，並列出失去的功能。
-3. Agent 依實際帳號關係選定一條登入路線，完成可安全代辦的 App、callback、產品／use case 與 permission 設定。
+3. Agent 依實際帳號關係提出登入路線與完整文字步驟，由人類完成 App、callback、產品／use case 與 permission 設定。
 4. 使用者本人完成必要登入、安全驗證、條款與 OAuth 同意；Agent 不要求使用者把 Secret、授權碼或 Token 貼進對話。
 5. Instagram Login 使用 [專用 OAuth 程式](../instagram-threads-oauth.md)，核對初次交換 scope、當前專業帳號類型及兩種 ID。2026-09-06 查證的官方資料沒有文件化全部當前 scope 重新列舉介面；交接必須標成初次授權證據，並由發布、留言、成效與私訊的實際功能端點各自驗證。Facebook Login 使用 [Page Token 專用程式](../instagram-facebook-login-oauth.md)，核對 Facebook User、唯一相連 Page、Page Token 與 Instagram 帳號；不能借用 Facebook Page 的目標身分驗證。
 6. 只把實際完成的 App、OAuth 與安全唯讀資源讀回標為已驗證。發布、留言寫入、insights 查詢與私訊收發分別等待後續技能實測。
