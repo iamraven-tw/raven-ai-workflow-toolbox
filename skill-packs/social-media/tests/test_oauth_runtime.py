@@ -138,6 +138,37 @@ class OAuthTests(unittest.TestCase):
             function()
         self.assertEqual(caught.exception.kind, kind)
 
+    def test_business_login_configuration_dialog_and_exchange(self):
+        runtime = self.runtime('facebook')
+        runtime.configure(configuration('facebook') | {'business_login_config_id': '987'},
+                          confirmed=True, replace=True)
+        session = self.session(runtime)
+        params = parse_qs(urlsplit(session.authorization_url()).query)
+        self.assertEqual(params['config_id'], ['987'])
+        self.assertNotIn('scope', params)
+        self.assertEqual(params['state'], [session.state])
+        self.assertEqual(params['redirect_uri'], [runtime.config()['redirect_uri']])
+        self.http.replies = self.facebook_replies()
+        session.accept('/oauth/callback?' + urlencode({'state': session.state, 'code': 'fictional-code'}))
+        self.assertEqual(runtime.status()['status'], 'ready')
+        self.assertEqual(runtime.config()['business_login_config_id'], '987')
+
+    def test_business_login_configuration_rejects_invalid_or_other_platform(self):
+        for value in ('', 'abc', 123, True, None, '12 34'):
+            self.assert_kind('invalid_configuration', lambda: validate_config(
+                configuration('facebook') | {'business_login_config_id': value}))
+        self.assert_kind('invalid_configuration', lambda: validate_config(
+            configuration('youtube') | {'business_login_config_id': '987'}))
+
+    def test_business_login_configuration_still_rejects_extra_grants(self):
+        runtime = self.runtime('facebook')
+        runtime.configure(configuration('facebook') | {'business_login_config_id': '987'},
+                          confirmed=True, replace=True)
+        self.http.replies = self.facebook_replies()
+        self.http.replies[4]['data'].append({'permission': 'business_management', 'status': 'granted'})
+        self.assert_kind('permission_mismatch', lambda: self.finish(runtime))
+        self.assertEqual(runtime.status()['parts'], 0)
+
     def test_configuration_is_confirmed_and_private(self):
         runtime = Runtime(self.workspace, "youtube", backend=self.backend, transport=self.http)
         self.assert_kind("authorization_required", lambda: runtime.configure(configuration("youtube")))

@@ -34,11 +34,17 @@ def validate_config(config):
                 "graph_version", "redirect_uri", "callback_port", "callback_mode",
                 "tls_cert", "tls_key"}
     keys = set(config) if isinstance(config, dict) else set()
-    if (not isinstance(config, dict) or (keys != required and keys != required | {"login_route"})
+    optional = {'login_route', 'business_login_config_id'}
+    if (not isinstance(config, dict) or not required.issubset(keys) or keys - required - optional
             or config.get("platform") not in ROUTES):
         raise OAuthError("invalid_configuration")
     config = dict(config)
     config["login_route"] = config.get("login_route") or DEFAULT_LOGIN_ROUTES[config["platform"]]
+    if 'business_login_config_id' in config:
+        if (config['platform'] != 'facebook' or config['login_route'] != 'facebook_pages'
+                or not isinstance(config['business_login_config_id'], str)
+                or not re.fullmatch(r'[0-9]+', config['business_login_config_id'])):
+            raise OAuthError('invalid_configuration')
     required.add("login_route")
     if any(not isinstance(config[k], str) for k in required - {"scopes", "callback_port"}):
         raise OAuthError("invalid_configuration")

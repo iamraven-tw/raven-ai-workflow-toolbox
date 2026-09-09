@@ -18,6 +18,14 @@
 
 Facebook 這條路徑是伺服器端交換，**不能把 App 設成 Native/Desktop 後套用**。App Secret 只留在使用者控制的本機程序與原生憑證庫，不能打包給其他使用者。同一套公開工具可以由每位使用者各自設定 App，但不散布共用 App Secret。Meta 的 HTTPS 條件與 Google Desktop app 的 HTTP loopback 不相同。
 
+### Facebook Login for Business 組態
+
+補充查證：2026-09-09，官方後台的組態建立畫面與登入對話已實測。當 App 使用 Facebook Login for Business，先在後台建立並讀回符合核准範圍的組態；本執行器採一般登入體驗、**用戶存取權杖**，不支援系統用戶權杖。選擇已核准且實際可用的 permission，核對自動相依項，不加入未核准的企業、廣告或其他平台 scope。沒有提供的核心權限另記缺口，不能標為完整管理已驗收。
+
+`preview`／`configure` 可帶 `--business-login-config-id <組態編號>`。此私人欄位僅適用 `facebook_pages`，連同其他識別資料保存在原生庫，納入既有 preview digest。授權網址傳 `config_id`，不再傳 `scope` 覆蓋後台組態；本機 `scopes` 仍保存已讀回的完整預期清單，交換後照常精確比對實際授予權限、App、使用者與 Page。沒有此欄位的既有連線保留原 scope flow，不自動搬移或修改後台組態。
+
+建立成功或到達官方同意畫面，只證明組態與授權入口可用；本人同意、callback、Token 保存與 API 讀取仍獨立驗收。官方入口：[建立組態及呼叫登入對話](https://developers.facebook.com/docs/facebook-login/facebook-login-for-business/)。
+
 ## 一次預覽與人類最少操作
 
 1. Agent 先依平台文件提出完整核心權限，包含平台正式支援的私訊；讓使用者移除不想開放的權限，另外選擇廣告等延伸項目。程式不替使用者決定 scope；每個 `--scope` 必須來自已確認的清單。

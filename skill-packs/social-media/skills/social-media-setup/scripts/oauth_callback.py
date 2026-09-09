@@ -71,7 +71,11 @@ class CallbackSession:
             params["scope"] = ",".join(self.config["scopes"])
             endpoint = AUTH_URLS[self.config["platform"]]
         else:
-            params["scope"] = ",".join(self.config["scopes"])
+            # Business Login 的權限由已讀回的後台組態指定；交換後仍精確核對 scopes。
+            if self.config.get('business_login_config_id'):
+                params['config_id'] = self.config['business_login_config_id']
+            else:
+                params["scope"] = ",".join(self.config["scopes"])
             endpoint = f"https://www.facebook.com/{self.config['graph_version']}/dialog/oauth"
         return endpoint + "?" + urlencode(params)
 
@@ -252,6 +256,7 @@ def main():
     parser.add_argument("--platform", required=True, choices=sorted(ROUTES))
     parser.add_argument("--connection", default="main")
     parser.add_argument("--login-route")
+    parser.add_argument("--business-login-config-id")
     parser.add_argument("--client-id")
     parser.add_argument("--target-id")
     parser.add_argument("--scope", action="append", default=[])
@@ -274,6 +279,8 @@ def main():
                 "callback_port", "callback_mode", "tls_cert", "tls_key")} | {"scopes": args.scope}
             if args.login_route:
                 config["login_route"] = args.login_route
+            if args.business_login_config_id is not None:
+                config['business_login_config_id'] = args.business_login_config_id
             config = validate_config(config)
             if not re.fullmatch(r"[a-z][a-z0-9-]{0,19}", args.connection):
                 raise OAuthError("invalid_configuration")
