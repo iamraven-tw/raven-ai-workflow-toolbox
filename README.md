@@ -319,6 +319,8 @@ ai-workflow-toolbox/
 
 ## 安裝
 
+使用者第一次透過根安裝入口完成任一技能包的全新安裝與技能發現驗證後，Agent 會主動詢問一次是否要盤點本機 AI Agent 的全域規則、全域技能、專案規則與專案技能。這個問題只用來確認是否進入盤點流程；Agent 不會因此自動安裝盤點技能、讀取規則或開始掃描。使用者同意後，才依盤點技能包的獨立授權關卡安裝必要技能，並先讓使用者選擇工具與專案範圍。拒絕或稍後處理不影響已完成的安裝。
+
 AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INSTALL.md) 與 `install.manifest.toml`。三種目標桌面／開發用戶端的規則入口與本機技能發現結果見 [`docs/client-compatibility.md`](skill-packs/ai-knowledge-base/docs/client-compatibility.md)；目前是「可供外部驗收」的候選版。第三方乾淨安裝、外部登入、遠端存取與另一臺電腦實測仍須逐項完成，之後才能由維護者決定是否正式支援。
 
 AI 剪片已建立 [`skill-packs/ai-video/`](skill-packs/ai-video/README.md) 的完整 Agent 安裝與生命週期契約，並發布鎖定的 [Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1)。manifest 標示 `installable = true`，代表可安裝為外部驗收候選版；`officially_supported` 仍為空，直到使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收。根專案的套件分流見 [`INSTALL.md`](INSTALL.md)。
