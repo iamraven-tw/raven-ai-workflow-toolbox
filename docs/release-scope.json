@@ -1,0 +1,532 @@
+{
+  "version": "0.1.0-preview.1",
+  "base_commit": "e79d7f3",
+  "file_count": 105,
+  "files": [
+    {
+      "path": ".gitignore",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "AGENTS.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "INSTALL.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "README.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/decisions/0001-video-use-integration.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/decisions/0003-website-building-workflow.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/dependency-policy.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/distribution-and-commercial-boundary.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/local-sync.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/preview-release.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/release-acceptance.md",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "docs/release-scope.json",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "release.toml",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "scripts/validate_release.py",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "skill-packs/ai-video/INSTALL.md",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/README.md",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/THIRD_PARTY_NOTICES.md",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/docs/architecture.md",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/docs/windows-install.md",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/install.manifest.toml",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/patches/LICENSE-Video-Use.txt",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/patches/windows-macos-v1.json",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/scripts/install_windows.py",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/scripts/prepare_source.py",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/tests/fixtures/synthetic-project/README.md",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/tests/run_public_smoke_test.py",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/tests/test_compatibility_overlay.py",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/ai-video/tests/validate_package.py",
+      "scope": "ai-video",
+      "reason": "Windows 固定相容性補丁、隔離安裝、測試、平台文件與授權"
+    },
+    {
+      "path": "skill-packs/google-automation/AGENTS.md",
+      "scope": "google-automation",
+      "reason": "跨平台固定上游驗證、symlink 權限測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/google-automation/INSTALL.md",
+      "scope": "google-automation",
+      "reason": "跨平台固定上游驗證、symlink 權限測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/google-automation/THIRD_PARTY_NOTICES.md",
+      "scope": "google-automation",
+      "reason": "跨平台固定上游驗證、symlink 權限測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/google-automation/scripts/validate_upstream.py",
+      "scope": "google-automation",
+      "reason": "跨平台固定上游驗證、symlink 權限測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/google-automation/tests/test_install_lifecycle.py",
+      "scope": "google-automation",
+      "reason": "跨平台固定上游驗證、symlink 權限測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/google-automation/tests/test_upstream_validation.py",
+      "scope": "google-automation",
+      "reason": "跨平台固定上游驗證、symlink 權限測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/README.md",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/docs/todo.md",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/install.manifest.toml",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/skills/social-media-setup/SKILL.md",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/skills/social-media-setup/references/oauth-runtime.md",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/skills/social-media-setup/references/token-lifecycle-maintenance.md",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/skills/social-media-setup/references/verification-levels.md",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/skills/social-media-setup/scripts/oauth_runtime.py",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/skills/social-media-setup/scripts/token_maintenance.py",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/tests/test_oauth_runtime.py",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/tests/test_token_maintenance.py",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/social-media/tests/validate_package.py",
+      "scope": "social-media",
+      "reason": "權杖維護入口、授權／排程邊界、回歸測試與產品名稱"
+    },
+    {
+      "path": "skill-packs/website-building/AGENTS.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/INSTALL.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/README.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/THIRD_PARTY_NOTICES.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/architecture.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/capability-matrix.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/client-compatibility.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/data-and-credential-boundaries.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/human-touchpoints.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/package-decisions.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/preview-release.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/release-acceptance.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/docs/release-checklist.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/install.manifest.toml",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/scripts/manage_install.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/scripts/prepare_release.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-build/SKILL.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-build/references/build-and-check.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-build/references/template-structure.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-content-writing/references/copy-contract.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-content-writing/references/writing-rules.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-deploy/SKILL.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-design-preview/assets/previews/THIRD_PARTY_LICENSES.txt",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/SKILL.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/agents/openai.yaml",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/assets/default-operations.json",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/references/backup-and-recovery.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/references/monitoring-and-incidents.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/references/operations-config.schema.json",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/references/updates-and-maintenance.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-operations/scripts/manage_operations.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/SKILL.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/agents/openai.yaml",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/assets/ServiceIntegrations.astro",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/assets/default-integrations.json",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/references/integration-config.schema.json",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/references/integration-modes.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/references/privacy-and-live-verification.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-service-integration/scripts/manage_integrations.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-setup/SKILL.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-setup/references/page-inventory.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/skills/website-setup/references/verification-levels.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/template/README.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/template/optional-pages/newsletter.astro",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/template/package-lock.json",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/template/package.json",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/template/src/components/ServiceIntegrations.astro",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/template/src/data/integrations.json",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/template/src/pages/contact.astro",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/tests/behavior-cases.md",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/tests/test_install_lifecycle.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/tests/test_install_migration.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/tests/test_operations.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/tests/test_release_artifact.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/tests/test_service_integration.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "skill-packs/website-building/tests/validate_package.py",
+      "scope": "website-building",
+      "reason": "完整七技能、Astro 範本、更新／回復、備份、防護、打包與 Preview 文件"
+    },
+    {
+      "path": "tests/test_preview_release.py",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    },
+    {
+      "path": "tests/test_release_privacy.py",
+      "scope": "root",
+      "reason": "產品改名、Preview 發行入口、授權索引、公開邊界或發布測試"
+    }
+  ]
+}

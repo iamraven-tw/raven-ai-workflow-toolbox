@@ -3,14 +3,14 @@ manifest_type = "website-building-install"
 project_id = "website-building"
 display_name = "官網打造工作流"
 entrypoint = "INSTALL.md"
-checked_on = "2026-09-05"
-status = "local_candidate_partial_pack"
+checked_on = "2026-09-13"
+status = "local_candidate_complete_pack"
 first_release_skills_complete = true
 installable = true
 requires_network = false
-support_level = "partial_pack_installable_candidate_not_formally_supported"
+support_level = "complete_pack_installable_candidate_not_formally_supported"
 license_spdx = "Apache-2.0"
-decision_record = "../../docs/decisions/0003-website-building-workflow.md"
+decision_record = "docs/package-decisions.md"
 
 [agent_execution]
 default_mode = "agent_executes_human_authorizes"
@@ -26,15 +26,19 @@ template_install_requires_network = true
 style_download_requires_network = true
 cloudflare_actions_require_network = true
 external_account_actions_require_explicit_authorization = true
+service_integration_actions_require_network = true
+operations_health_checks_require_network = true
+operations_dependency_checks_require_network = true
+operations_local_backup_requires_network = false
 
 [installation]
-candidate_version = "0.5.0"
+candidate_version = "0.7.0"
 manager = "scripts/manage_install.py"
 manager_requires_python = ">=3.11"
 manager_network_access = false
 state_schema_version = 1
 conflict_policy = "stop_without_overwrite"
-managed_entries = ["website-setup", "website-content-writing", "website-design-preview", "website-build", "website-deploy"]
+managed_entries = ["website-setup", "website-content-writing", "website-design-preview", "website-build", "website-deploy", "website-service-integration", "website-operations"]
 
 [workspace]
 configuration_manager = "skills/website-setup/scripts/manage_workspace.py"
@@ -45,6 +49,13 @@ template_path = "skills/website-setup/assets/default-config.json"
 configuration_target = "<workspace>/website/config.json"
 copy_target = "<workspace>/website/copy.json"
 posts_target = "<workspace>/website/posts"
+integrations_target = "<workspace>/website/integrations.json"
+integrations_schema = "skills/website-service-integration/references/integration-config.schema.json"
+integrations_manager = "skills/website-service-integration/scripts/manage_integrations.py"
+operations_target = "<workspace>/website/operations.json"
+operations_schema = "skills/website-operations/references/operations-config.schema.json"
+operations_manager = "skills/website-operations/scripts/manage_operations.py"
+operations_state_target = "<workspace>/.local/website/operations"
 copy_writer = "skills/website-content-writing/scripts/content_writer.py"
 copy_fact_boundary = "ai_suggestion_may_not_contain_numbers_or_quantities_absent_from_user_facts"
 state_target = "<workspace>/.local/website/setup-state.json"
@@ -63,6 +74,34 @@ default_public_hostname = "workers.dev_subdomain"
 api_token_policy = "never_stored_by_pack_wrangler_oauth_login_only"
 domain_routes = ["none_use_workers_dev", "cloudflare_registrar", "external_registrar_add_site", "existing_on_cloudflare"]
 boundary_document = "docs/cloudflare-boundary.md"
+
+[service_integrations]
+supported_services = ["contact_form", "newsletter", "booking", "payment"]
+contact_form_mode = "public_https_html_post"
+newsletter_mode = "hosted_https_link"
+booking_mode = "hosted_https_link"
+payment_mode = "hosted_https_link_no_transaction_test"
+embedded_scripts = false
+iframes = false
+server_side_secrets = false
+credential_policy = "never_store_only_public_values_rendered_in_html"
+privacy_disclosure_required = true
+external_actions_require_separate_authorization = true
+
+[operations]
+supported_modes = ["public_health_check", "local_verified_backup", "isolated_restore", "dependency_update", "incident_response"]
+health_method = "public_get_status_content_latency_tls"
+health_history = "<workspace>/.local/website/operations/health-history.json"
+backup_format = "zip_with_sha256_manifest"
+backup_destination = "<workspace>/.local/website/operations/backups"
+backup_upload = false
+backup_secret_policy = "exclude_environment_credentials_private_keys_and_runtime_auth"
+restore_policy = "new_isolated_directory_never_overwrite_current_site"
+update_policy = "exact_versions_verified_backup_isolated_build_separate_deploy_authorization"
+automatic_dependency_updates = false
+automatic_backup_pruning = false
+scheduled_monitoring_requires_explicit_request = true
+remote_mutations_require_preview_authorization_readback = true
 
 [style_sources]
 bundled_themes = "template/src/themes"
@@ -102,7 +141,7 @@ license_spdx = "Apache-2.0"
 lockfile = "template/package-lock.json"
 install_command = "npm ci"
 build_command = "npm run build"
-node_engine = ">=20.0.0"
+node_engine = ">=22.20.0"
 optional_pages = ["portfolio", "case_studies", "pricing", "faq", "newsletter"]
 themes = ["nightlight", "darkroom", "whitebox", "daylight", "sunrise", "weekly"]
 theme_switch = "site.config.mjs theme field; astro.config.mjs maps @theme alias"
@@ -190,17 +229,19 @@ required = true
 install_order = 30
 status = "local_candidate"
 
-[[planned_skills]]
+[[skills]]
 id = "website-service-integration"
-status = "not_implemented"
-sequence = 6
-first_release = false
+source_path = "skills/website-service-integration"
+required = true
+install_order = 40
+status = "local_candidate"
 
-[[planned_skills]]
+[[skills]]
 id = "website-operations"
-status = "not_implemented"
-sequence = 7
-first_release = false
+source_path = "skills/website-operations"
+required = true
+install_order = 50
+status = "local_candidate"
 
 [[dependencies]]
 id = "astro"
@@ -347,11 +388,11 @@ status = "complete_local"
 
 [[readiness_gates]]
 id = "local_skill_discovery"
-status = "not_performed"
+status = "complete_local_windows_codex_app_server_skills_list_seven_enabled"
 
 [[readiness_gates]]
 id = "template_node_build"
-status = "complete_local_macos_node22_npm_ci_astro_build_check_site_passed_second_computer_not_performed"
+status = "complete_local_windows_x64_node24_19_npm_ci_six_themes_and_service_integrations_build_passed_second_computer_not_performed"
 
 [[readiness_gates]]
 id = "automated_page_checks"
@@ -367,6 +408,18 @@ status = "not_performed"
 
 [[readiness_gates]]
 id = "custom_domain"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "service_integrations_live"
+status = "not_performed"
+
+[[readiness_gates]]
+id = "operations_backup_recovery"
+status = "complete_local_fictional"
+
+[[readiness_gates]]
+id = "operations_public_monitoring"
 status = "not_performed"
 
 [[readiness_gates]]
@@ -470,6 +523,21 @@ checked_on = "2026-09-05"
 id = "npm-ci"
 url = "https://docs.npmjs.com/cli/v10/commands/npm-ci"
 checked_on = "2026-09-05"
+
+[[official_references]]
+id = "npm-outdated"
+url = "https://docs.npmjs.com/cli/v11/commands/npm-outdated/"
+checked_on = "2026-09-13"
+
+[[official_references]]
+id = "npm-package-lock"
+url = "https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json/"
+checked_on = "2026-09-13"
+
+[[official_references]]
+id = "cloudflare-workers-rollbacks"
+url = "https://developers.cloudflare.com/workers/versions-and-deployments/rollbacks/"
+checked_on = "2026-09-13"
 
 [[official_references]]
 id = "unsplash-license"

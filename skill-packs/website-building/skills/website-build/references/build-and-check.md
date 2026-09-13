@@ -2,9 +2,11 @@
 
 ## 環境需求
 
-- Node.js 20 以上（範本 `engines` 宣告）。檢查：`node --version`。
-- npm 可用。檢查：`npm --version`。
+- Node.js 22.20.0 以上的受支援偶數版（24 分支使用 24.12.0 以上）。檢查：`node --version`。Astro 本身最低 22.12.0，但固定 lockfile 的 undici 要求 22.19.0，Linux x64 可選 lzma 依賴要求 ^22.20 或 ^24.12，因此不能只檢查 Astro。
+- npm 9.6.5 以上。檢查：`npm --version`。
 - 缺少時停止並提供官方下載來源，不自行安裝系統軟體，也不改用其他套件管理器。
+
+查核日 2026-09-13：[Astro 官方環境要求](https://docs.astro.build/en/install-and-setup/#prerequisites)。發布時同時核對固定 lockfile，不能以過去「Node 20 即可」的說明判定相容。
 
 ## 指令順序
 

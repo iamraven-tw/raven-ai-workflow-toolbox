@@ -25,3 +25,6 @@
 ## Google 服務
 
 Google Apps Script、Google Workspace APIs、OAuth、Google Cloud Run 與 Cloud Scheduler 是外部服務，不隨 Toolbox 散布。使用者仍受各服務當時的條款、配額、帳務與組織政策約束；manifest 記錄的官方文件查驗日期不保證未來行為不變。
+# Windows 驗證相容性補充
+
+Toolbox 的 `scripts/validate_upstream.py` 在通過既有固定來源驗證後，只於暫存副本調整 Learn-GAS symlink 測試的權限偵測。未修改上游 runtime、固定 commit、tree、MIT 授權或實際安裝的技能；Windows 1314 以 skipped 記錄，不代表 symlink 防護已驗證。這項測試調整由 Toolbox 維護，其他上游驗證失敗仍會停止。

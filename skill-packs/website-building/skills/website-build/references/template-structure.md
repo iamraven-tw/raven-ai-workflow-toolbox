@@ -69,11 +69,11 @@
 | `case_studies` | `/case-studies` | `case-studies.astro` | 問題、做法、成果三段式 |
 | `pricing` | `/pricing` | `pricing.astro` | 依 offerings 列方案，價格為佔位 |
 | `faq` | `/faq` | `faq.astro` | 原生 details 摺疊，不需 JavaScript |
-| `newsletter` | `/newsletter` | `newsletter.astro` | 說明與訂閱入口佔位；表單屬第二版 |
+| `newsletter` | `/newsletter` | `newsletter.astro` | 說明與訂閱入口；由 `website-service-integration` 接上 hosted link |
 
 ## 設計原則
 
 - 只有 Header 的手機選單用了一小段 JavaScript，其餘頁面純靜態。
-- 沒有外部字型、沒有分析程式、沒有第三方腳本；這些屬於第二版整合。
+- 除使用者可關閉的 Google Fonts 外，沒有分析程式或第三方腳本；服務串接預設只用原生 HTTPS POST 與 hosted links。
 - 換主題只改 `site.config.mjs` 的 `theme` 欄位並重建；不要在 `tsconfig.json` 加 `paths`，Astro 會用它蓋掉別名。
 - 每個主題的信任區塊沒有資料就不顯示，避免 AI 編造數字。

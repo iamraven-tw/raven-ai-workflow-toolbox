@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "not_configured",
+  "services": {
+    "contact_form": {
+      "enabled": false,
+      "provider": null,
+      "mode": "html_post",
+      "endpoint": null,
+      "label": "傳送訊息",
+      "fields": [
+        "name",
+        "email",
+        "message"
+      ],
+      "consent_required": true,
+      "privacy_url": null
+    },
+    "newsletter": {
+      "enabled": false,
+      "provider": null,
+      "mode": "hosted_link",
+      "url": null,
+      "label": "訂閱電子報",
+      "privacy_url": null
+    },
+    "booking": {
+      "enabled": false,
+      "provider": null,
+      "mode": "hosted_link",
+      "url": null,
+      "label": "預約時間",
+      "privacy_url": null
+    },
+    "payment": {
+      "enabled": false,
+      "provider": null,
+      "mode": "hosted_link",
+      "url": null,
+      "label": "前往安全付款頁",
+      "privacy_url": null,
+      "verification_scope": "link_only_no_transaction"
+    }
+  },
+  "disclosure": {
+    "heading": "外部服務與資料使用",
+    "intro": "使用下列功能時，你會前往或把資料送到標示的外部服務。送出前請閱讀該服務的隱私政策。",
+    "form_consent_label": "我了解這些資料會送到上述外部服務，以便回覆我的詢問。"
+  }
+}

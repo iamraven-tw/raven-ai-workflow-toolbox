@@ -123,7 +123,7 @@ def main() -> None:
     ffmpeg = require_file(args.ffmpeg_bin, "FFmpeg")
     ffprobe = require_file(args.ffprobe_bin, "FFprobe")
     python = require_file(
-        args.python_bin or video_use_dir / ".venv" / "bin" / "python",
+        args.python_bin or video_use_dir / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python"),
         "Video-Use Python",
     )
     require_file(video_use_dir / "helpers" / "build_subtitles.py", "字幕 helper")

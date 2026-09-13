@@ -1,0 +1,4 @@
+interface:
+  display_name: "官網維運"
+  short_description: "監控、備份、更新與處理官網日常維運"
+  default_prompt: "使用 $website-operations 檢查官網健康狀態，建立可驗證備份，並規劃安全的更新流程。"

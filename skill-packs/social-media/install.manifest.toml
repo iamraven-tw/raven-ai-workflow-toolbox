@@ -106,6 +106,9 @@ external_actions_performed = false
 entrypoint = "skills/social-media-setup/scripts/oauth_callback.py"
 engine = "skills/social-media-setup/scripts/oauth_runtime.py"
 transport = "skills/social-media-setup/scripts/oauth_http.py"
+maintenance_entrypoint = "skills/social-media-setup/scripts/token_maintenance.py"
+maintenance_contract = "skills/social-media-setup/references/token-lifecycle-maintenance.md"
+maintenance_default = "daily_check_refresh_in_platform_window_notify_on_change_or_attention"
 meta_user_adapter = "skills/social-media-setup/scripts/meta_user_oauth.py"
 instagram_facebook_adapter = "skills/social-media-setup/scripts/instagram_facebook_oauth.py"
 state_schema = "skills/social-media-setup/references/oauth-state.schema.json"
@@ -117,6 +120,7 @@ instagram_permission_evidence = "initial_exchange_exact_scopes_current_basic_ide
 facebook_flow = "web_server_https_code_exchange_selected_page_token"
 youtube_flow = "desktop_loopback_pkce_code_exchange_refresh"
 status = "implemented_fictional_tests_live_deferred"
+maintenance_status = "implemented_fictional_tests_live_scheduler_deferred"
 
 [implementation_gaps]
 messenger_webhook_and_message_actions = "not_implemented_in_setup_requires_community_skill_and_authorized_infrastructure"

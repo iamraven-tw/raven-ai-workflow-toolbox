@@ -89,3 +89,8 @@ fork 發布時必須保留上游 LICENSE、著作權聲明、上游網址與修�
 ## 公開 smoke test 素材
 
 `tests/fixtures/synthetic-project/` 的文字、時間軸、EDL 與詞彙資料是為本 Toolbox 撰寫的中性測試內容，適用根專案 Apache-2.0。測試影片由 FFmpeg 在暫存目錄產生純色畫面與固定音調，不含第三方媒體或可辨識聲音，因此沒有額外素材授權。
+# Windows 與跨平台補丁補充
+
+`patches/windows-macos-v1.json` 是針對原固定 Raven Video-Use v0.1.1 的最小文字差異，含 Toolbox 撰寫的平台 helper、Windows 專用 Python lock 與回歸測試。上游修改片段保留原 MIT 授權關係，完整文字隨補丁附於 [LICENSE-Video-Use.txt](patches/LICENSE-Video-Use.txt)；原 LICENSE 與 THIRD_PARTY_NOTICES 隨安裝保留。Toolbox 自有安裝器依根專案 Apache-2.0。
+
+Windows 下載來源與 SHA-256 以 manifest `[windows.assets]` 為準：Astral uv（Apache-2.0 OR MIT）、Astral python-build-standalone（Python-2.0 與封包內第三方聲明）、GyanD/codexffmpeg FFmpeg 9.0.1 essentials（GPL-3.0-or-later，含 libass）。這些 binary 不進 repository；保留原封包內的授權與 notices。OpenCC 1.4.2 來自官方 PyPI Windows wheel（Apache-2.0），hash 固定於補丁提供的 lock。Windows 字型使用作業系統既有 Microsoft JhengHei，不散布字型檔。Qwen 與 CKIP 原有套件／模型授權及限制不變。

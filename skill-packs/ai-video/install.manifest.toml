@@ -9,6 +9,44 @@ installable = true
 requires_network = true
 support_level = "installable_candidate_not_formally_supported"
 
+[compatibility_overlay]
+version = "windows-macos-v1"
+path = "patches/windows-macos-v1.json"
+sha256 = "0386f018ae2a5fb6b3a0ff653d7d2874bd04ac7ed7840626c071a15777c7b2bc"
+base = "v0.1.1"
+platforms = ["windows-x86_64", "macos-arm64"]
+policy = "verify_release_and_each_input_output_hash_before_registration"
+
+[windows]
+architecture = "AMD64"
+minimum_python_for_installer = "3.11"
+installer = "scripts/install_windows.py"
+registration = "verified_directory_copy_without_symlink"
+model_downloads = false
+asr_device = "cpu"
+formal_support = false
+
+[windows.assets.uv]
+url = "https://github.com/astral-sh/uv/releases/download/0.12.7/uv-x86_64-pc-windows-msvc.zip"
+sha256 = "bf1518af459a3915511a11fdc6e2f43ef9a2afa138b9d498eeb9642fe9d85218"
+archive = "uv.zip"
+executable = "uv.exe"
+license = "Apache-2.0 OR MIT"
+
+[windows.assets.python]
+url = "https://github.com/astral-sh/python-build-standalone/releases/download/20260825/cpython-3.12.14%2B20260825-x86_64-pc-windows-msvc-install_only_stripped.tar.gz"
+sha256 = "8e6aad12ef6fc9685e67ce66253f8f72d6e8fa02cb7187e5850bd4db5ecd9e2a"
+archive = "python.tar.gz"
+executable = "python/python.exe"
+license = "Python-2.0 and included third-party notices"
+
+[windows.assets.ffmpeg]
+url = "https://github.com/GyanD/codexffmpeg/releases/download/9.0.1/ffmpeg-9.0.1-essentials_build.zip"
+sha256 = "fec81ae03971d9dd4be3ebe02e263bd2ec1d789483f931bdba5f5715e65da2e9"
+archive = "ffmpeg.zip"
+executable = "ffmpeg-9.0.1-essentials_build/bin/ffmpeg.exe"
+license = "GPL-3.0-or-later; retain included notices"
+
 [mvp]
 implementation_policy = "reuse_existing_workflows_before_new_code"
 public_skill_status = "validated_in_published_video_use_v0.1.1"

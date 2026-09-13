@@ -4,6 +4,8 @@
 
 ## 目前狀態
 
+Windows x64 已新增隔離安裝入口、Windows 專用依賴 lock 與可追溯的跨平台補丁；macOS 14+ Apple Silicon 保留既有固定安裝路線。請先在 [INSTALL.md](INSTALL.md) 依平台分流。Windows 本機已通過引擎 98 項測試與中文字幕真實渲染；模型推論及這輪 macOS 原生驗收尚未執行。
+
 本套件已完成 Agent 端的 MVP，狀態是**可安裝的外部驗收候選版**。它會依固定網址與 SHA-256 下載 [Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1)，不把 fork 原始碼複製進 Toolbox，也不要求使用者自行判斷官方版與 fork。
 
 候選版已完成：

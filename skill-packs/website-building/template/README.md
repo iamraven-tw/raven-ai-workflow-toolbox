@@ -1,6 +1,6 @@
 # solo-site-starter
 
-這是 AI Workflow Toolbox 官網打造技能包的去識別化 Astro 起始範本。品牌名稱、文案、聯絡方式與圖片全部是虛構佔位，由 `website-build` 依使用者的 `website/config.json` 重新產生。
+這是 Raven AI 一人公司工具包 官網打造技能包的去識別化 Astro 起始範本。品牌名稱、文案、聯絡方式與圖片全部是虛構佔位，由 `website-build` 依使用者的 `website/config.json` 重新產生。
 
 ## 六個主題
 
@@ -25,6 +25,8 @@ astro.config.mjs         Astro 設定，site 與 @theme 別名來自 site.config
 wrangler.jsonc           Cloudflare Workers 靜態資產部署設定
 src/themes/<id>/         theme.json、theme.css、BaseLayout、Header、Footer、Home、BlogIndex、BlogPost
 src/pages/               首頁、關於、服務、文章列表、單篇文章、聯絡、404、RSS；只取資料並掛主題
+src/components/          共用服務串接元件；預設不啟用任何外部服務
+src/data/integrations.json 表單、電子報、預約與付款的公開串接設定；不得放秘密
 src/lib/                 導覽資料、手機選單行為與共用動畫層 motion.ts（所有主題共用）
 src/styles/global.css    Tailwind 匯入與最小共用樣式，不含任何顏色與字型
 optional-pages/          作品集、案例、價目、常見問題、電子報；只在設定啟用時複製進 src/pages/
@@ -53,4 +55,5 @@ npm run preview # 本機預覽 dist/
 - 不要把 API Token、帳號識別碼或任何秘密寫進 `site.config.mjs`、`wrangler.jsonc` 或環境檔。
 - 不要加入 SSR adapter、KV、D1、R2 等會離開免費方案的資源。
 - 上線前 `site.indexing` 維持 `noindex`；由 `website-deploy` 在使用者授權後改成 `index`。
+- 外部服務由 `website-service-integration` 寫入公開 HTTPS endpoint／hosted link；不要加入 API secret、未審查的 script 或 iframe。
 - 新增主題時要照一份可追溯的設計指引，或明確記錄的公開版面參考，實作全部檔案，並在 `theme.json` 記錄來源、授權與「未複製程式碼與素材」的聲明。

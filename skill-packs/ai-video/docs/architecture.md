@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TD
-    A["AI Workflow Toolbox<br/>公開工作流、manifest、驗收"] --> B["Raven Video-Use fork<br/>MVP 剪輯引擎與臺灣中文補強"]
+    A["Raven AI 一人公司工具包<br/>公開工作流、manifest、驗收"] --> B["Raven Video-Use fork<br/>MVP 剪輯引擎與臺灣中文補強"]
     C["官方 Video-Use<br/>上游核心"] --> B
     B --> E["使用者選定的工作目錄<br/>素材、逐字稿、EDL、字幕、成品"]
 ```
@@ -12,6 +12,8 @@ flowchart TD
 箭頭代表依賴關係，不代表把第三方原始碼或維護者私人資料複製進 Toolbox。Toolbox 透過 manifest 取得已鎖定的 Raven Video-Use v0.1.1 Release 資產，不直接複製 fork 原始碼。
 
 安裝後只保留一份版本化的 fork 目錄。Codex 與 Antigravity 的專案入口是 `<target-workspace>/.agents/skills/video-use`，Claude Code 是 `<target-workspace>/.claude/skills/video-use`；入口連結整個版本目錄，因此三個用戶端讀取相同的 `SKILL.md`、helper 與 lock，不會產生各自漂移的技能副本。
+
+上述連結方式適用既有 macOS 路線。Windows 為避免 symlink 權限限制，改成核對雜湊的完整技能副本，透過 `toolbox-runtime.json` 指向掃描目錄外的版本化 component 與 Python runtime。每次重跑核對副本與 component，不自動合併人工修改。跨平台差異存成最小文字補丁與輸入／輸出雜湊；不收錄完整第三方程式，也不依賴本機開發分支。
 
 私人剪片流程與公開版本各自演進，不做自動同步。只有維護者明確挑選、完成去識別化、參數化與候選版驗證的能力，才進入下一個公開版本快照。
 

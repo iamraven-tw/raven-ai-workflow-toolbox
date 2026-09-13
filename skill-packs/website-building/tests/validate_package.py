@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""驗證官網打造技能包第一個技能的結構、邊界與公開內容。"""
+"""驗證官網打造技能包的結構、邊界與公開內容。"""
 
 from __future__ import annotations
 
@@ -11,11 +11,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-IMPLEMENTED = {"website-setup", "website-content-writing", "website-design-preview", "website-build", "website-deploy"}
-PLANNED = {
-    "website-service-integration",
-    "website-operations",
-}
+IMPLEMENTED = {"website-setup", "website-content-writing", "website-design-preview", "website-build", "website-deploy", "website-service-integration", "website-operations"}
+PLANNED: set[str] = set()
 TEXT_SUFFIXES = {".md", ".toml", ".py", ".json", ".jsonc", ".yaml", ".yml", ".txt", ".astro", ".mjs", ".ts", ".css", ".svg"}
 BINARY_ALLOWED_SUFFIXES = {".jpg", ".png"}
 PRIVATE_PATTERNS = (
@@ -80,15 +77,15 @@ def is_iso_date(value: object) -> bool:
 
 
 def validate_manifest(manifest: dict) -> None:
-    """確認只把第一個完成技能列入安裝，且依賴仍是規劃狀態。"""
+    """確認七技能、固定依賴與可獨立下載的契約。"""
 
     expected = {
         "schema_version": 1,
         "manifest_type": "website-building-install",
-        "status": "local_candidate_partial_pack",
+        "status": "local_candidate_complete_pack",
         "installable": True,
         "requires_network": False,
-        "support_level": "partial_pack_installable_candidate_not_formally_supported",
+        "support_level": "complete_pack_installable_candidate_not_formally_supported",
         "license_spdx": "Apache-2.0",
     }
     for key, value in expected.items():
@@ -99,6 +96,12 @@ def validate_manifest(manifest: dict) -> None:
         raise ValidationError("manifest.checked_on 必須是 ISO 日期")
     if not (ROOT / "LICENSE").is_file():
         raise ValidationError("可獨立散布的技能包缺少 LICENSE")
+    if not (ROOT / "skills/website-design-preview/assets/previews/THIRD_PARTY_LICENSES.txt").is_file():
+        raise ValidationError("離線畫廊缺少可隨安裝保留的第三方授權文字")
+    package = json.loads((ROOT / "template/package.json").read_text(encoding="utf-8"))
+    lock = json.loads((ROOT / "template/package-lock.json").read_text(encoding="utf-8"))
+    if package["engines"] != lock["packages"][""]["engines"] or package["engines"]["node"] != manifest["template"]["node_engine"]:
+        raise ValidationError("Node／npm 環境契約必須與 manifest、lockfile 一致")
     decision = manifest.get("decision_record")
     if not isinstance(decision, str) or not (ROOT / decision).is_file():
         raise ValidationError("manifest 必須連回存在的 ADR")
@@ -124,7 +127,7 @@ def validate_manifest(manifest: dict) -> None:
     workspace = manifest.get("workspace", {})
     if workspace.get("configuration_schema_version") != 1:
         raise ValidationError("manifest 必須宣告一般設定 schema version 1")
-    for key in ("configuration_manager", "configuration_schema", "state_schema", "template_path"):
+    for key in ("configuration_manager", "configuration_schema", "state_schema", "template_path", "integrations_schema", "integrations_manager", "operations_schema", "operations_manager"):
         if not (ROOT / workspace.get(key, "missing")).is_file():
             raise ValidationError(f"manifest.workspace.{key} 對應檔案不存在")
     if workspace.get("credential_policy") != "never_store_in_skill_template_general_config_or_setup_state":
@@ -139,6 +142,30 @@ def validate_manifest(manifest: dict) -> None:
         raise ValidationError("套件不得保存 Cloudflare API Token")
     if not (ROOT / hosting.get("boundary_document", "missing")).is_file():
         raise ValidationError("缺少 Cloudflare 邊界文件")
+
+    integrations = manifest.get("service_integrations", {})
+    if integrations.get("supported_services") != ["contact_form", "newsletter", "booking", "payment"]:
+        raise ValidationError("服務串接類型或順序不符")
+    if integrations.get("credential_policy") != "never_store_only_public_values_rendered_in_html":
+        raise ValidationError("服務串接不得保存憑證")
+    for key in ("embedded_scripts", "iframes", "server_side_secrets"):
+        if integrations.get(key) is not False:
+            raise ValidationError(f"服務串接第一版不得啟用 {key}")
+    if integrations.get("privacy_disclosure_required") is not True:
+        raise ValidationError("服務串接必須要求隱私揭露")
+
+    operations = manifest.get("operations", {})
+    if operations.get("supported_modes") != ["public_health_check", "local_verified_backup", "isolated_restore", "dependency_update", "incident_response"]:
+        raise ValidationError("維運技能支援模式或順序不符")
+    if operations.get("backup_format") != "zip_with_sha256_manifest":
+        raise ValidationError("維運備份必須使用帶 SHA-256 manifest 的 ZIP")
+    if operations.get("restore_policy") != "new_isolated_directory_never_overwrite_current_site":
+        raise ValidationError("維運復原不得覆寫目前網站")
+    for key in ("backup_upload", "automatic_dependency_updates", "automatic_backup_pruning"):
+        if operations.get(key) is not False:
+            raise ValidationError(f"維運技能不得預設啟用 {key}")
+    if operations.get("scheduled_monitoring_requires_explicit_request") is not True:
+        raise ValidationError("定期監控必須由使用者明確要求")
 
     style = manifest.get("style_sources", {})
     for key, value in STYLE_THRESHOLD.items():
@@ -202,7 +229,7 @@ def validate_manifest(manifest: dict) -> None:
             raise ValidationError("依賴的 consumer_skill 必須是規劃中或已建立的技能")
 
     gates = {item.get("id"): item.get("status") for item in manifest.get("readiness_gates", [])}
-    for gate in ("wrangler_login", "workers_dev_deploy", "custom_domain", "second_computer_acceptance"):
+    for gate in ("wrangler_login", "workers_dev_deploy", "custom_domain", "service_integrations_live", "operations_public_monitoring", "second_computer_acceptance"):
         if gates.get(gate) != "not_performed":
             raise ValidationError(f"{gate} 不得在實機驗收前標示完成")
     if gates.get("formal_public_support") != "not_supported":
@@ -229,6 +256,8 @@ def validate_skill_structure() -> None:
     validate_build_skill(skill_root / "website-build")
     validate_design_skill(skill_root / "website-design-preview")
     validate_deploy_skill(skill_root / "website-deploy")
+    validate_service_integration_skill(skill_root / "website-service-integration")
+    validate_operations_skill(skill_root / "website-operations")
     validate_content_skill(skill_root / "website-content-writing")
     skill = skill_root / "website-setup"
     if parse_skill_name(skill / "SKILL.md") != "website-setup":
@@ -329,6 +358,8 @@ def validate_template() -> None:
         ".gitignore",
         "README.md",
         "src/site-config.d.ts",
+        "src/data/integrations.json",
+        "src/components/ServiceIntegrations.astro",
         "site.copy.mjs",
         "src/site-copy.d.ts",
         "src/content.config.ts",
@@ -407,6 +438,13 @@ def validate_template() -> None:
             raise ValidationError(f"範本不得內建分析或追蹤腳本：{path.name}")
         if "fonts.googleapis" in text and (path.name != "BaseLayout.astro" or "fontsHref &&" not in text):
             raise ValidationError(f"外部字型只能在受 site.fonts 開關保護的 BaseLayout 載入：{path}")
+
+    integration_default = json.loads((ROOT / "skills/website-service-integration/assets/default-integrations.json").read_text(encoding="utf-8"))
+    template_integration = json.loads((template / "src/data/integrations.json").read_text(encoding="utf-8"))
+    if integration_default != template_integration:
+        raise ValidationError("範本與 website-service-integration 的預設設定不一致")
+    if (ROOT / "skills/website-service-integration/assets/ServiceIntegrations.astro").read_bytes() != (template / "src/components/ServiceIntegrations.astro").read_bytes():
+        raise ValidationError("範本與 website-service-integration 的元件來源不一致")
 
 
 def validate_build_skill(skill: Path) -> None:
@@ -564,6 +602,95 @@ def validate_deploy_skill(skill: Path) -> None:
         raise ValidationError("範本必須鎖定 wrangler 4.129.0 並提供 deploy 指令")
 
 
+def validate_service_integration_skill(skill: Path) -> None:
+    """確認服務串接技能的靜態站點模式、授權與秘密邊界。"""
+
+    if parse_skill_name(skill / "SKILL.md") != "website-service-integration":
+        raise ValidationError("服務串接技能名稱不符")
+    required = (
+        "agents/openai.yaml",
+        "assets/default-integrations.json",
+        "assets/ServiceIntegrations.astro",
+        "scripts/manage_integrations.py",
+        "references/integration-config.schema.json",
+        "references/integration-modes.md",
+        "references/privacy-and-live-verification.md",
+    )
+    for name in required:
+        if not (skill / name).is_file():
+            raise ValidationError(f"服務串接技能缺少 {name}")
+    text = (skill / "SKILL.md").read_text(encoding="utf-8")
+    for phrase in (
+        "Mermaid", "批次確認", "html_post", "hosted_link", "--confirm-write", "命令旗標不是對話核准",
+        "隱私政策", "不自動扣款", "website-deploy", "讀回", "執行錯誤最小回填", "停止條件",
+        "不得保存密碼", "form endpoint", "另外取得部署授權",
+    ):
+        if phrase not in text:
+            raise ValidationError(f"服務串接技能契約缺少：{phrase}")
+    script = (skill / "scripts/manage_integrations.py").read_text(encoding="utf-8")
+    for phrase in (
+        "plan_sha256", "--expected-plan-sha256", "--confirm-write", "reject_secret_material",
+        "privacy_url", "link_only_no_transaction", "START_MARKER", "write_atomic", "public_readback",
+    ):
+        if phrase not in script:
+            raise ValidationError(f"服務串接工具缺少保護：{phrase}")
+    for forbidden in ("requests", "selenium", "playwright", "Authorization: Bearer"):
+        if forbidden in script:
+            raise ValidationError(f"服務串接工具不得內建第三方執行或憑證處理：{forbidden}")
+    default = json.loads((skill / "assets/default-integrations.json").read_text(encoding="utf-8"))
+    if default.get("status") != "not_configured" or any(item.get("enabled") for item in default.get("services", {}).values()):
+        raise ValidationError("服務串接預設值不得啟用外部服務")
+    if set(default.get("services", {})) != {"contact_form", "newsletter", "booking", "payment"}:
+        raise ValidationError("服務串接預設值缺少四種服務")
+
+
+def validate_operations_skill(skill: Path) -> None:
+    """確認維運技能的監控、備份、復原與更新安全邊界。"""
+
+    if parse_skill_name(skill / "SKILL.md") != "website-operations":
+        raise ValidationError("維運技能名稱不符")
+    required = (
+        "agents/openai.yaml",
+        "assets/default-operations.json",
+        "scripts/manage_operations.py",
+        "references/operations-config.schema.json",
+        "references/monitoring-and-incidents.md",
+        "references/backup-and-recovery.md",
+        "references/updates-and-maintenance.md",
+    )
+    for name in required:
+        if not (skill / name).is_file():
+            raise ValidationError(f"維運技能缺少 {name}")
+    text = (skill / "SKILL.md").read_text(encoding="utf-8")
+    for phrase in (
+        "Mermaid", "批次確認", "configure-plan", "backup-plan", "verify-backup", "restore-plan",
+        "--confirm-write", "命令旗標不是對話核准", "不送表單", "不測試付款", "website-deploy",
+        "另外取得部署授權", "不自動刪除", "隔離目錄", "npm outdated --json", "npm audit fix --force",
+        "執行錯誤最小回填", "停止條件",
+    ):
+        if phrase not in text:
+            raise ValidationError(f"維運技能契約缺少：{phrase}")
+    script = (skill / "scripts/manage_operations.py").read_text(encoding="utf-8")
+    for phrase in (
+        "plan_sha256", "--expected-plan-sha256", "--confirm-write", "reject_secret_material",
+        "EXCLUDED_DIRS", "SECRET_NAMES", "backup-manifest.json", "verify_archive", "zip-slip",
+        "MAX_TOTAL_BYTES", "restored_to_isolation", "submitted_forms", "tls_status", "write_atomic",
+    ):
+        if phrase not in script:
+            raise ValidationError(f"維運工具缺少保護：{phrase}")
+    for forbidden in ("requests", "playwright", "selenium", "Authorization: Bearer", "wrangler rollback"):
+        if forbidden in script:
+            raise ValidationError(f"維運工具不得直接處理第三方執行、憑證或遠端回復：{forbidden}")
+    default = json.loads((skill / "assets/default-operations.json").read_text(encoding="utf-8"))
+    if default.get("status") != "not_configured" or default.get("public_url") is not None:
+        raise ValidationError("維運預設值不得假設公開網址")
+    if default.get("health", {}).get("enabled") is not False:
+        raise ValidationError("維運預設值不得自動啟用監控")
+    updates = default.get("updates", {})
+    if updates.get("automatic_apply") is not False or updates.get("verified_backup_required") is not True:
+        raise ValidationError("維運預設值必須禁止自動更新並要求可驗證備份")
+
+
 def validate_content_skill(skill: Path) -> None:
     """確認 website-content-writing 的契約、事實邊界與範本文案層。"""
 
@@ -656,6 +783,16 @@ def validate_python_sources() -> None:
         compile(source, str(path), "exec")
 
 
+def validate_json_sources() -> None:
+    """確認公開 JSON 與 schema 都可由標準解析器讀取。"""
+
+    for path in ROOT.rglob("*.json"):
+        try:
+            json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            raise ValidationError(f"JSON 無法解析：{path}: {error}") from error
+
+
 def main() -> int:
     """執行全部靜態檢查。"""
 
@@ -666,10 +803,11 @@ def main() -> int:
         validate_public_boundary()
         validate_relative_links()
         validate_python_sources()
+        validate_json_sources()
     except (ValidationError, OSError, ValueError, KeyError, tomllib.TOMLDecodeError) as error:
         print(f"驗證失敗：{error}", file=sys.stderr)
         return 1
-    print("靜態結構、技能契約、公開邊界、相對連結與 Python 語法驗證通過。")
+    print("靜態結構、技能契約、公開邊界、相對連結、Python 語法與 JSON 解析驗證通過。")
     return 0
 
 

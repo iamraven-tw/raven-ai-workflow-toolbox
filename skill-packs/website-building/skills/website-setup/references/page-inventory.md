@@ -21,6 +21,6 @@
 | `case_studies` | 使用者提到客戶案例或成果 |
 | `pricing` | 使用者明確想公開價格 |
 | `faq` | 使用者提到常被問的問題 |
-| `newsletter` | 使用者有電子報且想在官網收訂閱；實際訂閱表單屬第二版整合 |
+| `newsletter` | 使用者有電子報且想在官網收訂閱；hosted 訂閱入口由 `website-service-integration` 串接 |
 
 可選頁面只在使用者提到對應內容時加入，不主動推銷。

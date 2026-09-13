@@ -14,6 +14,12 @@ AI 剪片以 [Browser Use 的 Video-Use](https://github.com/browser-use/video-us
 
 Google 工具自動化使用 [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 的固定公開 commit，提供 Google Apps Script 教學、專案開發／接管、除錯與 Google Docs 固定版面。Learn-GAS 採 MIT License，原始碼不複製進 Toolbox；安裝時核對完整 commit、Git tree、LICENSE SHA-256 與上游測試。完整資訊見 [`skill-packs/google-automation/THIRD_PARTY_NOTICES.md`](skill-packs/google-automation/THIRD_PARTY_NOTICES.md)。
 
+## 官網、社群與盤點
+
+- 官網內含自行實作的 Astro 範本與離線預覽；預覽內嵌的 Motion／Tailwind 程式與樣式保留 MIT 授權。見 [官網第三方聲明](skill-packs/website-building/THIRD_PARTY_NOTICES.md)及隨資產散布的 [完整授權文字](skill-packs/website-building/skills/website-design-preview/assets/previews/THIRD_PARTY_LICENSES.txt)。
+- 社群平台介面、工具與素材的使用邊界見 [社群第三方聲明](skill-packs/social-media/THIRD_PARTY_NOTICES.md)。本發行不含平台憑證或使用者媒體。
+- 盤點工具由固定上游版本取得，不內嵌掃描程式；來源與 MIT 授權見 [盤點第三方聲明](skill-packs/agent-inventory/THIRD_PARTY_NOTICES.md)。
+
 ## 收錄原則
 
 - 第三方程式預設由套件 manifest 從正式來源取得，不直接複製進本 repository。

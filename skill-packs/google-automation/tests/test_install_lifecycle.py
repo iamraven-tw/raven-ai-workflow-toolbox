@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -183,7 +184,7 @@ path = "<workspace>/.agents/skills"
         target_client = client_root or self.client_root
         target_state = state_root or self.state_root
         arguments = [
-            "python3",
+            sys.executable,
             str(MANAGER),
             command,
             "--registration",
@@ -281,7 +282,12 @@ path = "<workspace>/.agents/skills"
         write_text(foreign_target / "KEEP.txt", "虛構外部目標\n")
         foreign_root.mkdir(parents=True)
         link = foreign_root / "google-workflow-router"
-        link.symlink_to(foreign_target, target_is_directory=True)
+        try:
+            link.symlink_to(foreign_target, target_is_directory=True)
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows 未授予建立 symlink 權限")
+            raise
         result = self.manager(
             "install",
             package=self.package_v1,

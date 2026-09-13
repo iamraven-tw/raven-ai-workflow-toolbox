@@ -31,7 +31,7 @@ Facebook 這條路徑是伺服器端交換，**不能把 App 設成 Native/Deskt
 ## 一次預覽與人類最少操作
 
 1. Agent 先依平台文件提出完整核心權限，包含平台正式支援的私訊；讓使用者移除不想開放的權限，另外選擇廣告等延伸項目。程式不替使用者決定 scope；每個 `--scope` 必須來自已確認的清單。
-2. 把目標帳號／Page／頻道、App 類型、callback、秘密庫、連線代稱、將保存的值與唯讀檢查列入同一份外部變更預覽。明確說明日後可自動讀取憑證、檢查有效性與在核准範圍內刷新；不包含發布、回覆、排程或自動再授權。
+2. 把目標帳號／Page／頻道、App 類型、callback、秘密庫、連線代稱、將保存的值、唯讀檢查與憑證維護排程列入同一份外部變更預覽。明確說明日後可自動讀取憑證、檢查有效性與在核准範圍內刷新；不包含發布、回覆、內容發布排程或自動再授權。
 3. Agent 提供完整文字清單；缺少優先工具的後台填寫預設由人類操作；登入、安全／法律確認、資源選擇及 OAuth 同意仍由本人完成。不要求使用者貼授權碼。
 4. App Secret／client secret 先盤點既有原生庫，缺少時依 `local-credential-storage.md` 由 Agent 開 Terminal，使用者只在隱藏提示貼上一次。預先存成該平台的 `app-secret`，不可傳到命令列或對話。
 5. Agent 以 `preview` 產生連線設定摘要與 digest，在私人介面向使用者補充核對確切目標與 callback；確認後才以相同參數 `configure --confirm-config --preview-digest <digest>` 保存。取代既有設定還要確認並加入 `--confirm-replace`。這不是另一張問卷，可以納入同一份初始化預覽。
@@ -71,6 +71,8 @@ Facebook 額外參數：`--platform facebook --graph-version <當下已核對版
 
 ## 有效性與後續技能交接
 
+權杖保存後，依 [API 權杖生命週期維護](token-lifecycle-maintenance.md) 建立定期檢查／刷新排程，並用 `scripts/token_maintenance.py` 立即驗證一次。Runtime 本身只在被呼叫時檢查與刷新；排程器負責定期呼叫。OAuth 與平台讀取成功但維護排程尚未驗證時，整合狀態只能是 `partial`。
+
 Facebook 實機補充（2026-09-09）：Graph 請求的 `appsecret_time` 預留 60 秒時間差，HMAC 仍綁定同一 Token 與時間戳，不停用 proof、不修改系統時鐘。短期與長期 User Token、實際 scope 核對後，先完整列舉 `/me/accounts`；只有列舉成功但找不到已確認的目標 ID，才對該 ID 呼叫 `GET /{page-id}?fields=id,name,access_token`。要求回應 ID、名稱與 Token 有效，再照常驗證 PAGE 類型、App、scope、期限及 `/me` 身分。列舉失敗、不完整、目標重複或已列出目標但缺 tasks 時不改路線。指定 Page 路徑不回 tasks，不能捏造管理角色或推定寫入能力。官方 [Page 節點及 access_token 欄位](https://raw.githubusercontent.com/facebook/facebook-python-business-sdk/main/facebook_business/adobjects/page.py)只作介面參考，實際可用性以本次 API 為準。
 
 受信任的發布、互動與成效 adapter 應在自身取得任務授權後，於同一程序呼叫：
@@ -83,15 +85,15 @@ token = runtime.access(confirmed_read=True, allow_refresh=True)
 # 在 adapter 自己的預覽、確認與目標核對通過後才執行獲准任務。
 ```
 
-`allow_refresh` 只在使用者核准持續取用／刷新，或本次明確授權刷新時啟用，不因「檢查狀態」就刷新。`status` 不讀取 token、不連平台；`check` 會讀取平台。原生憑證庫的 `verified` 僅表示存入與讀回一致，不能代替平台驗證；後續 adapter 不得繞過本 runtime 直接拿某段 token 去發布。
+`allow_refresh` 只在使用者核准持續取用／刷新，或本次明確授權刷新時啟用，不因「檢查狀態」就刷新。維護入口另傳 `maintenance=True`，讓 Facebook Page Token 或資料存取期限進入最後七天時先回報 `reauth_required`；一般功能呼叫不會因此提前中止。`status` 不讀取 token、不連平台；`check` 會讀取平台。原生憑證庫的 `verified` 僅表示存入與讀回一致，不能代替平台驗證；後續 adapter 不得繞過本 runtime 直接拿某段 token 去發布。
 
 YouTube：每次核對 scope 與 `channels.list(mine=true)` 的選定頻道。access token 剩餘不超過 60 秒時，需要已核准的 refresh；新回應沒有 refresh token 就保留原值，有新值則保存新世代。`invalid_grant`、已知 refresh 到期或撤銷時回到明確重新授權關卡，不自動開瀏覽器。初次回應缺少 refresh token 時不宣稱已完成可持續使用的連線；若需要再次 consent，先解釋原因並確認，不盲目重跑。
 
-Facebook：先驗短期及長期 User Token 的 App、使用者、類型與期限；讀回 `/me/permissions`，只保留指定 Page 的 Token。每次取用檢查 Page Token、App、scope、期限與 `/me` 的 Page ID。`expires_at=0` 表示沒有排定到期時間，**不等於永遠有效**；缺值不視為零。到期／撤銷需要重新登入授權，不把 Page Token 套進 Google refresh 流程。檢查採每次使用時執行，不建立背景排程。公開留言、私訊、成效端點仍由後續技能驗證，取得 permission 不是端點全部可用的證明。
+Facebook：先驗短期及長期 User Token 的 App、使用者、類型與期限；讀回 `/me/permissions`，只保留指定 Page 的 Token。每次取用檢查 Page Token、App、scope、期限與 `/me` 的 Page ID。`expires_at=0` 表示沒有排定到期時間，**不等於永遠有效**；缺值不視為零。到期／撤銷需要重新登入授權，不把 Page Token 套進 Google refresh 流程。定期維護排程呼叫相同檢查，發現失效或資料存取期限問題時通知本人。公開留言、私訊、成效端點仍由後續技能驗證，取得 permission 不是端點全部可用的證明。
 
 Scope 要求與實際讀回不一致（少授予或多出未同意項目）一律停止，不自行擴權。Facebook 隱含的 `public_profile` 必須在預覽揭露，程式將其納入核對。
 
-Instagram Login／Threads：每次取用先做當前身分檢查；長 Token 剩最後七天、已持有至少 24 小時、仍有效且刷新已獲核准時才按需刷新一次。七天是本套件策略，不是平台硬性要求；不建立背景排程。過期不能刷新，回到本人重新同意。Instagram 的 scope 清單是初次交換證據，**不是每次重新核對所有權限**；Threads 另讀官方 debugger 的當前 scope。Instagram 的發布、留言、insights 與私訊必須由選定功能的正式端點處理權限不足、撤權與未知結果，且一項成功不得推定其他項目成功；細節見專用契約。`ready` 只涵蓋各路徑明列的讀回範圍。
+Instagram Login／Threads：每次取用先做當前身分檢查；長 Token 剩最後七天、已持有至少 24 小時、仍有效且刷新已獲核准時才按需刷新一次。七天是本套件策略，不是平台硬性要求；定期排程讓 Runtime 能在到期前進入窗口並刷新。過期不能刷新，回到本人重新同意。Instagram 的 scope 清單是初次交換證據，**不是每次重新核對所有權限**；Threads 另讀官方 debugger 的當前 scope。Instagram 的發布、留言、insights 與私訊必須由選定功能的正式端點處理權限不足、撤權與未知結果，且一項成功不得推定其他項目成功；細節見專用契約。`ready` 只涵蓋各路徑明列的讀回範圍。
 
 Instagram via Facebook Login：初次以長期 User Token 精確核對 `/me/permissions`，再只保存唯一相連 IG 目標的 Page Token。每次取用重新核對 Page Token 的 App、類型、scope、期限、Page 與 IG 關係；失效要重新 Facebook OAuth，不套用 Instagram Login／Threads／Google refresh。`expires_at=0` 仍不等於永久有效。
 
@@ -109,10 +111,10 @@ Instagram via Facebook Login：初次以長期 User Token 精確核對 `/me/perm
 
 YouTube 的 `quotaExceeded` 會歸入 `rate_limited`，不建議以擴權解決；有 Google 帳號但尚未建立 YouTube 頻道的 `youtubeSignupRequired` 屬於目標條件不符。依據：[官方 API 錯誤表](https://developers.google.com/youtube/v3/docs/errors)。
 
-沒有背景服務、Webhook 部署、自動修補平台權限、無限重試或多帳號自動切換。錯誤修正仍遵守主技能的一次小修正與針對性重測。
+本 Runtime 沒有常駐背景服務；由已核准的排程產品定期啟動維護入口。沒有 Webhook 部署、自動修補平台權限、無限重試或多帳號自動切換。錯誤修正仍遵守主技能的一次小修正與針對性重測。
 
 ## 官方依據與虛構驗證
 
 已直接讀取的當前官方文件：[Google Desktop OAuth](https://developers.google.com/identity/protocols/oauth2/native-app)、[Google 官方 refresh 實作](https://github.com/googleapis/google-auth-library-python/blob/main/google/oauth2/_client.py)、[YouTube channels.list](https://developers.google.com/youtube/v3/docs/channels/list)、[Facebook manual flow](https://developers.facebook.com/docs/facebook-login/guides/advanced/manual-flow/)、[長期 Token](https://developers.facebook.com/docs/facebook-login/guides/access-tokens/get-long-lived/)、[Facebook Login 安全規則](https://developers.facebook.com/docs/facebook-login/security/)、[Meta Token 類型](https://developers.facebook.com/documentation/facebook-login/guides/access-tokens)、[Meta 官方 Page Token 範例](https://www.postman.com/meta/facebook/request/bqfxwbp/get-access-tokens-of-pages-you-manage)。只作行為查證，未複製或安裝官方 SDK。
 
-`tests/test_oauth_runtime.py`、`tests/test_meta_user_oauth.py` 與 `tests/test_instagram_facebook_oauth.py` 使用虛構 backend／HTTP 回應，涵蓋五條登入路徑的交換、選定資源、分段保存、刷新、scope／目標不符、撤銷、state、PKCE、重播、中斷及不明結果。Loopback HTTP 測試只連本機，讀取官方 Location 但不跟隨，不開瀏覽器；不是平台 OAuth 實測。TLS、反向代理、原生庫、使用者同意及實際權限讀回全部留到最後集中驗收。
+`tests/test_oauth_runtime.py`、`tests/test_meta_user_oauth.py`、`tests/test_instagram_facebook_oauth.py` 與 `tests/test_token_maintenance.py` 使用虛構 backend／HTTP 回應，涵蓋五條登入路徑的交換、選定資源、分段保存、刷新、定期維護入口、scope／目標不符、撤銷、state、PKCE、重播、中斷及不明結果。Loopback HTTP 測試只連本機，讀取官方 Location 但不跟隨，不開瀏覽器；不是平台 OAuth 或排程產品實測。TLS、反向代理、原生庫、使用者同意、實際權限讀回及排程執行全部留到最後集中驗收。

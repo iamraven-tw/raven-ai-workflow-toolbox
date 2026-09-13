@@ -25,7 +25,7 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 
 - `website/config.json`：商業資訊、頁面、設計、託管設定。`business.status` 必須不是 `not_configured`。
 - 使用者指定的專案目標目錄。必須是空目錄或不存在，且不在技能包、範本或 Agent 技能掃描目錄內。
-- 可選：`website-design-preview` 寫入的 `website/design.json`（選定主題）。`scaffold` 會自動讀取與 `config.json` 同目錄的這個檔案，也可用 `--theme` 指定；都沒有就用預設主題 `bookshop`，並在回報中提醒可以先用 `website-design-preview` 挑主題。
+- 可選：`website-design-preview` 寫入的 `website/design.json`（選定主題）。`scaffold` 會自動讀取與 `config.json` 同目錄的這個檔案，也可用 `--theme` 指定；都沒有就用預設主題 `whitebox`，並在回報中提醒可以先用 `website-design-preview` 挑主題。
 - 可選：`website-content-writing` 寫入的 `website/copy.json` 與 `website/posts/`。`scaffold` 會自動渲染成 `site.copy.mjs` 並複製文章；沒有就沿用範本的預設語氣與佔位句，並在回報中提醒可以先寫文案。
 - 可選：使用者提供的 Logo 或照片。有的話在建置前放進 `public/images/`，並更新對應的 `src` 路徑；沒有就用佔位圖。
 
@@ -36,7 +36,7 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 這是多階段技能。開始執行前，用 Mermaid 向使用者呈現本次實際採用的分支、確認關卡與停止位置。
 
 1. 讀設定，確認 `business.status`。`not_configured` 就停止並交回 `website-setup`。
-2. 檢查環境：`node --version` 需要 20 以上，`npm --version` 可用。缺少時停止並說明，不自行安裝。
+2. 檢查環境：使用 Node 22.20.0 以上的受支援偶數版（24 分支使用 24.12.0 以上），npm 9.6.5 以上。依固定 lockfile 內 Astro 及平台依賴的 engines 核對；不足時停止並說明，不自行安裝。
 3. `scaffold_site.py plan`：列出計畫。向使用者一次確認目標目錄與計畫內容；使用者說「全部用預設」視為確認。
 4. `scaffold_site.py scaffold --confirm-write`：建立專案。命令旗標不是對話核准，必須先取得第 3 步的確認。
 5. 有使用者素材時放入 `public/images/` 並更新引用。

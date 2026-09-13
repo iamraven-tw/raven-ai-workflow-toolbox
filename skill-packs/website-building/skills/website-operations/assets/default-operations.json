@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "not_configured",
+  "public_url": null,
+  "health": {
+    "enabled": false,
+    "timeout_seconds": 20,
+    "tls_warning_days": 30,
+    "history_limit": 90,
+    "checks": [
+      {
+        "path": "/",
+        "expected_status": 200,
+        "required_text": null
+      },
+      {
+        "path": "/robots.txt",
+        "expected_status": 200,
+        "required_text": "User-agent:"
+      },
+      {
+        "path": "/sitemap-index.xml",
+        "expected_status": 200,
+        "required_text": "<sitemapindex"
+      }
+    ]
+  },
+  "backup": {
+    "retention_count": 5,
+    "stale_after_days": 14,
+    "workspace_paths": [
+      "website"
+    ],
+    "project_paths": [
+      "src",
+      "public",
+      "package.json",
+      "package-lock.json",
+      "astro.config.mjs",
+      "tsconfig.json",
+      "wrangler.jsonc",
+      "site.config.mjs",
+      "site.copy.mjs"
+    ]
+  },
+  "updates": {
+    "exact_versions_only": true,
+    "automatic_apply": false,
+    "verified_backup_required": true,
+    "local_build_required": true,
+    "separate_deploy_authorization_required": true
+  }
+}

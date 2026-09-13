@@ -7,6 +7,8 @@
 - 託管方案、部署路線、Worker 名稱、網域意願、網域路線與網域名稱。
 - 本機建置、自動化頁面檢查、Wrangler 登入、`workers.dev` 部署、自訂網域與公開收錄六個互不代替的驗證狀態。
 - 相對於工作區的一人公司設定檔路徑。
+- `website/integrations.json` 中會直接公開在 HTML 的服務商名稱、表單 endpoint、電子報／預約／付款 hosted URL、按鈕標籤與隱私政策網址。
+- `website/operations.json` 中的公開網站 origin、健康檢查路徑、逾時、TLS 提醒天數、備份相對路徑與更新政策；不得放登入資訊或帶秘密 query 的網址。
 
 網站名稱、聯絡信箱與網域本來就會公開在網站上，因此可以寫入一般設定；但公開套件的範本必須全部留空或使用虛構值。
 
@@ -14,7 +16,9 @@
 
 - Cloudflare API Token、帳號識別碼、zone 識別碼、部署 Hook 網址、Wrangler 登入狀態。
 - 任何密碼、Cookie、session、OAuth client secret。
+- 表單內容、訂閱名單、預約人資料、交易資料、卡號、銀行帳戶、稅務與身分驗證資料；這些只能留在使用者選定的服務商，不進工作區狀態。
 - 使用者的 Logo、照片與其他素材檔案；設定檔只記錄相對路徑。
+- `.local/website/operations/health-history.json`、備份 ZIP 與隔離復原目錄。健康歷史只含公開網址與讀回結果；備份可能含私人文案與素材，必須留在私人空間且不得提交。
 
 `manage_workspace.py` 會拒絕常見秘密欄位與 Token 形狀。這是最低限度防線，不代表可以把一般設定檔當成秘密儲存。
 
@@ -22,6 +26,9 @@
 
 - `site.fonts = "google"`（預設）時，網站會向 fonts.googleapis.com 與 fonts.gstatic.com 請求字型，訪客的 IP 會被 Google 看到。`website-setup` 的批次確認應提到這一點；使用者可改為 `system`，網站就不發任何外部請求。
 - 示範照片是本機檔案，不會向 Unsplash 或 Picsum 發請求。
+- 啟用 `website-service-integration` 後，訪客送出聯絡表單時會把姓名、Email、訊息與同意值 POST 到設定中標示的服務商；點擊電子報、預約或付款入口會離開本站前往該服務商。頁面必須在操作前顯示服務商名稱與隱私政策。
+- 本版服務串接不加入第三方 JavaScript、iframe、分析或廣告追蹤；若未來加入非必要 Cookie 或跨站追蹤，必須先建立獨立的同意與撤回流程。
+- 維運健康檢查只向設定的公開網站送 GET；不送表單。依賴盤點與安裝會連到 npm registry，只有盤點為唯讀，套用更新與後續部署要分別授權。本機備份預設不連網、不自動上傳。
 
 ## 公開與私人快照
 

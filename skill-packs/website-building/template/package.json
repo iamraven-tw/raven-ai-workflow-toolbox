@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "AI Workflow Toolbox 官網打造技能包的去識別化 Astro 起始範本。品牌、文案與圖片皆為虛構佔位，請由 website-build 依 website/config.json 產生。",
+  "description": "Raven AI 一人公司工具包的去識別化 Astro 起始範本。品牌、文案與圖片皆為虛構佔位，請由 website-build 依 website/config.json 產生。",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.20.0",
+    "npm": ">=9.6.5"
   },
   "scripts": {
     "dev": "astro dev",

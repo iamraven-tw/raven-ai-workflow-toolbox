@@ -1,8 +1,10 @@
-# AI Workflow Toolbox
+# Raven AI 一人公司工具包
+
+> **PREVIEW · `0.1.0-preview.1`** — 可供早期使用者安裝與驗收，尚未正式支援；`1.0.0` 前可能有破壞性變更。詳見 [PREVIEW 發行說明](docs/preview-release.md)。
 
 > 提供給一人公司創業者的 AI 工作流工具包，協助一個人完成內容、營運、知識管理、社群經營與官網建置。
 
-AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計、規劃以開放原始碼方式發布的工具包。它會把一人公司經營時常見的重要工作，整理成一系列 AI Agent（能依步驟執行任務的 AI 助理）技能包，讓使用者可以在缺少完整團隊的情況下，仍然有方法地完成工作並檢查成果。
+Raven AI 一人公司工具包是專為一人公司創業者（solopreneur）設計的開源工具包。它把一人公司經營時常見的重要工作，整理成一系列 AI Agent（能依步驟執行任務的 AI 助理）技能包，讓使用者可以在缺少完整團隊的情況下，仍然有方法地完成工作並檢查成果。
 
 本專案預計支援下列桌面端與開發工具：
 
@@ -13,7 +15,7 @@ AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計�
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於早期開發階段。六個技能包都已完成 Agent 端的本機候選版：AI 知識庫、AI 剪片與 Google 工具自動化可供外部驗收，社群媒體七個技能、官網打造第一版五個技能與 AI Agent 規則盤點仍是本機候選。全部尚未正式支援；登入、外部帳號、實機發布與另一臺電腦驗收，都等所有工具包完成後才集中安排。本 repository 也尚未公開發布。
+> 本專案目前處於 PREVIEW 階段，包含六個技能包。可安裝候選不等於正式支援；各平台登入、模型推論、實機發布與另一臺電腦的驗收狀態，以各技能包 manifest 為準。公開版本見 [GitHub prerelease](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.1)，完整發布驗收見 [Preview 驗收紀錄](docs/release-acceptance.md)。
 
 ## 專案要解決的問題
 
@@ -21,7 +23,7 @@ AI Workflow Toolbox 是一個專為一人公司創業者（solopreneur）設計�
 
 AI 工具可以協助處理其中一部分工作，但只有工具還不夠。使用者仍然需要知道應該從哪裡開始、要提供什麼資料、哪些步驟可以交給 AI、哪些決定必須自己做，以及如何判斷結果真的能投入使用。
 
-AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具包，協助使用者完成五項核心能力：
+Raven AI 一人公司工具包 要提供一套一人公司可以實際採用的創業工具包，協助使用者完成五項核心能力：
 
 1. 把原始素材製作成可以發布的影片。
 2. 使用 Google 工具建立日常營運自動化。
@@ -31,7 +33,7 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 
 本專案不是只提供零散提示詞，也不是要用 AI 取代創業者的判斷。每套技能都要從實際經營需求出發，引導使用者完成規劃、準備、執行、確認與成果驗收。
 
-## 五大技能包
+## 五大工作流與盤點技能包
 
 | 技能包 | 目前狀態 | 第一階段目標 |
 |---|---|---|
@@ -39,7 +41,7 @@ AI Workflow Toolbox 要提供一套一人公司可以實際採用的創業工具
 | Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 用固定版本 Learn-GAS 保留 Apps Script 路線，先完成需求分流、本機實作與遠端確認關卡，再由使用者做 Google 實機驗收 |
 | AI 知識庫 | Agent 端候選版可供外部驗收；本機生命週期與三種桌面／開發用戶端技能發現已通過，尚未正式支援 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
 | 社群媒體管理工作流 | 七個技能為可安裝的本機候選（候選版 0.7.0）；七份流程審查已完成，登入／OAuth、平台讀取與測試發布尚未執行，尚未正式支援 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
-| 官網打造工作流 | 第一版五個技能（設定、文案、風格挑選、建置、部署）與起始範本為可安裝的本機候選；第二版兩個技能尚未建立，尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到 `workers.dev` 上線與自訂網域 |
+| 官網打造工作流 | 七個技能（設定、文案、風格挑選、建置、部署、服務串接、維運）與起始範本為可安裝的本機候選；尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到上線、自訂網域、常用服務串接、監控與備份 |
 | AI Agent 規則與技能盤點 | 上游 v0.2.1 已鎖定並以乾淨 clone 核對雜湊，本套件為可安裝的本機候選；技能發現、實際盤點與另一臺電腦驗收尚未執行，尚未正式支援 | 讓 Agent 盤點本機所有 AI coding agent 的規則與技能，寫成中文摘要並用本機網站呈現，協助使用者看懂並整理自己的工作流設定 |
 
 ### 1. AI 剪片工作流
@@ -161,7 +163,7 @@ flowchart LR
 
 第一階段會先以一人公司最常需要的最小可用官網為範圍：能清楚介紹業務、建立信任、收集潛在顧客，並提供明確的聯絡或購買入口。AI 可以協助規劃、撰寫、設計與開發，但網域購買、付費服務、正式部署與公開發布仍需要使用者明確確認。
 
-這套技能包的設計前提是交給 AI Agent 全程執行：人類只回答一次商業訪談、批次確認預設方案、完成 Cloudflare 登入與授權，其餘由 Agent 完成。技術路線固定為 Astro 靜態站點加 Cloudflare Workers 靜態資產免費方案，預設先上線到 `workers.dev`，自訂網域是授權後的第二步。風格提供六個完整主題，各參考一個公開示範頁的版面手法與動畫類型自行實作，走到選風格的步驟時由 Agent 產生本機畫廊直接展示真正建置出來的頁面。目前第一版五個技能與起始範本都已完成，第二版的服務串接與維運兩個技能尚未建立；完整決策、人類接觸點清單與七個技能的順序見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)，套件位於 [`skill-packs/website-building/`](skill-packs/website-building/README.md)。
+這套技能包的設計前提是交給 AI Agent 全程執行：人類只回答一次商業訪談、批次確認預設方案、完成 Cloudflare 與外部服務的登入和分階段授權，其餘由 Agent 完成。技術路線固定為 Astro 靜態站點加 Cloudflare Workers 靜態資產免費方案，預設先上線到 `workers.dev`，自訂網域是授權後的第二步。風格提供六個完整主題，各參考一個公開示範頁的版面手法與動畫類型自行實作；服務串接以原生 HTTPS POST 與 hosted links 支援聯絡表單、電子報、預約與付款，不保存憑證、不自動扣款；維運提供公開健康檢查、可驗證本機備份、隔離復原與安全更新流程。目前七個技能與起始範本都已完成本機候選；完整決策、人類接觸點清單與七個技能的順序見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)，套件位於 [`skill-packs/website-building/`](skill-packs/website-building/README.md)。
 
 ## 共用設計原則
 
@@ -219,7 +221,7 @@ flowchart LR
 以下是目標結構，不代表所有目錄都已建立：
 
 ```text
-ai-workflow-toolbox/
+raven-ai-workflow-toolbox/
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md
@@ -325,7 +327,7 @@ AI 知識庫已提供自己的 [`INSTALL.md`](skill-packs/ai-knowledge-base/INST
 
 AI 剪片已建立 [`skill-packs/ai-video/`](skill-packs/ai-video/README.md) 的完整 Agent 安裝與生命週期契約，並發布鎖定的 [Raven Video-Use v0.1.1](https://github.com/iamraven-tw/video-use/releases/tag/v0.1.1)。manifest 標示 `installable = true`，代表可安裝為外部驗收候選版；`officially_supported` 仍為空，直到使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收。根專案的套件分流見 [`INSTALL.md`](INSTALL.md)。
 
-社群媒體管理提供七個技能的 [`INSTALL.md`](skill-packs/social-media/INSTALL.md) 與本機候選 manifest（候選版 0.7.0）。靜態結構、虛構生命週期與 Codex 本機技能發現已通過；登入／OAuth、平台讀取、測試發布、其他用戶端、另一臺電腦與正式公開支援都尚未通過。官網打造目前提供第一版五個技能與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構與虛構生命週期已通過，技能發現、真實 Wrangler 登入、部署與網域都尚未執行，範本建置以環境變數選擇性驗證，部署流程以假的 wrangler 程式做虛構測試。設計決策見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)。
+社群媒體管理提供七個技能的 [`INSTALL.md`](skill-packs/social-media/INSTALL.md) 與本機候選 manifest（候選版 0.7.0）。靜態結構、虛構生命週期與 Codex 本機技能發現已通過；登入／OAuth、平台讀取、測試發布、其他用戶端、另一臺電腦與正式公開支援都尚未通過。官網打造目前提供七個技能與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構、虛構生命週期、Windows Codex 七技能發現、六主題及四種服務入口的 Node 建置已通過；真實 Wrangler 登入、部署、網域、外部服務端到端與公開維運仍未驗收。設計決策見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)。
 
 AI Agent 規則與技能盤點提供 [`INSTALL.md`](skill-packs/agent-inventory/INSTALL.md) 與本機候選 manifest。它不含自有技能，只用固定 tag `v0.2.1` 安裝上游 [iamraven-tw/agent-inventory](https://github.com/iamraven-tw/agent-inventory)（MIT）的六個技能，安裝器不連網、不掃描、不修改任何既有規則或技能。靜態結構、虛構資料生命週期與乾淨 clone 的雜湊核對及實際安裝已在維護者機器通過；技能發現、實際盤點與另一臺電腦驗收都尚未執行。整合決策見 [`docs/decisions/0004-agent-inventory-integration.md`](docs/decisions/0004-agent-inventory-integration.md)。
 
@@ -350,4 +352,4 @@ AI Agent 規則與技能盤點提供 [`INSTALL.md`](skill-packs/agent-inventory/
 
 ## 非官方聲明
 
-AI Workflow Toolbox 是獨立的社群專案，並非 OpenAI、Anthropic、Google、Meta、X、Substack 或其他平台的官方產品，也不代表這些公司提供背書。所有產品名稱與商標均屬其各自權利人所有。
+Raven AI 一人公司工具包 是獨立的社群專案，並非 OpenAI、Anthropic、Google、Meta、X、Substack 或其他平台的官方產品，也不代表這些公司提供背書。所有產品名稱與商標均屬其各自權利人所有。

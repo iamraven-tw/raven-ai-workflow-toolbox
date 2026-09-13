@@ -125,6 +125,7 @@ class Runtime:
         self.backend = backend or vault.detect_backend()
         self.http, self.clock = transport or OfficialHTTP(), clock
         self.prefix = f"oauth-{connection}"
+        self.maintenance_mode = False
 
     def lock(self):
         """與單筆原生儲存使用不同鎖，避免巢狀互鎖。"""
@@ -274,6 +275,9 @@ class Runtime:
                 raise OAuthError("read_failed")
             if expiry and expiry <= self.clock():
                 raise OAuthError("expired")
+            if (self.maintenance_mode and expected_type == "PAGE" and expiry
+                    and expiry <= self.clock() + 7 * 24 * 60 * 60):
+                raise OAuthError("reauth_required")
         if type(data.get("expires_at")) is not int:
             raise OAuthError("read_failed")
         return data
@@ -425,10 +429,11 @@ class Runtime:
             raise OAuthError(self.status()["status"]) from None
         return self.status()
 
-    def access(self, *, confirmed_read=False, allow_refresh=False, resume=False):
+    def access(self, *, confirmed_read=False, allow_refresh=False, resume=False, maintenance=False):
         """供後續受信任技能取用；每次讀回驗證，必要時只刷新一次。不得列印回傳值。"""
         if not confirmed_read:
             raise OAuthError("authorization_required")
+        self.maintenance_mode = maintenance
         with self.lock():
             state = self.status()["status"]
             if state in {"exchanging", "refreshing", "remote_result_unknown", "authorizing", "configured"}:

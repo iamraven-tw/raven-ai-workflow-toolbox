@@ -1,6 +1,6 @@
 # Google 工具自動化協作規則
 
-本目錄是 AI Workflow Toolbox 的 Google 工具自動化公開候選技能包。MVP 只補足跨技術分流、安裝契約與驗收門檻；Google Apps Script 的既有能力維持在 Learn-GAS 單一來源。
+本目錄是 Raven AI 一人公司工具包 的 Google 工具自動化公開候選技能包。MVP 只補足跨技術分流、安裝契約與驗收門檻；Google Apps Script 的既有能力維持在 Learn-GAS 單一來源。
 
 ## 開始前
 

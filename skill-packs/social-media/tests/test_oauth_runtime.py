@@ -350,6 +350,17 @@ class OAuthTests(unittest.TestCase):
         self.assertEqual(runtime.access(confirmed_read=True), "fictional-page")
         self.assertTrue(all("oauth/access_token" not in c[1] for c in self.http.calls[-2:]))
 
+    def test_facebook_maintenance_warns_before_page_or_data_access_expiry(self):
+        runtime = self.runtime("facebook")
+        self.http.replies = self.facebook_replies()
+        self.finish(runtime)
+        for field in ("expires_at", "data_access_expires_at"):
+            page = self.facebook_replies()[-2]
+            page["data"][field] = self.now[0] + 6 * 24 * 60 * 60
+            self.http.replies = [page]
+            self.assert_kind("reauth_required", lambda: runtime.access(
+                confirmed_read=True, maintenance=True, resume=field == "data_access_expires_at"))
+
     def test_facebook_rejects_wrong_app_user_and_page(self):
         runtime = self.runtime("facebook")
         for index, field, value in ((1, "app_id", "wrong"), (3, "user_id", "different"), (7, "type", "USER")):

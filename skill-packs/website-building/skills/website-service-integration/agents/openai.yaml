@@ -1,0 +1,4 @@
+interface:
+  display_name: "官網服務串接"
+  short_description: "串接表單、電子報、預約與 hosted 付款入口"
+  default_prompt: "使用 $website-service-integration 把已建好的官網串接我需要的表單、電子報、預約或付款服務；先提出不含秘密的預設方案與資料流預覽，經我確認後再寫入並驗證。"

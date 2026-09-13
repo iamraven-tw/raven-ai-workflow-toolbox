@@ -2,7 +2,7 @@
 
 ## 目前決策
 
-AI Workflow Toolbox 不與維護者的私人工作區自動同步。過去評估過的 canonical／mirror／runtime consumer 設計已停用，不建立 hook、檔案監看、雙向同步，也不要求私人流程每次修改後做一般化工作。
+Raven AI 一人公司工具包 不與維護者的私人工作區自動同步。過去評估過的 canonical／mirror／runtime consumer 設計已停用，不建立 hook、檔案監看、雙向同步，也不要求私人流程每次修改後做一般化工作。
 
 ## 發行方式
 

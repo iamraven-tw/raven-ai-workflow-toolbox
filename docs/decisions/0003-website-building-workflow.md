@@ -38,6 +38,9 @@ README 把「官網打造工作流」列為第五個技能包，目前狀態是�
 | 在 Cloudflare 後台「Add a site」加入網域並選免費方案（只在網域不是向 Cloudflare 購買時） | 外部帳號 | 一次 | Wrangler 的 OAuth 沒有建立 zone 的權限；改用 API Token 同樣要人進後台建立，人直接加入反而較省 |
 | 在網域註冊商改 nameserver 指向 Cloudflare（只在網域不是向 Cloudflare 購買時） | 外部帳號 | 一次 | 註冊商後台需要本人登入 |
 | 授權綁定自訂網域與正式公開（移除 noindex） | 授權 | 一次 | 公開發布 |
+| 建立／登入表單、電子報、預約或付款服務並同意條款 | 帳號／登入 | 每個服務一次 | 帳號建立、登入與同意由本人完成 |
+| 輸入付款服務要求的身分、稅務、銀行與收款資料 | 身分／財務 | 平台要求時 | Agent 不得接觸或代填高敏感資料 |
+| 授權建立服務資源、網站整合、重新部署與選擇性端到端測試 | 授權 | 每批變更分階段 | 分別改變服務端、網站、公開部署或測試資料 |
 | 提供 Logo、個人照片等自有素材 | 提供事實 | 可選 | Agent 可先用佔位圖，使用者想換再提供 |
 
 ## 決策
@@ -95,8 +98,8 @@ README 把「官網打造工作流」列為第五個技能包，目前狀態是�
 | 3 | `website-design-preview` | 依訪談推薦調性與風格；下載固定 commit 的設計系統；產生單檔 HTML 預覽；用瀏覽器工具截圖 | 從預覽中選一個 | 是 |
 | 4 | `website-build` | 從起始範本建立 Astro 專案；套用選定主題；填入內容；產生佔位素材；`npm ci`、`build`、`preview`；自動截圖與 RWD、404、連結檢查 | 無（僅在 Agent 發現需要取捨時才問） | 是 |
 | 5 | `website-deploy` | 確認 Wrangler 登入狀態；產生部署預覽；`wrangler deploy` 到 `workers.dev`；讀回 HTTP、sitemap、robots、OG；宣告 custom domain 並讀回 DNS 與 HTTPS；移除 noindex | 建立 Cloudflare 帳號、`wrangler login` 同意、取 `workers.dev` 子網域名稱、授權首次部署、買網域、必要時 Add a site 與改 nameserver、授權正式公開 | 是 |
-| 6 | `website-service-integration` | 表單、電子報、預約、付款、流量分析的串接程式與隱私說明 | 各服務的帳號登入與同意 | 否，第二版 |
-| 7 | `website-operations` | 內容更新、依賴更新、備份、健康檢查、成效回顧 | 授權更新部署 | 否，第二版 |
+| 6 | `website-service-integration` | 原生 HTTPS POST 聯絡表單、電子報／預約／付款 hosted links、隱私揭露、本機與公開讀回；不保存秘密、不自動扣款 | 各服務的帳號登入與同意、付款身分與收款資料、分階段授權 | 是，本機候選；真實服務尚未驗收 |
+| 7 | `website-operations` | 公開 GET／TLS 健康檢查、帶逐檔 SHA-256 manifest 的本機 ZIP 備份、隔離復原、依賴更新候選與事件處理；不自動排程、刪除、部署或 rollback | 批次確認維運設定；授權備份／隔離復原／更新；需要時另行授權排程、異地備份、部署、rollback 或清理 | 是，本機候選；真實公開監控與線上回復尚未驗收 |
 
 第一版快照的最低目標是 1、4、5 三個技能加起始範本，能讓使用者只做「訪談、登入、授權」就從零走到 `workers.dev` 上線；2 與 3 在流程審查通過後加入同一版或下一版。
 
@@ -115,8 +118,10 @@ flowchart LR
     G -->|是| H5([人：買網域／改 nameserver<br/>授權正式公開])
     H5 --> F[Agent 綁定網域、移除 noindex、讀回]
     G -->|否| F2[Agent 上線檢查與讀回]
-    F --> Z[第二版：整合與維運]
-    F2 --> Z
+    F --> I[website-service-integration<br/>表單 POST 與 hosted links]
+    F2 --> I
+    I --> J[website-operations<br/>健康檢查、可驗證備份與隔離復原]
+    J --> H6([人：需要時授權排程、更新、部署或 rollback])
 ```
 
 圓角節點是人類接觸點，方形節點全部由 Agent 執行。
@@ -161,8 +166,14 @@ skill-packs/website-building/
 │   │   └── references/{tonalities.md, page-templates/, design-system-source.md}
 │   ├── website-build/
 │   │   └── scripts/{scaffold_site.py, check_site.py}   # 建立專案、產生佔位素材、自動檢查
-│   └── website-deploy/
-│       └── references/{wrangler-local-route.md, workers-builds-optional-route.md, custom-domain-and-dns.md, launch-checklist.md}
+│   ├── website-deploy/
+│   │   └── references/{wrangler-local-route.md, workers-builds-optional-route.md, custom-domain-and-dns.md, launch-checklist.md}
+│   ├── website-service-integration/
+│   │   └── scripts/manage_integrations.py
+│   └── website-operations/
+│       ├── assets/default-operations.json
+│       ├── scripts/manage_operations.py
+│       └── references/{operations-config.schema.json, monitoring-and-incidents.md, backup-and-recovery.md, updates-and-maintenance.md}
 └── tests/
     ├── validate_package.py           # 靜態結構、frontmatter、連結、隱私字串
     ├── test_install_lifecycle.py     # 虛構安裝生命週期
@@ -173,13 +184,13 @@ skill-packs/website-building/
 
 ## Manifest 要點
 
-- `project_id = "website-building"`，`status = "local_candidate_first_skills"`，`support_level` 沿用「本機候選、未正式支援」。
+- `project_id = "website-building"`，`status = "local_candidate_complete_pack"`，`support_level` 表示七技能完整候選、尚未正式支援。
 - `requires_network = false`（安裝與設定），`[runtime]` 另標 `npm ci`、設計系統下載與 Cloudflare 操作需要網路。
 - `[agent_execution]` 記錄本套件的執行原則：`default_mode = "agent_executes_human_authorizes"`、`human_touchpoints` 指向 `docs/human-touchpoints.md`、`batch_confirmation = true`。
 - `[[dependencies]]` 逐一列出 Astro、Tailwind CSS、Wrangler、`@astrojs/sitemap`、`@astrojs/rss`、open-design、Playwright（可選）：套件名稱、固定版本或 commit、授權、官方來源、`bundle_source = false`。
 - `[cloudflare]` 記錄免費方案的已知限制、需要授權的動作清單、費用停止點、Wrangler OAuth 涵蓋與不涵蓋的操作，以及「套件不保存 Token」的政策。
-- `[[planned_skills]]` 列出第一版未完成的技能，`status = "not_implemented"`。
-- `[[readiness_gates]]`：靜態結構、本機技能發現、範本 `npm ci`／`build`、自動化頁面檢查、`wrangler` 登入、`workers.dev` 部署、自訂網域、另一臺電腦、正式公開支援，全部先標 `not_performed`。
+- 七個技能均列入 `[[skills]]`；不保留只有名稱或待辦事項的技能目錄。
+- `[[readiness_gates]]` 分別記錄靜態結構、本機技能發現、範本 `npm ci`／`build`、自動化頁面檢查、Wrangler、部署、網域、服務串接、維運備份／復原、公開監控、另一臺電腦與正式支援；只有實際驗證的層級才標完成。
 
 ## 驗證層級
 
@@ -207,7 +218,7 @@ skill-packs/website-building/
 
 1. 起始範本放在套件內（建議，自有程式、可離線安裝），還是另立公開 repository 以固定 commit 引用（與 Learn-GAS 相同模式）。
 2. 第一版快照是否要包含 `website-content-writing` 與 `website-design-preview`，還是先以 setup、build、deploy 三個技能打通上線。
-3. 表單、電子報、分析等外部服務是否列為第二版，或第一版只留「聯絡方式為 mailto 或外部連結」的最小做法。
+3. 已決定：服務串接先實作不需網站端秘密的原生 HTTPS POST 與 hosted links；分析追蹤、API secret、webhook、會員與資料庫另行設計。
 4. 是否接受 Playwright 作為可選依賴，供沒有內建瀏覽器工具的用戶端做自動化頁面檢查。
 5. 先用哪個用戶端做本機技能發現測試（社群媒體套件先以 Codex 驗證）。
 6. 風格來源的納入門檻（OSI 授權、Stars 一萬以上或大廠出品、近 90 天有更新、固定 commit、不含品牌資產）是否照此寫進 manifest 與 README。

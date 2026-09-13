@@ -1,0 +1,22 @@
+schema_version = 1
+product_id = "ai-workflow-toolbox"
+display_name = "Raven AI 一人公司工具包"
+repository = "https://github.com/iamraven-tw/raven-ai-workflow-toolbox"
+version = "0.1.0-preview.1"
+channel = "preview"
+prepared_on = "2026-09-13"
+release_status = "preview_release"
+publication_status_source = "github_prerelease"
+tag = "v0.1.0-preview.1"
+support_level = "preview_evaluation_not_formally_supported"
+stability = "breaking_changes_may_occur_before_1.0.0"
+
+[documentation]
+release_notes = "docs/preview-release.md"
+installation = "INSTALL.md"
+license = "LICENSE"
+
+[scope]
+package_status_source = "skill-packs/*/install.manifest.toml"
+all_packages_same_maturity = false
+production_ready = false

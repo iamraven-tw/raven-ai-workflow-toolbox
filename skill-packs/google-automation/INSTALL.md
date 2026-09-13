@@ -59,16 +59,17 @@ LICENSE SHA-256 39106e322b00c852430a6e6fca5f93b1465b24a6abd8a6d723df99ae9d2eaa15
 Git 狀態        無修改、無未追蹤檔案
 ```
 
-再從 Learn-GAS 根目錄執行：
+再從 Toolbox 根目錄執行（Windows 與 macOS 使用同一驗證入口）：
 
 ```bash
-python3 scripts/validate_skills.py
-python3 -m unittest discover \
-  -s skills/google-apps-script-teaching/scripts \
-  -p 'test_*.py' -v
+python skill-packs/google-automation/scripts/validate_upstream.py --learn-gas-source <learn-gas-source>
 ```
 
 任何一步失敗就停止。不得因公開 `main` 有新 commit 而自動改用新版。
+
+驗證器先核對原始 commit、tree、LICENSE 與乾淨狀態，再於暫存副本執行原上游驗證器和 43 項測試。唯一調整是 symlink 測試建立連結時若得到 Windows `WinError 1314`，回報明確的 `skipped`；其他錯誤仍失敗。macOS 與具備權限的 Windows 會實際執行同一項防護測試。安裝仍複製未修改的固定來源，不需要管理員、Developer Mode 或 symlink 權限。
+
+Windows PowerShell 使用 `python` 與單行參數，或 PowerShell 反引號續行；不要直接貼上後續 Bash 範例的反斜線續行。clone 時使用 repository 專屬 `-c core.autocrlf=false`，避免 Git 在 checkout 改變鎖定檔案的位元組；不修改全域 Git 設定。
 
 ## 4. 註冊技能
 

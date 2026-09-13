@@ -5,7 +5,7 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 
 # 官網部署
 
-這是官網打造工作流的第五個技能，也是「從零到上線」的最後一步。每個外部動作都先預覽、取得明確授權、執行後從平台讀回；指令沒有報錯不等於上線。
+這是官網打造工作流的第五個技能，也是「從零到上線」的發布步驟；上線後若要表單、電子報、預約或付款入口，再交給 `website-service-integration`。每個外部動作都先預覽、取得明確授權、執行後從平台讀回；指令沒有報錯不等於上線。
 
 ## 責任
 
@@ -17,7 +17,7 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 - 依 `references/custom-domain-and-dns.md` 的四條路線處理自訂網域：`domain check` 讀 NS 是否已在 Cloudflare、`domain plan` 預覽、授權後 `domain apply` 寫入 routes、重建、部署、`verify --url https://<網域>`。
 - 使用者授權正式公開後，`publish --confirm-write` 把 `indexing` 改為 `index`，重建、部署、`verify --expect-indexing index`。
 - 每個階段完成後，依 `website-setup` 的 `manage_workspace.py` 預覽與確認流程更新設定檔的 `verification` 欄位：`wrangler_login`、`workers_dev_deploy`、`custom_domain`、`public_index`。
-- 產出上線報告並交接給第二版的維運技能。
+- 產出上線報告；需要外部服務時交接給 `website-service-integration`，完成後交給 `website-operations` 建立健康檢查與第一份可驗證備份。
 
 本技能不建立 Cloudflare 帳號、不代按 OAuth 同意、不輸入付款資料、不用瀏覽器自動化操作 Cloudflare 後台、不保存任何 API Token 或帳號識別碼。
 
@@ -33,7 +33,7 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 
 這是多階段技能。開始執行前，用 Mermaid 向使用者呈現本次採用的分支、授權關卡與停止位置。
 
-1. 確認前置：專案目錄存在、`dist/` 已建置且比來源新、`site.indexing` 仍是 `noindex`。不滿足就先回 `website-build`。
+1. 確認前置：專案目錄存在、`dist/` 已建置且比來源新。首次上線要求 `site.indexing` 為 `noindex`；已上線更新保留目前 indexing、正式網址與 routes，改走下方「已上線更新」，不要重設 noindex 或重跑首次公開流程。
 2. `status`。未登入時說明「我會執行 wrangler login，瀏覽器會打開 Cloudflare 授權頁，你只要按允許；沒有帳號的話先在同一頁註冊」，然後執行 `npx wrangler login`，等使用者完成後重跑 `status`。
 3. `plan --stage workers_dev`。把預覽完整列給使用者：Worker 名稱、網址樣式、上傳量、費用為零、這一步會建立公開連結。取得明確授權。
 4. `deploy --confirm-deploy --expect-indexing noindex`。若帳號尚未有 `workers.dev` 子網域，wrangler 會要求先取名；這是使用者的一次性決定，Agent 提出建議名稱讓使用者選，必要時請使用者到 Cloudflare 後台 Workers & Pages 頁設定一次再重跑。
@@ -46,6 +46,10 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 11. 依 `references/launch-checklist.md` 產出上線報告並交接。
 
 命令旗標不是對話核准。`--confirm-deploy` 與 `--confirm-write` 只能在使用者對同一份預覽明確同意後使用。
+
+## 已上線更新
+
+從 `website-service-integration` 或 `website-operations` 交接時，先讀取既有正式網址、routes 與 indexing。確認本機建置／頁面檢查通過後，執行 status 與 plan，預覽這次版本的檔案、目的 Worker 及網域；取得本次部署授權後才以目前 indexing 執行 deploy。用正式網址與相同 indexing 執行 verify，不能只讀 workers.dev。不改網域、不執行 publish、不重跑 set-url；結果不明先讀回，回復線上版本另行授權。
 
 ## 授權關卡
 
@@ -87,7 +91,7 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 - 公開網址（`workers.dev` 與自訂網域）、Worker 名稱、部署時間；不含帳號識別碼。
 - 各層狀態：Wrangler 登入、`workers.dev` 部署、自訂網域、公開收錄。只有 `verify` 通過的層級標示完成。
 - 剩下的人類接觸點與下一個唯一建議動作。
-- 上線報告（見 `references/launch-checklist.md`），交接給第二版的 `website-operations`。
+- 上線報告（見 `references/launch-checklist.md`），交接給 `website-operations`；監控排程與第一份備份仍各自預覽並取得授權。
 
 ## 停止條件
 

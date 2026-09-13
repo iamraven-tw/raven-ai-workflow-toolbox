@@ -12,6 +12,8 @@
 
 ## 1. 唯讀預檢
 
+**先依作業系統分流：Windows x64 使用 [Windows 安裝契約](docs/windows-install.md)，不執行下列 Homebrew／symlink 步驟。macOS 14+ Apple Silicon 維持本文件的固定版本路線。** `compatibility_overlay` 另外鎖定共用程式的移植差異；原 Release 與 macOS 依賴雜湊維持不變。
+
 Agent 先讀本文件、`install.manifest.toml` 與 fork 解壓後的 `install.md`，再檢查：
 
 1. `uname -m` 必須是 `arm64`；macOS 主版本必須是 14 或更新。

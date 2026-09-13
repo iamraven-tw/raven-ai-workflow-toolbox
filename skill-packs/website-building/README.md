@@ -1,8 +1,8 @@
 # 官網打造工作流
 
-這是 AI Workflow Toolbox 的公開官網打造技能包。目標是讓一人公司創業者把「從零到官網上線」交給 AI Agent 全程執行；人類只提供事實、做取捨、完成外部帳號的登入與同意、授權付費或公開發布。目前是**第一版五個技能（設定、文案、風格挑選、建置、部署）與起始範本都已完成的本機候選版**，第二版的整合與維運技能尚未建立，也尚未正式支援。
+這是 Raven AI 一人公司工具包 的公開官網打造技能包。目標是讓一人公司創業者把「從零到官網上線、服務串接與日常維運」交給 AI Agent 全程執行；人類只提供事實、做取捨、完成外部帳號的登入與同意，並授權付費、公開發布或其他高影響操作。目前是**七個技能（設定、文案、風格挑選、建置、部署、服務串接、維運）與起始範本都已完成的本機候選版**，尚未正式支援。
 
-設計決策見 [ADR 0003](../../docs/decisions/0003-website-building-workflow.md)。
+目前可獨立散布的決策摘要見 [套件決策](docs/package-decisions.md)，發布待辦見 [Preview 清單](docs/release-checklist.md)。
 
 ## 核心承諾
 
@@ -14,6 +14,7 @@
 4. 授權首次部署到 `workers.dev`。
 5. 要自訂網域時：購買網域，必要時在 Cloudflare 後台加入網域與在註冊商改 nameserver。
 6. 授權綁定網域與正式公開。
+7. 需要表單、電子報、預約或付款時，建立／登入選定服務，完成條款、身分或收款資料，並分別授權服務資源建立、網站寫入、重新部署與選擇性的端到端測試。
 
 ## 目前可用
 
@@ -21,6 +22,8 @@
 - `website-content-writing`：引導使用者填寫首頁、關於、服務、聯絡、文章列表與 404 的文案。Agent 依設定檔列出每欄的用途、字數與一個虛構範例，必填五欄請使用者自己寫；他沒空時 AI 先填起點並標記為建議、明講建議親自改過一遍。工具會擋下 AI 建議裡沒依據的數字、定稿仍含佔位或必填空白。建站階段不寫部落格文章，文章由使用者自己用 Markdown 寫，技能只檢查格式並帶進網站。確認後寫入 `website/copy.json`，`website-build` 建站時自動套用，已建好的站用 `sync` 同步。
 - `website-design-preview`：範本內建六個主題，各參考一個公開商業示範頁的版面手法與動畫類型自行實作（程式碼與素材未複製；版面、字型、間距、元件、動畫都不同，不是換色）。走到選風格的步驟時 Agent 主動產生本機畫廊，用真正建置出來的首頁展示、替換成使用者的站名與文案、截圖並標示建議；使用者只回一個編號。選定後寫入 `website/design.json`，建站或重建時整站換主題。使用者端不需要 Node，不需要網路。
 - `website-deploy`：Wrangler 登入檢查、部署預覽、`wrangler deploy` 到 `workers.dev`、HTTP 讀回、四條網域路線與 custom domain 綁定、移除 `noindex` 正式公開。每個外部動作都先預覽、取得授權、執行後讀回；套件不保存任何 Token。人類只做建立帳號、瀏覽器點一次同意、授權部署、買網域與必要的 Add a site／改 nameserver、授權公開。
+- `website-service-integration`：把已建好的靜態網站接上聯絡表單、電子報、預約與付款服務。預設使用原生 HTTPS POST 與 hosted links，不加入第三方 SDK、iframe 或網站端 secret；每項整合都帶服務商與隱私政策揭露。Agent 先規劃、寫入、建置與讀回；人類只處理服務帳號登入／同意、付款身分與收款資料，以及分階段授權。付款只驗證結帳入口，不自動扣款。
+- `website-operations`：對公開網址做狀態碼、必要內容、延遲與 TLS 健康檢查；建立含逐檔 SHA-256 manifest 的本機 ZIP 備份並驗證；只復原到新的隔離目錄；依賴更新先查官方資料、驗證備份並在隔離複本建置。監控排程、更新寫入、部署、線上 rollback、外部備份與刪除都各自需要明確授權。
 - `website-build`：從 `template/` 的去識別化 Astro 起始範本建立專案，依設定檔寫入站點設定與 Worker 名稱、複製啟用的可選頁面、覆寫設計 token、產生佔位素材，然後 `npm ci`、`npm run build`、用 `check_site.py` 檢查靜態輸出，再用瀏覽器工具截圖。人類只在建立前確認一次計畫。本技能不登入 Cloudflare、不部署。
 
 ## 起始範本
@@ -40,14 +43,7 @@
 
 完整清單見 [`skills/website-build/references/template-structure.md`](skills/website-build/references/template-structure.md)。
 
-## 已確認、尚未建立
-
-| 順序 | 技能 | 第一版 |
-|---|---|---|
-| 6 | `website-service-integration` | 第二版 |
-| 7 | `website-operations` | 第二版 |
-
-這些名稱列在 manifest 的 `planned_skills`，目前沒有可被 Agent 發現的技能目錄。每個技能完成流程審查後才會加入安裝清單。
+七個技能均已加入 manifest 的安裝清單；真實公開監控、異地備份、依賴更新與線上回復仍屬後續實機驗收，不能由本機虛構測試推定為已通過。
 
 ## 技術路線
 
@@ -56,14 +52,15 @@
 - 部署預設由 Agent 在本機執行 `wrangler deploy`；Git 連動 Workers Builds 降為可選。
 - 套件不保存任何 Cloudflare API Token，只用 Wrangler 自己的 OAuth 登入狀態。
 - 內容以 repository 內的 Markdown 為唯一來源；外部 CMS 同步不進第一版。
+- 表單採公開 HTTPS POST；電子報、預約與付款採 hosted links。服務串接不保存憑證、不植入第三方 script／iframe；需要 API secret、webhook、會員、購物車或資料庫時另行設計。
 
 ## 風格來源
 
-預設路徑是範本內建的六個主題，見 [`skills/website-design-preview/references/style-catalog.md`](skills/website-design-preview/references/style-catalog.md)：紙本書店、夜間工作室、留白畫廊、黑白展場、遊樂場、報刊編輯。每個主題依 open-design（Apache-2.0，固定 commit）的一份設計指引完整實作，來源記錄在各主題的 `theme.json` 與 `THIRD_PARTY_NOTICES.md`。新增主題屬於維護者工作，要照另一份可追溯的設計指引實作全部檔案並重新匯出預覽。納入門檻寫在 manifest 的 `[style_sources]`：OSI 授權、GitHub Stars 一萬以上或大廠出品、近 90 天有更新、能固定 commit 或版本、不含品牌圖片或字型檔。以真實品牌命名的風格只以六大視覺調性呈現，不把品牌名當預設值。
+預設六個主題為小夜燈、暗房、白盒子、日光、晨光、週刊，見 [`style-catalog.md`](skills/website-design-preview/references/style-catalog.md)。它們參考公開示範頁的版面手法自行實作，未複製來源的程式碼或素材；來源記錄在各 theme.json 與 THIRD_PARTY_NOTICES.md。open-design 只保留為可選擴充來源，不是現行六主題的實作來源。新增主題必須記錄可追溯依據、遵守 manifest 的來源政策並重新匯出預覽，不把來源品牌當預設值。
 
 ## 本機實作與集中實機驗收
 
-目前先做本機程式與虛構測試；範本的 `npm ci` 與 `astro build` 以 `WEBSITE_NODE_ACCEPTANCE=1` 選擇性執行。所有工具包完成後才集中安排 Wrangler 登入、`workers.dev` 部署、自訂網域與另一臺電腦驗收。流程確認仍逐技能進行，不以實機驗收阻擋下一個技能。實作時必須確認的外部事實列在 manifest 的 `[[external_facts_to_confirm]]`。
+目前先做本機程式與虛構測試；範本的 `npm ci` 與 `astro build` 以 `WEBSITE_NODE_ACCEPTANCE=1` 選擇性執行。所有工具包完成後才集中安排 Wrangler 登入、`workers.dev` 部署、自訂網域、真實服務帳號與另一臺電腦驗收。流程確認仍逐技能進行，不以實機驗收阻擋下一個技能。實作時必須確認的外部事實列在 manifest 的 `[[external_facts_to_confirm]]`。
 
 ## 公開邊界
 

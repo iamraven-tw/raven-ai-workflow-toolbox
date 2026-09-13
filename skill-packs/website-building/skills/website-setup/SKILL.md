@@ -58,7 +58,7 @@ description: "建立或調整一人公司官網的基礎設定。當使用者想
 - 風格：依受眾與定位推薦一個調性，說明理由，並在可能時直接展示 `website-design-preview` 的畫廊讓使用者看圖選號；不要只用文字描述風格。
 - 託管：固定 Cloudflare Workers 靜態資產、免費方案、Agent 本機 `wrangler deploy`。Git 連動只在使用者主動要求時改選。
 - 網域：先問「現在有沒有網域」。沒有就預設先用 `workers.dev` 上線，`wanted` 記為 `undecided` 或使用者的答案。要買的話優先 Cloudflare Registrar；使用者想要的頂級網域不在 Registrar 清單時，改走外部註冊商。既有網域則記錄 DNS 是否已在 Cloudflare。
-- 行動呼籲：預設 `mailto` 或使用者提供的外部連結；表單類整合留給第二版，記為 `form_later`。
+- 行動呼籲：預設 `mailto` 或使用者提供的外部連結；要由 `website-service-integration` 後續建立表單時記為 `form_later`。
 - 字型：預設 `google`，各主題會載入自己的中文字型，網站會向 Google 發請求；批次確認時用一句話說明，使用者在意隱私就改 `system`。
 
 ## 寫入流程

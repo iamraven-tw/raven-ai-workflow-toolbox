@@ -1,6 +1,6 @@
 # 社群媒體管理工作流
 
-這是 AI Workflow Toolbox 的公開、平台無關社群媒體技能包。目前已建立**七個技能的本機候選版**，七份流程均已逐項說明並獲准繼續。另已由目前 root Agent 使用十個虛構回合前測一次一問、直接任務、研究關卡、平台選取及跨技能交接；這不是獨立模型或真實安裝入口驗收。流程確認與對話前測都不等於外部整合、實機驗收或正式公開支援完成；現況見 [七技能流程確認與驗收狀態](docs/workflow-review-status.md)與[虛構 Agent 對話前測](docs/agent-dialogue-preflight-local-verification.md)。
+這是 Raven AI 一人公司工具包 的公開、平台無關社群媒體技能包。目前已建立**七個技能的本機候選版**，七份流程均已逐項說明並獲准繼續。另已由目前 root Agent 使用十個虛構回合前測一次一問、直接任務、研究關卡、平台選取及跨技能交接；這不是獨立模型或真實安裝入口驗收。流程確認與對話前測都不等於外部整合、實機驗收或正式公開支援完成；現況見 [七技能流程確認與驗收狀態](docs/workflow-review-status.md)與[虛構 Agent 對話前測](docs/agent-dialogue-preflight-local-verification.md)。
 
 ## 目前可用
 

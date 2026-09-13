@@ -1,8 +1,8 @@
 # 第三方聲明
 
-目前候選版包含第一版五個技能：`website-setup`、`website-content-writing`、`website-design-preview`、`website-build` 與 `website-deploy`。範本內建的六個主題是本專案自行實作的程式碼（Apache-2.0）。每個主題各參考一個公開的商業主題示範頁（網址記在各主題 `theme.json` 的 `source_references`）的版面手法與動畫類型自行實作：只借鏡區塊順序、版面結構與動畫種類，未複製任何程式碼、樣式表、文案、圖片、影片或字型檔，也未使用其名稱。主題不含任何品牌 Logo、字型檔或商標，主題名稱為本專案自訂。早期版本曾參考 [nexu-io/open-design](https://github.com/nexu-io/open-design)（Apache-2.0）的設計指引，目前的六個主題已不再由其衍生；該專案只保留在 `references/extended-sources.md` 作為日後擴充的可選來源。各品牌或產品名稱僅用於標示來源，不代表相關公司背書。全站動畫使用 [Motion](https://motion.dev)（MIT），以 npm 固定版本由使用者的 `npm ci` 安裝。套件本身不綑綁、不下載，也不安裝任何第三方程式碼；本機管理器、工作區設定程式、scaffold 與檢查程式只使用 Python 標準函式庫。
+目前候選版包含七個技能：`website-setup`、`website-content-writing`、`website-design-preview`、`website-build`、`website-deploy`、`website-service-integration` 與 `website-operations`。範本內建的六個主題與服務串接元件都是本專案自行實作的程式碼（Apache-2.0）。服務串接只產生標準 HTML form 與連結，不綑綁任何表單、電子報、預約或付款供應商的 SDK、嵌入碼或商標資產。維運工具以 Python 標準函式庫執行 HTTP/TLS 檢查、ZIP 備份、雜湊驗證與隔離復原，不綑綁監控、備份或更新供應商 SDK。每個主題各參考一個公開的商業主題示範頁（網址記在各主題 `theme.json` 的 `source_references`）的版面手法與動畫類型自行實作：只借鏡區塊順序、版面結構與動畫種類，未複製任何程式碼、樣式表、文案、圖片、影片或字型檔，也未使用其名稱。主題不含任何品牌 Logo、字型檔或商標，主題名稱為本專案自訂。早期版本曾參考 [nexu-io/open-design](https://github.com/nexu-io/open-design)（Apache-2.0）的設計指引，目前的六個主題已不再由其衍生；該專案只保留在 `references/extended-sources.md` 作為日後擴充的可選來源。各品牌或產品名稱僅用於標示來源，不代表相關公司背書。全站動畫使用 [Motion](https://motion.dev)（MIT），以 npm 固定版本由使用者的 `npm ci` 安裝。安裝管理器不下載或安裝第三方套件；離線畫廊則包含固定版本建置後的 Motion／Framer Motion JavaScript 與 Tailwind CSS／Typography 樣式，隨包保留 [第三方授權全文](skills/website-design-preview/assets/previews/THIRD_PARTY_LICENSES.txt)，也隨技能安裝。本機管理器、工作區設定程式、scaffold、整合與檢查程式只使用 Python 標準函式庫。
 
-`template/` 是本專案自有的 Astro 起始範本（Apache-2.0）。它的 `package.json` 與 `package-lock.json` 宣告下列第三方 npm 套件，由使用者專案執行 `npm ci` 時從 npm registry 取得，不包含在本技能包的檔案內：
+`template/` 是本專案自有的 Astro 起始範本（Apache-2.0）。它的 `package.json` 與 `package-lock.json` 宣告下列第三方 npm 套件，由使用者專案執行 `npm ci` 時從 npm registry 取得，不綑綁 node_modules；離線預覽內嵌的建置產物依上一段保留授權：
 
 | 套件 | 版本 | 授權 |
 |---|---|---|

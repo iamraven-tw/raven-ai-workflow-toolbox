@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/ai-workflow-toolbox/integration-config.schema.json",
+  "title": "官網外部服務串接設定",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "services", "disclosure"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "status": { "enum": ["not_configured", "configured"] },
+    "services": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contact_form", "newsletter", "booking", "payment"],
+      "properties": {
+        "contact_form": { "$ref": "#/$defs/contact_form" },
+        "newsletter": { "$ref": "#/$defs/hosted_link" },
+        "booking": { "$ref": "#/$defs/hosted_link" },
+        "payment": { "$ref": "#/$defs/payment_link" }
+      }
+    },
+    "disclosure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["heading", "intro", "form_consent_label"],
+      "properties": {
+        "heading": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "intro": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "form_consent_label": { "type": "string", "minLength": 1, "maxLength": 300 }
+      }
+    }
+  },
+  "$defs": {
+    "provider": { "type": ["string", "null"], "maxLength": 100 },
+    "label": { "type": "string", "minLength": 1, "maxLength": 100 },
+    "public_url": { "type": ["string", "null"], "maxLength": 1000 },
+    "contact_form": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "provider", "mode", "endpoint", "label", "fields", "consent_required", "privacy_url"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "provider": { "$ref": "#/$defs/provider" },
+        "mode": { "const": "html_post" },
+        "endpoint": { "type": ["string", "null"], "maxLength": 1000 },
+        "label": { "$ref": "#/$defs/label" },
+        "fields": { "const": ["name", "email", "message"] },
+        "consent_required": { "const": true },
+        "privacy_url": { "$ref": "#/$defs/public_url" }
+      }
+    },
+    "hosted_link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "provider", "mode", "url", "label", "privacy_url"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "provider": { "$ref": "#/$defs/provider" },
+        "mode": { "const": "hosted_link" },
+        "url": { "type": ["string", "null"], "maxLength": 1000 },
+        "label": { "$ref": "#/$defs/label" },
+        "privacy_url": { "$ref": "#/$defs/public_url" }
+      }
+    },
+    "payment_link": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "provider", "mode", "url", "label", "privacy_url", "verification_scope"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "provider": { "$ref": "#/$defs/provider" },
+        "mode": { "const": "hosted_link" },
+        "url": { "type": ["string", "null"], "maxLength": 1000 },
+        "label": { "$ref": "#/$defs/label" },
+        "privacy_url": { "$ref": "#/$defs/public_url" },
+        "verification_scope": { "const": "link_only_no_transaction" }
+      }
+    }
+  }
+}

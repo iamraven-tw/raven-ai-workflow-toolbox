@@ -19,6 +19,8 @@ BUILD = "website-build"
 DESIGN = "website-design-preview"
 DEPLOY = "website-deploy"
 CONTENT = "website-content-writing"
+SERVICE = "website-service-integration"
+OPERATIONS = "website-operations"
 
 
 def run(arguments: list[str]) -> subprocess.CompletedProcess[str]:
@@ -82,7 +84,7 @@ class InstallLifecycleTests(unittest.TestCase):
         manifest = package / "install.manifest.toml"
         manifest.write_text(
             manifest.read_text(encoding="utf-8").replace(
-                'candidate_version = "0.5.0"', 'candidate_version = "0.6.0"'
+                'candidate_version = "0.7.0"', 'candidate_version = "0.8.0"'
             ),
             encoding="utf-8",
         )
@@ -104,7 +106,7 @@ class InstallLifecycleTests(unittest.TestCase):
         installed_skill = self.client_root / SKILL / "SKILL.md"
         self.assertTrue(installed_skill.is_file())
         self.assertIn("name: website-setup", installed_skill.read_text(encoding="utf-8"))
-        self.assertEqual(set(installed["managed_entries"]), {SKILL, CONTENT, DESIGN, BUILD, DEPLOY})
+        self.assertEqual(set(installed["managed_entries"]), {SKILL, CONTENT, DESIGN, BUILD, DEPLOY, SERVICE, OPERATIONS})
         self.assertTrue((self.client_root / BUILD / "SKILL.md").is_file())
 
         repeated = self.assert_success(self.command("install"))
@@ -162,7 +164,7 @@ class InstallLifecycleTests(unittest.TestCase):
 
         target = self.client_root / SKILL
         target.parent.mkdir(parents=True)
-        for name in (SKILL, CONTENT, DESIGN, BUILD, DEPLOY):
+        for name in (SKILL, CONTENT, DESIGN, BUILD, DEPLOY, SERVICE, OPERATIONS):
             shutil.copytree(ROOT / f"skills/{name}", self.client_root / name)
         shutil.copytree(ROOT / "template", self.client_root / BUILD / "assets/template")
         before = (target / "SKILL.md").stat().st_mtime_ns

@@ -23,7 +23,7 @@
 
 ## 首頁 13 個欄位
 
-`eyebrow`、`title`、`lead`、`primary_cta`、`secondary_cta`、`offerings_eyebrow`、`offerings_heading`、`offerings_intro`、`trust_eyebrow`、`trust_heading`、`closing_eyebrow`、`closing_heading`、`closing_lead`。各主題會用自己的方式呈現，例如紙本書店把 `offerings_heading` 放在目錄章節、報刊編輯放在黑色橫幅。
+`eyebrow`、`title`、`lead`、`primary_cta`、`secondary_cta`、`offerings_eyebrow`、`offerings_heading`、`offerings_intro`、`trust_eyebrow`、`trust_heading`、`closing_eyebrow`、`closing_heading`、`closing_lead`。各主題依自己的版面呈現，欄位契約不隨主題變動。
 
 ## 阻擋項
 

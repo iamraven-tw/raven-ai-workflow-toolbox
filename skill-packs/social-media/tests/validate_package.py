@@ -435,9 +435,13 @@ def validate_manifest(manifest: dict) -> None:
     oauth = manifest.get("oauth_runtime", {})
     if oauth.get("routes") != ["facebook", "youtube", "instagram", "threads"] or oauth.get("status") != "implemented_fictional_tests_live_deferred":
         raise ValidationError("OAuth 執行器必須明列四條路徑，不能代表所有登入路線或實機通過")
-    for key in ("entrypoint", "engine", "transport", "state_schema", "meta_user_adapter", "instagram_facebook_adapter"):
+    for key in ("entrypoint", "engine", "transport", "state_schema", "meta_user_adapter",
+                "instagram_facebook_adapter", "maintenance_entrypoint", "maintenance_contract"):
         if not (ROOT / oauth.get(key, "missing")).is_file():
             raise ValidationError("OAuth 執行器缺少 manifest 對應檔案")
+    if (oauth.get("maintenance_default") != "daily_check_refresh_in_platform_window_notify_on_change_or_attention"
+            or oauth.get("maintenance_status") != "implemented_fictional_tests_live_scheduler_deferred"):
+        raise ValidationError("manifest 缺少權杖生命週期維護排程契約")
     if oauth.get("instagram_facebook_flow") != "facebook_login_https_code_selected_linked_page_token_instagram_identity":
         raise ValidationError("manifest 缺少 Instagram via Facebook Login 的 Page／IG 身分契約")
     if oauth.get("instagram_permission_evidence") != "initial_exchange_exact_scopes_current_basic_identity_function_endpoint_required":
@@ -871,7 +875,9 @@ def validate_skill_structure(manifest: dict) -> None:
         "scripts/oauth_callback.py",
         "scripts/oauth_runtime.py",
         "scripts/oauth_http.py",
+        "scripts/token_maintenance.py",
         "references/oauth-runtime.md",
+        "references/token-lifecycle-maintenance.md",
         "references/oauth-state.schema.json",
         "scripts/manage_workspace.py",
         "references/credential-references.schema.json",
@@ -918,6 +924,8 @@ def validate_skill_structure(manifest: dict) -> None:
         "credential_store.py put",
         "使用者只貼上一次",
         "不代表已授權發布",
+        "credential_maintenance",
+        "維護排程",
         "執行錯誤最小回填",
         "一次小修正、一次針對性重測",
         "不得修改已安裝快取、內建技能、外掛或第三方來源",
@@ -928,6 +936,13 @@ def validate_skill_structure(manifest: dict) -> None:
     for phrase in required_phrases:
         if phrase not in skill_text:
             raise ValidationError(f"技能契約缺少：{phrase}")
+
+    maintenance_text = (skill / "references/token-lifecycle-maintenance.md").read_text(encoding="utf-8")
+    for phrase in (
+            "才能將整合標為完整完成", "預設每天", "立即手動執行一次",
+            "正常且沒有變化時保持安靜", "不硬編碼 60 天", "attention_required"):
+        if phrase not in maintenance_text:
+            raise ValidationError(f"權杖生命週期維護契約缺少：{phrase}")
 
     # 防止回復成先問模式、預設代操作或全面禁止優先工具。
     for setup_doc in [skill / "SKILL.md", *(skill / "references").rglob("*.md")]:

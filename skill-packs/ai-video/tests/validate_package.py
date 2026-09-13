@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import sys
 import tomllib
@@ -38,6 +39,23 @@ def validate_manifest() -> None:
         fail("候選安裝與正式支援的狀態沒有分開")
     if manifest["environment"].get("officially_supported") != []:
         fail("外部驗收前不得宣稱任何正式支援環境")
+
+    overlay = manifest["compatibility_overlay"]
+    overlay_path = PACKAGE_ROOT / overlay["path"]
+    if hashlib.sha256(overlay_path.read_bytes()).hexdigest() != overlay["sha256"]:
+        fail("跨平台補丁 SHA-256 不符")
+    patch = json.loads(overlay_path.read_text(encoding="utf-8"))
+    license_text = (overlay_path.parent / "LICENSE-Video-Use.txt").read_text(encoding="utf-8")
+    if "Copyright (c) 2026 Browser Use" not in license_text or "Permission is hereby granted" not in license_text:
+        fail("散布 Video-Use 補丁時缺少上游 MIT 授權")
+    if patch["base_commit"] != "da344098518230f69ff70f78a4860d4904e9e6cb":
+        fail("補丁沒有對應固定上游 commit")
+    paths = {entry["path"] for entry in patch["files"]}
+    if not {"requirements/asr-runtime-windows.lock", "requirements/ckip-runtime-windows.lock", "requirements/opencc-windows.lock", "helpers/platform_support.py", "WINDOWS.md"} <= paths:
+        fail("跨平台補丁缺少必要依賴或執行契約")
+    for asset in manifest["windows"]["assets"].values():
+        if not asset["url"].startswith("https://github.com/") or not re.fullmatch(r"[0-9a-f]{64}", asset["sha256"]) or not asset["license"]:
+            fail("Windows 工具缺少固定來源、完整雜湊或授權")
 
     dependencies = {item["id"]: item for item in manifest["dependencies"]}
     expected_refs = {

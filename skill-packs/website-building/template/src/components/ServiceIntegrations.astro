@@ -1,0 +1,51 @@
+---
+import integrations from '../data/integrations.json';
+import { site } from '../../site.config.mjs';
+
+type ServiceKey = 'contact_form' | 'newsletter' | 'booking' | 'payment';
+interface Props { only?: ServiceKey[] }
+
+const { only } = Astro.props;
+const visible = (key: ServiceKey) => !only || only.includes(key);
+const form = integrations.services.contact_form;
+const links = (['newsletter', 'booking', 'payment'] as ServiceKey[])
+  .filter((key) => visible(key))
+  .map((key) => ({ key, ...integrations.services[key] }))
+  .filter((service) => service.enabled);
+const showForm = visible('contact_form') && form.enabled;
+const hasService = showForm || links.length > 0;
+---
+
+{hasService ? (
+  <section class="mt-12 space-y-8" data-service-integrations>
+    <div>
+      <h2 class="t-h2">{integrations.disclosure.heading}</h2>
+      <p class="t-note mt-3">{integrations.disclosure.intro}</p>
+    </div>
+
+    {showForm && (
+      <form class="t-card grid gap-5" method="post" action={form.endpoint} accept-charset="UTF-8" data-service-kind="contact_form">
+        <p class="t-muted">表單資料將交由 {form.provider} 處理。<br /><a class="t-link" href={form.privacy_url} target="_blank" rel="noopener noreferrer">查看 {form.provider} 隱私政策</a></p>
+        <label class="grid gap-2"><span>姓名</span><input class="rounded-lg border border-current/20 bg-transparent px-4 py-3" type="text" name="name" autocomplete="name" required /></label>
+        <label class="grid gap-2"><span>Email</span><input class="rounded-lg border border-current/20 bg-transparent px-4 py-3" type="email" name="email" autocomplete="email" required /></label>
+        <label class="grid gap-2"><span>訊息</span><textarea class="min-h-40 rounded-lg border border-current/20 bg-transparent px-4 py-3" name="message" required></textarea></label>
+        {form.consent_required && <label class="flex items-start gap-3"><input class="mt-1" type="checkbox" name="privacy_consent" value="agreed" required /><span>{integrations.disclosure.form_consent_label}</span></label>}
+        <button class="t-btn justify-self-start" type="submit">{form.label}</button>
+      </form>
+    )}
+
+    {links.length > 0 && (
+      <ul class="t-grid-2">
+        {links.map((service) => (
+          <li class="t-card" data-service-kind={service.key}>
+            <p class="t-muted">由 {service.provider} 提供</p>
+            <a class="t-btn mt-4" href={service.url} target="_blank" rel="noopener noreferrer">{service.label}</a>
+            <p class="mt-3 text-sm"><a class="t-link" href={service.privacy_url} target="_blank" rel="noopener noreferrer">隱私政策</a></p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+) : site.cta.kind === 'form_later' ? (
+  <p class="t-note mt-10">尚未啟用聯絡表單；目前請直接使用上方的聯絡方式。</p>
+) : null}
