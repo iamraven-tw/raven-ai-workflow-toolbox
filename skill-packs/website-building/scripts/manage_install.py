@@ -42,17 +42,35 @@ def sha256_file(file_path: Path) -> str:
     return digest.hexdigest()
 
 
-def sha256_entry(entry: Path) -> str:
+def sha256_entry(entry: Path, assets: dict[str, Path] | None = None) -> str:
     """計算目錄的可重現雜湊，並拒絕任何 symlink。"""
 
     if entry.is_symlink() or not entry.is_dir():
         raise InstallError(f"技能來源或入口必須是一般目錄：{entry}")
+    # 安裝前計算合成內容的雜湊；安裝後仍以相同演算法驗證完整實體副本。
+    paths: dict[str, Path | None] = {
+        child.relative_to(entry).as_posix(): child for child in entry.rglob("*")
+    }
+    for target, source in (assets or {}).items():
+        if source.is_symlink() or not source.is_dir():
+            raise InstallError("附帶資產必須是一般目錄")
+        if target in paths or any(name.startswith(target + "/") for name in paths):
+            raise InstallError(f"附帶資產與技能原檔衝突：{target}")
+        for parent in Path(target).parents:
+            if parent != Path("."):
+                key = parent.as_posix()
+                if key in paths and (paths[key].is_symlink() or not paths[key].is_dir()):
+                    raise InstallError("附帶資產的父路徑衝突")
+                paths.setdefault(key, None)
+        paths[target] = source
+        for child in source.rglob("*"):
+            paths[target + "/" + child.relative_to(source).as_posix()] = child
     digest = hashlib.sha256()
-    for child in sorted(entry.rglob("*"), key=lambda item: item.as_posix()):
-        if child.is_symlink():
+    for name, child in sorted(paths.items()):
+        if child is not None and child.is_symlink():
             raise InstallError(f"技能內容不得包含 symlink：{child}")
-        relative = child.relative_to(entry).as_posix().encode("utf-8")
-        if child.is_dir():
+        relative = name.encode("utf-8")
+        if child is None or child.is_dir():
             digest.update(b"D\0" + relative + b"\0")
         elif child.is_file():
             digest.update(b"F\0" + relative + b"\0")
@@ -100,10 +118,10 @@ def safe_source(package_root: Path, relative: str) -> Path:
     return source
 
 
-def desired_entries(manifest: dict[str, Any], manifest_path: Path) -> dict[str, tuple[Path, str]]:
+def desired_entries(manifest: dict[str, Any], manifest_path: Path) -> dict[str, tuple[Path, str, dict[str, Path]]]:
     """從 manifest 建立目前已完成技能的來源清單。"""
 
-    entries: dict[str, tuple[Path, str]] = {}
+    entries: dict[str, tuple[Path, str, dict[str, Path]]] = {}
     for record in manifest.get("skills", []):
         if record.get("required") is not True:
             continue
@@ -118,7 +136,15 @@ def desired_entries(manifest: dict[str, Any], manifest_path: Path) -> dict[str, 
             raise InstallError(f"技能來源結構不正確：{skill_id}")
         if skill_id in entries:
             raise InstallError(f"重複技能 ID：{skill_id}")
-        entries[skill_id] = (source, sha256_entry(source))
+        assets = {}
+        for asset in record.get("bundled_assets", []):
+            if skill_id != "website-build" or asset != {"source_path": "template", "target_path": "assets/template"}:
+                raise InstallError("未支援的附帶資產配置")
+            template = manifest_path.parent / "template"
+            if template.is_symlink():
+                raise InstallError("範本來源不得是 symlink")
+            assets["assets/template"] = safe_source(manifest_path.parent, "template")
+        entries[skill_id] = (source, sha256_entry(source, assets), assets)
     managed = manifest.get("installation", {}).get("managed_entries")
     if sorted(entries) != sorted(managed or []):
         raise InstallError("managed_entries 與已完成技能不一致")
@@ -260,13 +286,15 @@ def active_record(version: str, manifest_path: Path, hashes: dict[str, str]) -> 
     }
 
 
-def stage_entries(entries: dict[str, tuple[Path, str]], transaction: Path) -> Path:
+def stage_entries(entries: dict[str, tuple[Path, str, dict[str, Path]]], transaction: Path) -> Path:
     """先在狀態目錄完成整批候選複製。"""
 
     staged = transaction / "new"
     staged.mkdir(parents=True)
-    for name, (source, expected_hash) in entries.items():
+    for name, (source, expected_hash, assets) in entries.items():
         copy_skill(source, staged / name)
+        for relative, asset_source in assets.items():
+            copy_skill(asset_source, staged / name / relative)
         if sha256_entry(staged / name) != expected_hash:
             raise InstallError(f"暫存技能雜湊不符：{name}")
     return staged
@@ -325,7 +353,7 @@ def install_or_update(args: argparse.Namespace, *, update: bool) -> dict[str, An
         manifest, args.registration, Path(args.client_root), Path(args.state_root)
     )
     entries = desired_entries(manifest, manifest_path)
-    hashes = {name: digest for name, (_, digest) in entries.items()}
+    hashes = {name: digest for name, (_, digest, _) in entries.items()}
     names = list(entries)
     version = str(manifest["installation"]["candidate_version"])
     file_path = state_path(state_root, args.registration, client_root)
@@ -413,7 +441,7 @@ def rollback(args: argparse.Namespace) -> dict[str, Any]:
             raise InstallError(f"回復快照缺少或損壞：{name}")
 
     transaction = state_root / "transactions" / uuid.uuid4().hex
-    entries = {name: (content / name, snapshot["entries"][name]) for name in names}
+    entries = {name: (content / name, snapshot["entries"][name], {}) for name in names}
     try:
         staged = stage_entries(entries, transaction)
         replace_entries(client_root, names, staged, transaction)
@@ -486,7 +514,7 @@ def status(args: argparse.Namespace) -> dict[str, Any]:
         manifest, args.registration, Path(args.client_root), Path(args.state_root)
     )
     entries = desired_entries(manifest, manifest_path)
-    hashes = {name: digest for name, (_, digest) in entries.items()}
+    hashes = {name: digest for name, (_, digest, _) in entries.items()}
     actual = current_hashes(client_root, list(entries))
     state = read_state(state_path(state_root, args.registration, client_root))
     if state is None:

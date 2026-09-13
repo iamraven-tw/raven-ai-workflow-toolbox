@@ -9,6 +9,11 @@ import sys
 import tempfile
 import unittest
 
+try:
+    from .platform_support import assert_private_file, private_fixture
+except ImportError:
+    from platform_support import assert_private_file, private_fixture
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_DIR = ROOT / "skills/social-community-management/scripts"
@@ -101,6 +106,7 @@ class CommunityCoordinatorTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory(prefix="fictional-community-execute-")
         self.addCleanup(self.temp.cleanup)
         self.workspace = Path(self.temp.name).resolve()
+        private_fixture(self.workspace)
         self.adapter = FakeAdapter()
         self.coordinator = execute.CommunityCoordinator(self.workspace, adapter=self.adapter)
 
@@ -289,7 +295,7 @@ class CommunityCoordinatorTests(unittest.TestCase):
         self.assertFalse(handoff["external_write_performed"])
         self.assertNotIn("人類修改後", json.dumps(handoff, ensure_ascii=False))
         handoff_path = self.workspace / handoff["handoff_path"]
-        self.assertEqual(handoff_path.stat().st_mode & 0o777, 0o600)
+        assert_private_file(self, handoff_path)
         observed = {"reply_id": "reply001", "reply_target_id": "comment001",
                     "text": "人類修改後的最終文字。",
                     "url": "https://fictional.substack.com/p/post/comment/reply001",

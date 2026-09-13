@@ -14,6 +14,11 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+try:
+    from .platform_support import symlink_or_skip
+except ImportError:
+    from platform_support import symlink_or_skip
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "skills/social-community-management/scripts/community_queue.py"
 SPEC = importlib.util.spec_from_file_location("community_queue", SCRIPT)
@@ -319,13 +324,15 @@ class CommunityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.begin(key)
 
-    def test_boundary_and_symlinks(self):
+    def test_boundary(self):
         with self.assertRaises(ValueError):
             queue.workspace(ROOT)
         with self.assertRaises(ValueError):
             queue.local(self.root, "../outside.json")
+
+    def test_symlinks_are_rejected(self):
         link = self.root / "shortcut"
-        link.symlink_to(ROOT)
+        symlink_or_skip(self, link, ROOT, directory=True)
         with self.assertRaises(ValueError):
             queue.local(self.root, "shortcut/install.manifest.toml")
 

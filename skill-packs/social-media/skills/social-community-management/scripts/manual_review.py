@@ -86,7 +86,7 @@ def _write_json(root, relative, value, *, replace=False):
 def _relative(root, path):
     """只回傳私人工作區內的相對位置。"""
 
-    return str(path.relative_to(root))
+    return path.relative_to(root).as_posix()
 
 
 def _page(title, body, *, form=False):

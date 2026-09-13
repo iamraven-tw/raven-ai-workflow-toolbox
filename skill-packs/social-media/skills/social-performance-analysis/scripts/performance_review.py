@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
 MODES = ("weekly", "monthly", "quarterly", "yearly")
@@ -22,6 +22,19 @@ STATUSES = {"available", "unavailable", "permission_denied", "read_failed", "def
 IDENTITY = ("metric", "definition", "unit", "aggregation", "scope", "segment", "basis", "timezone")
 STRATEGY = "sources/strategy/social-media-strategy-and-insights.md"
 DATA_ROOT = "social-media/performance"
+
+
+class TimezoneDataMissing(ValueError):
+    """執行環境缺 IANA 資料，不能把它誤報成使用者時區錯誤。"""
+
+
+def load_timezone(key):
+    """先確認資料庫可讀，絕不以 UTC 代替指定時區。"""
+    try:
+        ZoneInfo("UTC")
+    except ZoneInfoNotFoundError:
+        raise TimezoneDataMissing("timezone_data_missing: install pinned tzdata requirements") from None
+    return ZoneInfo(key)
 
 
 def require(condition, message):
@@ -119,7 +132,7 @@ def analyze(root, data):
     """只在同一序列的完整、同定義資料間計算，不做跨平台排名或加總。"""
     require(data.get("schema_version") == 1 and data.get("mode") in MODES, "資料版本或週期錯誤")
     require(re.fullmatch(r"[a-z0-9][a-z0-9-]{0,63}", data.get("report_id", "")), "報告 ID 格式錯誤")
-    ZoneInfo(data["timezone"])
+    load_timezone(data["timezone"])
     for field in ("period", "comparison_period"):
         period(**data[field])
     require(data["comparison_period"]["end"] == data["period"]["start"], "MVP 只比較相鄰曆期")
@@ -138,14 +151,14 @@ def analyze(root, data):
             require(point["status"] in STATUSES and point["coverage"] in {"complete", "partial", "unknown"}, "資料狀態不符")
             for identity in IDENTITY:
                 text(point[identity])
-            ZoneInfo(point["timezone"])
+            load_timezone(point["timezone"])
             require(point["timezone"] == data["timezone"], "不同來源時區需另建資料集，不能換標籤")
             require(point["period"] == data[window], "指標的實際期間不符")
             require(point["aggregation"] in {"total", "unique", "snapshot", "average", "rate"}, "聚合方式不符")
             require(point["basis"] in {"period_activity", "period_end_snapshot"}, "累積貼文或固定天齡請另列描述，不套曆期增減")
             require((point["aggregation"] == "snapshot") == (point["basis"] == "period_end_snapshot"), "快照不可假裝期間總量")
             observed = timestamp(point["observed_at"])
-            require(observed.astimezone(ZoneInfo(point["timezone"])).date() >= date.fromisoformat(point["period"]["end"]),
+            require(observed.astimezone(load_timezone(point["timezone"])).date() >= date.fromisoformat(point["period"]["end"]),
                     "讀取時間早於期間結束")
             require(observed <= datetime.now(observed.tzinfo), "讀取時間不可在未來")
             value = point["value"]

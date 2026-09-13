@@ -39,7 +39,7 @@ YouTube 預設沿用初始化時供選題與成效共用的 [官方 API 連線](
 
 ## 驗證與能力界線
 
-程式只用 Python 3.11+ 標準函式庫。`metric_catalog.py` 載入公開 `metric-catalog.json`，在讀取前限制最小指標與來源資格；`official_performance_api.py` 已接 YouTube Analytics 與 Facebook／Instagram／Threads 帳號 insights 的受限 GET；`performance_collect.py` 將這四平台回應，或 Substack 官方 MCP／官方匯出／受控瀏覽器的已保存 artifact，轉成既有資料契約。第一版只接帳號層單一 metric，不含 Meta 貼文／媒體細分或 Substack REST client。Facebook／Instagram runtime description 只證明當次欄位可讀，不能把 coverage 升成 complete；所有 adapter 只通過假 Runtime／HTTP 與虛構資料測試，不宣稱真實平台已串接或實機驗收。
+程式使用 Python 3.11+ 標準函式庫；時區運算另需系統 IANA 資料庫，Windows 等缺資料環境依 [Python 執行期](references/python-runtime.md) 準備固定 tzdata 與驗證私人目錄 ACL。`metric_catalog.py` 載入公開 `metric-catalog.json`，在讀取前限制最小指標與來源資格；`official_performance_api.py` 已接 YouTube Analytics 與 Facebook／Instagram／Threads 帳號 insights 的受限 GET；`performance_collect.py` 將這四平台回應，或 Substack 官方 MCP／官方匯出／受控瀏覽器的已保存 artifact，轉成既有資料契約。第一版只接帳號層單一 metric，不含 Meta 貼文／媒體細分或 Substack REST client。Facebook／Instagram runtime description 只證明當次欄位可讀，不能把 coverage 升成 complete；所有 adapter 只通過假 Runtime／HTTP 與虛構資料測試，不宣稱真實平台已串接或實機驗收。
 
 虛構測試須覆蓋官方主機／端點 allowlist、Token 不進 query、setup scope／目標核對、YouTube 指標白名單／美西時區／逐日涵蓋、Facebook description probe、Instagram period／description、Threads followers_count 排除、Meta observed definition 變更、Substack eligibility／原始證據雜湊、中斷續跑不重讀，以及四週期跨年與閏年、零／缺值、權限失敗、定義改變、不完整期間、百分點、三至五項觀察／一個問題、人類判斷、預覽過期、證據變更、保留原策略、鎖及重複寫入。`tests/test_performance_end_to_end.py` 必須再用同一批虛構資料，讓 weekly、monthly、quarterly、yearly 各自走完收集、觀察、單一問題、人工判斷、只讀預覽、再次確認寫回與讀回；原始資料和逐期報告不得進長期策略。測試不使用真實帳號或私人策略；流程品質還需另做 Agent 行為驗收。靜態、技能發現、套件、OAuth、平台讀取、測試發布、跨電腦與正式支援分開回報。
 

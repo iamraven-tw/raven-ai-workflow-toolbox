@@ -17,8 +17,10 @@ from typing import Any
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_ROOT = SKILL_ROOT.parents[1]
-DEFAULT_TEMPLATE = PACKAGE_ROOT / "template"
+# 安裝版從受管理技能內讀範本；來源版才使用包根，不依賴 cwd。
+SOURCE_LAYOUT = SKILL_ROOT.parent.name == "skills" and (SKILL_ROOT.parents[1] / "install.manifest.toml").is_file()
+PACKAGE_ROOT = SKILL_ROOT.parents[1] if SOURCE_LAYOUT else SKILL_ROOT.parent
+DEFAULT_TEMPLATE = PACKAGE_ROOT / "template" if SOURCE_LAYOUT else SKILL_ROOT / "assets/template"
 TEMPLATE_EXCLUDES = {"node_modules", "dist", ".astro", ".DS_Store"}
 OPTIONAL_PAGE_FILES = {
     "portfolio": "portfolio.astro",

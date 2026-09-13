@@ -6,9 +6,15 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+try:
+    from .website_platform_support import directory_symlink_or_skip
+except ImportError:
+    from website_platform_support import directory_symlink_or_skip
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -53,7 +59,7 @@ class StyleGalleryTests(unittest.TestCase):
         self.temporary.cleanup()
 
     def gallery(self, *arguments: str) -> subprocess.CompletedProcess[str]:
-        return run(["python3", str(GALLERY), *arguments])
+        return run([sys.executable, str(GALLERY), *arguments])
 
     def test_themes_cover_all_tonalities_and_carry_attribution(self) -> None:
         result = self.gallery("list", "--recommend", "dark_immersive")
@@ -142,23 +148,23 @@ class StyleGalleryTests(unittest.TestCase):
         self.gallery("select", "--workspace-root", str(self.workspace), "--theme", "darkroom", "--confirm-write")
         target = Path(self.temporary.name) / "site"
         config = self.workspace / "website/config.json"
-        plan = run(["python3", str(SCAFFOLD), "plan", "--config", str(config), "--target", str(target)])
+        plan = run([sys.executable, str(SCAFFOLD), "plan", "--config", str(config), "--target", str(target)])
         self.assertEqual(plan.returncode, 0, plan.stderr)
         self.assertEqual(json.loads(plan.stdout)["theme"], "darkroom")
-        scaffold = run(["python3", str(SCAFFOLD), "scaffold", "--config", str(config), "--target", str(target), "--confirm-write"])
+        scaffold = run([sys.executable, str(SCAFFOLD), "scaffold", "--config", str(config), "--target", str(target), "--confirm-write"])
         self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
         self.assertIn("theme: 'darkroom'", (target / "site.config.mjs").read_text(encoding="utf-8"))
         self.assertIn("#f5f5f5", (target / "public/favicon.svg").read_text(encoding="utf-8"))
         self.assertTrue((target / "src/themes/darkroom/theme.css").is_file())
-        explicit = run(["python3", str(SCAFFOLD), "plan", "--config", str(config), "--target", str(Path(self.temporary.name) / "site2"), "--theme", "sunrise"])
+        explicit = run([sys.executable, str(SCAFFOLD), "plan", "--config", str(config), "--target", str(Path(self.temporary.name) / "site2"), "--theme", "sunrise"])
         self.assertEqual(json.loads(explicit.stdout)["theme"], "sunrise")
-        unknown = run(["python3", str(SCAFFOLD), "plan", "--config", str(config), "--target", str(Path(self.temporary.name) / "site3"), "--theme", "nope"])
+        unknown = run([sys.executable, str(SCAFFOLD), "plan", "--config", str(config), "--target", str(Path(self.temporary.name) / "site3"), "--theme", "nope"])
         self.assertEqual(unknown.returncode, 2)
 
     def test_symlink_targets_stop(self) -> None:
         outside = Path(self.temporary.name) / "outside"
         outside.mkdir()
-        os.symlink(outside, self.workspace / ".local")
+        directory_symlink_or_skip(self, outside, self.workspace / ".local")
         result = self.gallery("render", "--workspace-root", str(self.workspace))
         self.assertEqual(result.returncode, 2)
         self.assertFalse(any(outside.iterdir()))

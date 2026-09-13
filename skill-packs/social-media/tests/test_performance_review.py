@@ -1,6 +1,7 @@
 """只用隔離虛構資料驗證四週期、比較與策略寫回，不連平台。"""
 
 import copy
+from datetime import datetime, timedelta
 import importlib.util
 import json
 from pathlib import Path
@@ -9,6 +10,11 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
+
+try:
+    from .platform_support import symlink_or_skip
+except ImportError:
+    from platform_support import symlink_or_skip
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "skills/social-performance-analysis/scripts/performance_review.py"
@@ -19,6 +25,28 @@ SPEC.loader.exec_module(review)
 
 class PerformanceTests(unittest.TestCase):
     """明確區分結構檢查、離線行為及未執行的外部驗收。"""
+
+    def test_timezone_offsets_and_dst_are_not_utc_fallbacks(self):
+        utc = review.load_timezone("UTC")
+        taipei = review.load_timezone("Asia/Taipei")
+        new_york = review.load_timezone("America/New_York")
+        self.assertEqual(datetime(2024, 1, 1, tzinfo=utc).utcoffset(), timedelta(0))
+        self.assertEqual(datetime(2024, 1, 1, tzinfo=taipei).utcoffset(), timedelta(hours=8))
+        self.assertEqual(datetime(2024, 1, 1, tzinfo=new_york).utcoffset(), timedelta(hours=-5))
+        self.assertEqual(datetime(2024, 7, 1, tzinfo=new_york).utcoffset(), timedelta(hours=-4))
+        self.assertEqual(datetime(2024, 3, 10, 1, 59, tzinfo=new_york).utcoffset(), timedelta(hours=-5))
+        self.assertEqual(datetime(2024, 3, 10, 3, tzinfo=new_york).utcoffset(), timedelta(hours=-4))
+        self.assertEqual(datetime(2024, 11, 3, 1, 30, tzinfo=new_york, fold=0).utcoffset(), timedelta(hours=-4))
+        self.assertEqual(datetime(2024, 11, 3, 1, 30, tzinfo=new_york, fold=1).utcoffset(), timedelta(hours=-5))
+
+    def test_missing_timezone_database_has_actionable_error(self):
+        with mock.patch.object(review, "ZoneInfo", side_effect=review.ZoneInfoNotFoundError):
+            with self.assertRaisesRegex(review.TimezoneDataMissing, "timezone_data_missing"):
+                review.load_timezone("Asia/Taipei")
+
+    def test_invalid_timezone_is_not_reported_as_missing_database(self):
+        with self.assertRaises(review.ZoneInfoNotFoundError):
+            review.load_timezone("Mars/Olympus")
 
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="fictional-performance-")
@@ -36,14 +64,14 @@ class PerformanceTests(unittest.TestCase):
                     "basis": "period_activity", "timezone": "UTC", "period": period,
                     "status": "available", "coverage": "complete", "value": value,
                     "observed_at": "2024-03-02T12:00:00+00:00",
-                    "evidence_path": str(self.evidence.relative_to(self.root)),
+                    "evidence_path": self.evidence.relative_to(self.root).as_posix(),
                     "evidence_sha256": review.digest(self.evidence.read_bytes())}
         self.data["series"] = [{
             "key": "fictional-views", "platform": "youtube", "account_ref": "fictional-channel",
             "role": "虛構教育觸及", "current": point(120, periods["period"]),
             "previous": point(100, periods["comparison_period"])}]
-        self.dataset_path = str((self.folder / "dataset.json").relative_to(self.root))
-        self.report_path = str((self.folder / "report.json").relative_to(self.root))
+        self.dataset_path = (self.folder / "dataset.json").relative_to(self.root).as_posix()
+        self.report_path = (self.folder / "report.json").relative_to(self.root).as_posix()
         self.report = {
             "schema_version": 1, "report_id": "fictional-review",
             "observations": [
@@ -289,18 +317,20 @@ class PerformanceTests(unittest.TestCase):
             self.apply(sha)
         self.assertEqual(target.read_bytes(), before_retry)
 
-    def test_path_traversal_symlinks_and_public_root_rejected(self):
+    def test_path_traversal_and_public_root_rejected(self):
         with self.assertRaises(ValueError):
             review.safe_path(self.root, "../outside")
-        target = self.root / "linked"
-        target.symlink_to(self.folder, target_is_directory=True)
-        with self.assertRaises(ValueError):
-            review.safe_path(self.root, "linked/dataset.json")
         (self.root / "skill-packs").mkdir()
         with self.assertRaises(ValueError):
             review.workspace(self.root)
         with self.assertRaises(ValueError):
             review.workspace(Path.home())
+
+    def test_symlinks_are_rejected(self):
+        target = self.root / "linked"
+        symlink_or_skip(self, target, self.folder, directory=True)
+        with self.assertRaises(ValueError):
+            review.safe_path(self.root, "linked/dataset.json")
         standalone = self.root / "fictional-standalone"
         standalone.mkdir()
         (standalone / "install.manifest.toml").write_text("schema_version = 1")

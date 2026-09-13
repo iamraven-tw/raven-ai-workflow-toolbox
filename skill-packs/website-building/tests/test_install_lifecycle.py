@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -53,7 +54,7 @@ class InstallLifecycleTests(unittest.TestCase):
 
         return run(
             [
-                "python3",
+                sys.executable,
                 str(MANAGER),
                 command,
                 "--manifest",
@@ -163,11 +164,83 @@ class InstallLifecycleTests(unittest.TestCase):
         target.parent.mkdir(parents=True)
         for name in (SKILL, CONTENT, DESIGN, BUILD, DEPLOY):
             shutil.copytree(ROOT / f"skills/{name}", self.client_root / name)
+        shutil.copytree(ROOT / "template", self.client_root / BUILD / "assets/template")
         before = (target / "SKILL.md").stat().st_mtime_ns
         adopted = self.assert_success(self.command("install"))
         after = (target / "SKILL.md").stat().st_mtime_ns
         self.assertEqual(adopted["result"], "adopted_identical")
         self.assertEqual(before, after)
+
+    def test_installed_template_gallery_and_scaffold_without_source(self) -> None:
+        """來源消失、cwd 改變、整個工作區搬移後仍能從安裝副本建站。"""
+        source = self.temp_root / "fictional-source"
+        shutil.copytree(ROOT, source, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        self.assert_success(self.command("install", manifest=source / "install.manifest.toml"))
+        source.rename(self.temp_root / "preserved-source")
+        workspace = self.client_root.parents[1]
+        moved = self.temp_root / "搬移後的 虛構工作區"
+        workspace.rename(moved)
+        client = moved / ".agents/skills"
+        config = moved / "website/config.json"
+        config.parent.mkdir()
+        payload = json.loads((client / SKILL / "assets/default-config.json").read_text(encoding="utf-8"))
+        payload["business"].update({
+            "status": "configured", "site_name": "虛構工作室",
+            "one_line_positioning": "協助虛構小店整理流程", "audience_summary": "虛構店主",
+            "offerings": [{"name": "虛構諮詢", "summary": "流程討論"}],
+            "primary_call_to_action": {"kind": "mailto", "label": "聯絡", "target": "mailto:hello@example.invalid"},
+            "contact_channels": [{"kind": "email", "label": "Email", "target": "mailto:hello@example.invalid"}],
+        })
+        config.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        gallery = client / DESIGN / "scripts/style_gallery.py"
+        scaffold = client / BUILD / "scripts/scaffold_site.py"
+        def installed(script, *args):
+            return self.assert_success(subprocess.run(
+                [sys.executable, str(script), *args], cwd=self.temp_root,
+                capture_output=True, text=True))
+        listed = installed(gallery, "list")
+        self.assertEqual(len(listed["themes"]), 6)
+        installed(gallery, "render", "--workspace-root", str(moved))
+        self.assertTrue((moved / ".local/website/style-gallery/index.html").is_file())
+        target = moved / "site"
+        installed(scaffold, "scaffold", "--config", str(config), "--target", str(target), "--confirm-write")
+        self.assertTrue((target / "package-lock.json").is_file())
+        self.assertEqual(len(list((target / "src/themes").glob("*/theme.json"))), 6)
+        # 缺失時明確停止，不暗中改讀維護者來源的範本。
+        template = client / BUILD / "assets/template"
+        template.rename(template.with_name("preserved-template"))
+        failed = subprocess.run([sys.executable, str(gallery), "list"], cwd=self.temp_root,
+                                capture_output=True, text=True)
+        self.assertNotEqual(failed.returncode, 0)
+
+    def test_template_is_managed_during_update_rollback_and_remove(self) -> None:
+        self.assert_success(self.command("install"))
+        installed = self.client_root / BUILD / "assets/template/README.md"
+        original = installed.read_bytes()
+        candidate = self.make_version_two()
+        with (candidate.parent / "template/README.md").open("a", encoding="utf-8") as stream:
+            stream.write("\n虛構的範本更新\n")
+        self.assert_success(self.command("update", manifest=candidate))
+        self.assertNotEqual(installed.read_bytes(), original)
+        self.assert_success(self.command("rollback", manifest=candidate))
+        self.assertEqual(installed.read_bytes(), original)
+        installed.write_bytes(original + b"\nfictional local edit\n")
+        self.assertEqual(self.command("remove").returncode, 2)
+        self.assertEqual(self.command("update", manifest=candidate).returncode, 2)
+
+    def test_legacy_install_can_update_to_bundled_template(self) -> None:
+        legacy = self.make_version_two()
+        text = legacy.read_text(encoding="utf-8")
+        text = text.replace('bundled_assets = [{ source_path = "template", target_path = "assets/template" }]\n', '')
+        legacy.write_text(text, encoding="utf-8")
+        self.assert_success(self.command("install", manifest=legacy))
+        template = self.client_root / BUILD / "assets/template"
+        self.assertFalse(template.exists())
+        self.assertEqual(self.command("install").returncode, 2)
+        self.assert_success(self.command("update"))
+        self.assertTrue((template / "package-lock.json").is_file())
+        self.assert_success(self.command("rollback"))
+        self.assertFalse(template.exists())
 
 
 if __name__ == "__main__":

@@ -6,9 +6,15 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+try:
+    from .website_platform_support import directory_symlink_or_skip
+except ImportError:
+    from website_platform_support import directory_symlink_or_skip
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -63,7 +69,7 @@ class ScaffoldTests(unittest.TestCase):
         self.config.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
     def command(self, *arguments: str) -> subprocess.CompletedProcess[str]:
-        return run(["python3", str(SCAFFOLD), *arguments])
+        return run([sys.executable, str(SCAFFOLD), *arguments])
 
     def test_plan_is_read_only_and_scaffold_requires_confirmation(self) -> None:
         """plan 不建立目錄；scaffold 需要旗標。"""
@@ -167,7 +173,7 @@ class ScaffoldTests(unittest.TestCase):
 
         outside = self.root / "outside"
         outside.mkdir()
-        os.symlink(outside, self.target)
+        directory_symlink_or_skip(self, outside, self.target)
         result = self.command("scaffold", "--config", str(self.config), "--target", str(self.target), "--confirm-write")
         self.assertEqual(result.returncode, 2)
         self.assertFalse(any(outside.iterdir()))

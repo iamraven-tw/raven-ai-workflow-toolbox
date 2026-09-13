@@ -291,6 +291,32 @@ verification = "fictional_png_decode_dimensions_hash_overflow_handoff_tests"
 lifecycle = "no_install_update_remove_environment_unchanged"
 alternative = "authorized_image_tool_or_preserve_brief_report_missing_runtime"
 
+[[dependencies]]
+id = "tzdata"
+type = "official_python_iana_timezone_data"
+required = false
+required_for = "performance_when_system_iana_database_is_missing_including_windows"
+upstream_url = "https://github.com/python/tzdata"
+source_url = "https://pypi.org/project/tzdata/2026.3/"
+download_url = "https://files.pythonhosted.org/packages/e5/6d/b53b99a9f2766d095985947a5782f1702cabb129a34f7a802d7197af832f/tzdata-2026.3-py2.py3-none-any.whl"
+version = "2026.3"
+sha256 = "dc096730c87af6cab1b171c9d532be840741ff5d459015e7f6947bd7d7e54931"
+download_bytes = 348168
+license_spdx = "Apache-2.0"
+license_url = "https://github.com/python/tzdata/blob/2026.3/LICENSE"
+installable = true
+bundled = false
+managed_by_skill_installer = false
+installation_stage = "isolated_python_runtime_after_notice_and_authorization"
+requirements = "skills/social-performance-analysis/requirements.txt"
+procedure = "skills/social-performance-analysis/references/python-runtime.md"
+supported_environment = "python_3.11_plus_windows_macos_linux"
+hardware = "cpu_only_no_gpu"
+fees = "no_account_or_usage_fee"
+verification = "UTC_Taipei_DST_and_fictional_performance_suite"
+lifecycle = "pinned_isolated_venv_side_by_side_update_preserve_old_remove_only_owned_venv"
+alternative = "existing_system_iana_database_or_stop_performance_without_timezone_fallback"
+
 [registrations.agents_workspace]
 clients = ["codex", "google-antigravity-desktop", "google-antigravity-cli"]
 scope = "workspace"

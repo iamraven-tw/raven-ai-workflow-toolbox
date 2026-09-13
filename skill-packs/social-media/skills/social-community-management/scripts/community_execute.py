@@ -72,7 +72,7 @@ def _write_json(root, relative, value):
 def _relative(root, path):
     """所有交接與證據路徑都維持在私人工作區內。"""
 
-    return str(path.relative_to(root))
+    return path.relative_to(root).as_posix()
 
 
 def _item_context(root, batch_id, key):

@@ -483,8 +483,20 @@ def validate_manifest(manifest: dict) -> None:
 def validate_opencli_dependency(manifest: dict) -> None:
     """驗證離線技能安裝與明示核准的固定 OpenCLI 來源分離。"""
     dependencies = manifest.get("dependencies", [])
-    if len(dependencies) != 2 or {d.get("id") for d in dependencies} != {"opencli", "pillow"}:
-        raise ValidationError("僅允許已定義的 OpenCLI 與既有 Pillow 執行期依賴")
+    if len(dependencies) != 3 or {d.get("id") for d in dependencies} != {"opencli", "pillow", "tzdata"}:
+        raise ValidationError("僅允許已定義的 OpenCLI、既有 Pillow 與固定 tzdata 依賴")
+    timezone_data = next(d for d in dependencies if d["id"] == "tzdata")
+    if any(timezone_data.get(k) != v for k, v in {
+        "version": "2026.3", "bundled": False, "managed_by_skill_installer": False,
+        "license_spdx": "Apache-2.0", "download_bytes": 348168,
+        "sha256": "dc096730c87af6cab1b171c9d532be840741ff5d459015e7f6947bd7d7e54931",
+        "installation_stage": "isolated_python_runtime_after_notice_and_authorization",
+    }.items()):
+        raise ValidationError("tzdata 必須固定版本與雜湊，不能由技能安裝器靜默下載")
+    requirements = (ROOT / timezone_data["requirements"]).read_text(encoding="utf-8")
+    if ("tzdata==" + timezone_data["version"] + " --hash=sha256:" + timezone_data["sha256"]
+            not in requirements or not (ROOT / timezone_data["procedure"]).is_file()):
+        raise ValidationError("tzdata 鎖定 requirements 與操作文件不一致")
     dependency = next(d for d in dependencies if d["id"] == "opencli")
     image_runtime = next(d for d in dependencies if d["id"] == "pillow")
     if any(image_runtime.get(k) != v for k, v in {

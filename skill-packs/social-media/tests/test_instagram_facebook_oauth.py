@@ -309,7 +309,12 @@ class InstagramFacebookOAuthTests(unittest.TestCase):
             self.assertEqual(callback.main(), 0)
         payload = json.loads(output.getvalue())
         self.assertEqual(payload["login_route"], adapter.LOGIN_ROUTE)
-        self.assertNotIn(value["target_id"], output.getvalue())
+        # 短 ID 可能偶然出現在隨機雜湊內；只排除已驗證的 SHA-256 欄位。
+        for field in ("preview_digest",):
+            if field in payload:
+                self.assertRegex(payload[field], r"^[0-9a-f]{64}$")
+                payload.pop(field)
+        self.assertNotIn(value["target_id"], json.dumps(payload))
         self.assertNotIn(value["redirect_uri"], output.getvalue())
 
 

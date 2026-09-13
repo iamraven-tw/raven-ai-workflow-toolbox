@@ -7,6 +7,7 @@ import json
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -57,7 +58,7 @@ class InstallLifecycleTests(unittest.TestCase):
 
         return run(
             [
-                "python3",
+                sys.executable,
                 str(MANAGER),
                 command,
                 "--manifest",
@@ -85,7 +86,7 @@ class InstallLifecycleTests(unittest.TestCase):
         self.assertTrue((installed / "scripts/instagram_facebook_oauth.py").is_file())
         self.assertTrue((installed / "references/instagram-threads-oauth.md").is_file())
         self.assertTrue((installed / "references/instagram-facebook-login-oauth.md").is_file())
-        result = run(["python3", str(installed / "scripts/oauth_callback.py"), "--help"])
+        result = run([sys.executable, str(installed / "scripts/oauth_callback.py"), "--help"])
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("instagram", result.stdout)
         self.assertIn("threads", result.stdout)

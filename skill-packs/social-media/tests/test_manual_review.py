@@ -289,7 +289,7 @@ class DirectMessageManualReviewTests(unittest.TestCase):
         self.assertIn("A &amp; B", page)
         self.assertNotIn("<b>虛構私訊訪客</b>", page)
         self.assertIn("不代表可以傳送私訊", page)
-        self.assertIn("direct-messages/manual-reviews", str(session.path))
+        self.assertIn("direct-messages/manual-reviews", session.path.as_posix())
         self.assertFalse((self.workspace / "social-media/community/state.json").exists())
 
     def test_private_message_allow_requires_second_confirmation_after_summary(self):

@@ -8,6 +8,12 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
+
+try:
+    from .platform_support import assert_private_file, private_fixture
+except ImportError:
+    from platform_support import assert_private_file, private_fixture
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -57,6 +63,7 @@ class PerformanceCollectTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="fictional-performance-collect-")
         self.root = Path(self.temp.name).resolve()
+        private_fixture(self.root)
         periods = collect.review.periods("monthly", "2024-03-01")
         self.plan = {
             "schema_version": 1, "report_id": "fictional-source",
@@ -96,7 +103,7 @@ class PerformanceCollectTests(unittest.TestCase):
         payload = json.loads(evidence.read_text())
         self.assertEqual(payload["request"]["query"]["metric"], "views")
         self.assertNotIn("fictional-secret", evidence.read_text())
-        self.assertEqual(evidence.stat().st_mode & 0o777, 0o600)
+        assert_private_file(self, evidence)
         self.assertTrue((self.root / ".local/social-media/performance/collections/"
                          "fictional-source.json").is_file())
 
@@ -159,7 +166,7 @@ class PerformanceCollectTests(unittest.TestCase):
             "status": "available", "coverage": "complete", "value": value,
             "observed_at": "2024-03-02T12:00:00+00:00",
             "eligibility": "admin_bestseller_mcp_connected",
-            "raw_evidence_path": str(raw.relative_to(self.root)),
+            "raw_evidence_path": raw.relative_to(self.root).as_posix(),
             "raw_evidence_sha256": collect.review.digest(raw.read_bytes()),
         }
         if tamper:
@@ -198,7 +205,7 @@ class PerformanceCollectTests(unittest.TestCase):
         result = subprocess.run(
             [sys.executable, str(SCRIPT_DIR / "performance_collect.py"),
              "collect-import", "--workspace", str(self.root),
-             "--input", str(source.relative_to(self.root))],
+             "--input", source.relative_to(self.root).as_posix()],
             capture_output=True, text=True, check=False)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
@@ -233,6 +240,12 @@ class PerformanceCollectTests(unittest.TestCase):
                                     "timezone_invalid"):
             collect.run(self.root, "collect-official", invalid,
                         adapter=FakeAdapter())
+
+    def test_missing_timezone_data_stops_before_api_read(self):
+        with mock.patch.object(collect.review, "ZoneInfo",
+                               side_effect=collect.review.ZoneInfoNotFoundError):
+            with self.assertRaisesRegex(collect.PerformanceCollectError, "timezone_data_missing"):
+                collect.run(self.root, "collect-official", self.plan, adapter=BombAdapter())
 
 
 if __name__ == "__main__":

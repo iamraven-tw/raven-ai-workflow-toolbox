@@ -6,9 +6,15 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+
+try:
+    from .website_platform_support import directory_symlink_or_skip
+except ImportError:
+    from website_platform_support import directory_symlink_or_skip
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -69,7 +75,7 @@ class WorkspaceConfigurationTests(unittest.TestCase):
     def command(self, *arguments: str) -> subprocess.CompletedProcess[str]:
         """呼叫工作區管理器。"""
 
-        return run(["python3", str(MANAGER), *arguments, "--workspace-root", str(self.workspace)])
+        return run([sys.executable, str(MANAGER), *arguments, "--workspace-root", str(self.workspace)])
 
     def preview(self) -> dict:
         """取得候選預覽。"""
@@ -243,7 +249,7 @@ class WorkspaceConfigurationTests(unittest.TestCase):
 
         outside = self.root / "outside"
         outside.mkdir()
-        os.symlink(outside, self.workspace / "website")
+        directory_symlink_or_skip(self, outside, self.workspace / "website")
         preview = self.command("preview", "--candidate", str(self.candidate))
         self.assertEqual(preview.returncode, 2)
         self.assertIn("symlink", preview.stderr)

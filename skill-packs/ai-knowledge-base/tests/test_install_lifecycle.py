@@ -265,7 +265,13 @@ path = "<workspace>/.agents/skills"
         write_text(foreign_target / "KEEP.txt", "虛構外部目標\n")
         foreign_root.mkdir(parents=True)
         link = foreign_root / SKILL_NAMES[0]
-        link.symlink_to(foreign_target, target_is_directory=True)
+        try:
+            link.symlink_to(foreign_target, target_is_directory=True)
+        except OSError as error:
+            # 只略過建立測試連結的權限缺口，其他錯誤仍須失敗。
+            if os.name == "nt" and getattr(error, "winerror", None) == 1314:
+                self.skipTest("Windows 未授予建立 symlink 權限；連結防護須在具權限環境補驗")
+            raise
         result = self.manager(
             "install",
             client_root=foreign_root,

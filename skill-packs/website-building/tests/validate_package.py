@@ -161,6 +161,11 @@ def validate_manifest(manifest: dict) -> None:
     if manifest.get("acceptance_policy", {}).get("default_tests") != "fictional_local_only":
         raise ValidationError("目前一般測試必須維持虛構本機資料，不自動開始實機驗收")
     template = manifest.get("template", {})
+    for skill in manifest.get("skills", []):
+        expected_assets = ([{"source_path": "template", "target_path": "assets/template"}]
+                           if skill.get("id") == "website-build" else [])
+        if skill.get("bundled_assets", []) != expected_assets:
+            raise ValidationError("範本必須隨 website-build 受管理安裝，其餘技能不得注入資產")
     for key in ("path", "lockfile", "scaffold_script", "check_script"):
         if not (ROOT / template.get(key, "missing")).exists():
             raise ValidationError(f"manifest.template.{key} 對應檔案不存在")

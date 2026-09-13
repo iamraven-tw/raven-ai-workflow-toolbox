@@ -117,7 +117,7 @@ class DirectMessageEndToEndTests(unittest.TestCase):
         review_hash = hashlib.sha256(session.path.read_bytes()).hexdigest()
         queue.run(self.workspace, "prepare", {
             "batch_id": "dm-batch001", "keys": [key],
-            "review_session_path": str(session.path.relative_to(self.workspace)),
+            "review_session_path": session.path.relative_to(self.workspace).as_posix(),
             "review_session_sha256": review_hash,
         })
         self.assertEqual(self.state()["batches"]["dm-batch001"]["status"],

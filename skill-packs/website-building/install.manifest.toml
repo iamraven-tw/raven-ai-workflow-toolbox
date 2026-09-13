@@ -178,6 +178,7 @@ status = "local_candidate"
 [[skills]]
 id = "website-build"
 source_path = "skills/website-build"
+bundled_assets = [{ source_path = "template", target_path = "assets/template" }]
 required = true
 install_order = 20
 status = "local_candidate"

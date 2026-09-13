@@ -156,8 +156,10 @@ def _plan(data, source_mode):
                           "comparison_period": data["comparison_period"]},
              "period_invalid")
     try:
-        review.ZoneInfo(data["timezone"])
-    except Exception:
+        review.load_timezone(data["timezone"])
+    except review.TimezoneDataMissing:
+        raise PerformanceCollectError("timezone_data_missing") from None
+    except (review.ZoneInfoNotFoundError, ValueError, TypeError):
         raise PerformanceCollectError("timezone_invalid") from None
     series = data.get("series")
     _require(isinstance(series, list) and 0 < len(series) <= 20,
@@ -347,7 +349,7 @@ class PerformanceCollector:
                 row[label] = _point(
                     item, period, status, value, coverage,
                     observation["observed_at"],
-                    str(evidence_path.relative_to(self.root)),
+                    evidence_path.relative_to(self.root).as_posix(),
                     review.digest(encoded), plan["timezone"],
                     definition=observed_definition)
             output.append(row)
@@ -426,7 +428,7 @@ class PerformanceCollector:
                 row[label] = _point(
                     item, plan[period_name], artifact["status"], artifact["value"],
                     artifact["coverage"], artifact["observed_at"],
-                    str(path.relative_to(self.root)), review.digest(path.read_bytes()),
+                    path.relative_to(self.root).as_posix(), review.digest(path.read_bytes()),
                     plan["timezone"])
             output.append(row)
         dataset = _dataset(plan, output)
@@ -470,8 +472,11 @@ def main():
         print(json.dumps(run(root, args.command, data), ensure_ascii=False))
         return 0
     except (PerformanceCollectError, PerformanceAPIError, ValueError, TypeError,
-            KeyError, OSError, OverflowError, UnicodeError):
-        print('{"result":"stopped","reason":"invalid_or_conflicting_state"}')
+            KeyError, OSError, OverflowError, UnicodeError) as error:
+        # 只公開可操作的依賴缺口，其餘錯誤保留原本不洩漏資料的摘要。
+        reason = ("timezone_data_missing" if isinstance(error, PerformanceCollectError)
+                  and str(error) == "timezone_data_missing" else "invalid_or_conflicting_state")
+        print(json.dumps({"result": "stopped", "reason": reason}))
         return 2
 
 

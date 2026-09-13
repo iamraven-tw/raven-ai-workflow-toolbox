@@ -103,4 +103,6 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 
 ## 驗證
 
+Windows 的 npx 以解析後的 npx.cmd 啟動，子程序保留必要的 Windows 路徑與設定目錄環境，但不傳遞 Token 環境變數。虛構 Python CLI 使用 .py 副檔名，由同一支 Python 以 UTF-8 執行，不依賴 shebang 或檔案關聯。這些只驗證本機啟動與解析，不能代替真實 Wrangler／Cloudflare 驗收。
+
 公開候選版以虛構專案與假的 wrangler 程式驗證：登入與未登入的解析（信箱遮罩、不記帳號 ID、判斷 zone 權限）、部署預覽與 stale dist 警告、首次部署拒絕 `index`、`deploy` 需要旗標且能解析 `workers.dev` 網址、失敗時停止、`verify` 對本機服務的完整輸出通過並對缺檔與 robots 不符失敗、`domain apply` 正確寫入 routes 與 `_redirects` 且重跑不重複、`publish` 拒絕 example.invalid 並需要旗標、`wrangler.jsonc` 含禁止欄位時停止。真實 Cloudflare 登入、部署、網域與另一臺電腦驗收延後到所有工具包完成後集中執行。

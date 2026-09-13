@@ -2,6 +2,8 @@
 
 範本位於技能包的 `template/`，名稱 `solo-site-starter`，Apache-2.0。所有品牌、文案、聯絡方式與圖片都是虛構佔位。
 
+發行來源只維護這一份；安裝管理器依 manifest 組合到 website-build/assets/template，納入完整安裝雜湊與生命週期。安裝後建置及同層風格畫廊都讀此副本，原下載目錄可移走。範本不含 node_modules／dist／.astro，npm ci 只在建立的網站專案內執行。
+
 ## 鎖定版本
 
 | 套件 | 版本 | 授權 | 用途 |

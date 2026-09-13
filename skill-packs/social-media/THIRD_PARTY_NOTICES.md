@@ -8,6 +8,13 @@
 
 技能檔案安裝器不綑綁、不下載，也不安裝第三方程式；只使用 Python 標準函式庫。實際專案初始化則預設提出下列 OpenCLI 準備，由 Agent 在下載前告知並依核准範圍執行。這兩個安裝階段不可混淆。憑證保存使用的 Apple Security framework 或 Microsoft WinCred API 也不是本套件散布的第三方依賴。
 
+## tzdata：成效時區資料
+
+- 使用 [Python 官方 tzdata 2026.3](https://pypi.org/project/tzdata/2026.3/) 提供 Windows 等缺少系統 IANA 資料庫環境的時區資料；不是平台 SDK。
+- 上游 [LICENSE](https://github.com/python/tzdata/blob/2026.3/LICENSE) 為 Apache-2.0，IANA 資料依上游聲明為公共領域；保留下載 wheel 內授權，不複製或綑綁第三方來源。
+- 版本、下載位址、大小與 wheel SHA-256 由 install.manifest.toml 記錄，技能 requirements.txt 固定版本及雜湊。準備、驗證、更新與回復見 [Python 執行期](skills/social-performance-analysis/references/python-runtime.md)。
+- 本次 Windows 修復只於隔離測試 venv 下載安裝，沒有變更全域 Python、帳號或私人工作區。
+
 ## OpenCLI
 
 - 原始作者來源：[jackwener/opencli](https://github.com/jackwener/opencli)，不是 fork，也不是社群平台官方 API。

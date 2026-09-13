@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -47,7 +48,7 @@ def configured_config() -> dict:
 
 
 def run(*arguments: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(["python3", *arguments], capture_output=True, text=True)
+    return subprocess.run([sys.executable, *arguments], capture_output=True, text=True)
 
 
 class ContentWriterTests(unittest.TestCase):

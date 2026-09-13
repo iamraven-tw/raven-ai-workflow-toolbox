@@ -1,0 +1,2 @@
+# Python 官方 IANA 時區資料；固定 wheel 雜湊，禁止退回原始碼建置。
+tzdata==2026.3 --hash=sha256:dc096730c87af6cab1b171c9d532be840741ff5d459015e7f6947bd7d7e54931

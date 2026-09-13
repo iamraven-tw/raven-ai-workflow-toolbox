@@ -80,7 +80,7 @@ def _write_json(root, relative, value):
 def _relative(root, path):
     """證據只回傳私人工作區內的相對位置。"""
 
-    return str(path.relative_to(root))
+    return path.relative_to(root).as_posix()
 
 
 class CommunitySheetsCoordinator:

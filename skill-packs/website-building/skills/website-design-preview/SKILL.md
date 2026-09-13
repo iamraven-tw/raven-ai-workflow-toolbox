@@ -37,6 +37,8 @@ description: "為一人公司官網挑選視覺風格。當使用者走到選風
 - 使用者對風格的任何描述，例如「想要暗色的」「像雜誌」「不要太花」。
 - 範本主題描述檔 `template/src/themes/*/theme.json` 與匯出預覽 `assets/previews/manifest.json`。
 
+安裝版從同層 `website-build/assets/template/src/themes/` 讀主題，從本技能的 assets/previews 讀預覽；來源版才使用包根 template。安裝副本可搬移，不依賴來源下載目錄；缺少 website-build 或範本就停止，不自行下載或放寬路徑防護。
+
 不讀取任何憑證、環境變數或瀏覽器資料。
 
 ## 啟動流程

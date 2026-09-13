@@ -128,17 +128,17 @@ class PublishExecutor:
             "platform_time": platform_time, "observed_at": observed_at,
             "content_matches": content_matches, "media_matches": media_matches,
             "settings_readback": settings_readback or {},
-            "evidence_path": str(evidence_path.relative_to(self.root)),
+            "evidence_path": evidence_path.relative_to(self.root).as_posix(),
             "evidence_sha256": job.file_hash(evidence_path),
         }
         receipt_path = receipt_dir / f'{item["id"]}-{token}.json'
         job.save(receipt_path, receipt)
         result = job.transaction(
             self.root, self.plan, "record", item_id=item["id"],
-            receipt_path=str(receipt_path.relative_to(self.root)),
+            receipt_path=receipt_path.relative_to(self.root).as_posix(),
         )
         return result | {
-            "receipt": str(receipt_path.relative_to(self.root)),
+            "receipt": receipt_path.relative_to(self.root).as_posix(),
             "external_actions": source == "official_api",
         }
 
@@ -513,7 +513,7 @@ class PublishExecutor:
         )
         job.save(path, handoff)
         return {"result": "browser_handoff_ready", "item_id": item_id,
-                "handoff": str(path.relative_to(self.root)),
+                "handoff": path.relative_to(self.root).as_posix(),
                 "external_actions": False}
 
     def claim_browser_write(self, item_id):

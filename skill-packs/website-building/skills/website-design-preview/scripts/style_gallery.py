@@ -17,8 +17,10 @@ from typing import Any
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
-PACKAGE_ROOT = SKILL_ROOT.parents[1]
-THEMES_ROOT = PACKAGE_ROOT / "template" / "src" / "themes"
+SOURCE_LAYOUT = SKILL_ROOT.parent.name == "skills" and (SKILL_ROOT.parents[1] / "install.manifest.toml").is_file()
+PACKAGE_ROOT = SKILL_ROOT.parents[1] if SOURCE_LAYOUT else SKILL_ROOT.parent
+TEMPLATE_ROOT = PACKAGE_ROOT / "template" if SOURCE_LAYOUT else SKILL_ROOT.parent / "website-build/assets/template"
+THEMES_ROOT = TEMPLATE_ROOT / "src" / "themes"
 PREVIEWS_ROOT = SKILL_ROOT / "assets" / "previews"
 DESIGN_RELATIVE = Path("website/design.json")
 CONFIG_RELATIVE = Path("website/config.json")

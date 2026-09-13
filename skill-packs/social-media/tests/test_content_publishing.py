@@ -11,6 +11,11 @@ import sys
 import tempfile
 import unittest
 
+try:
+    from .platform_support import symlink_or_skip
+except ImportError:
+    from platform_support import symlink_or_skip
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "skills/social-content-publishing/scripts/publish_job.py"
 SPEC = importlib.util.spec_from_file_location("publish_job", SCRIPT)
@@ -212,14 +217,16 @@ class PublishingTests(unittest.TestCase):
                 self.preview()
             self.plan = plan
 
-    def test_lock_and_symlink_are_not_removed_or_followed(self):
+    def test_lock_is_not_removed(self):
         lock = self.root / "social-media/publishing/.transaction.lock"
         lock.write_text("fictional-other-process", encoding="utf-8")
         with self.assertRaises(FileExistsError):
             self.begin()
         self.assertEqual(lock.read_text(), "fictional-other-process")
+
+    def test_symlink_is_not_followed(self):
         link = self.root / "linked-media.bin"
-        link.symlink_to(self.asset)
+        symlink_or_skip(self, link, self.asset)
         self.plan["items"][0]["assets"][0]["path"] = link.name
         self.write()
         with self.assertRaisesRegex(ValueError, "symlink"):

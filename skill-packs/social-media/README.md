@@ -37,6 +37,6 @@
 
 本套件只包含一般化流程、中性 schema、官方能力摘要與虛構測試。私人工作區只能作為設計證據；任何帳號、網址、品牌語氣、排程、平台識別碼、憑證位置與內容資料都不得搬入本套件。
 
-套件內含 Apache-2.0 授權。技能安裝器不綑綁或安裝第三方套件；實際專案初始化預設準備 OpenCLI，先告知作者 GitHub、固定版本、位置與權限，在核准範圍內由 AI Agent 下載、建置與驗證。拒絕或延後仍可走其他可用路徑。此流程尚未實機驗收，詳見 [OpenCLI 初始化](skills/social-media-setup/references/opencli-initialization.md) 與 `THIRD_PARTY_NOTICES.md`。本機憑證 helper 維持只使用 Python 標準函式庫與作業系統原生介面。
+套件內含 Apache-2.0 授權。技能安裝器不綑綁或安裝第三方套件；實際專案初始化預設準備 OpenCLI，先告知作者 GitHub、固定版本、位置與權限，在核准範圍內由 AI Agent 下載、建置與驗證。拒絕或延後仍可走其他可用路徑。此流程尚未實機驗收，詳見 [OpenCLI 初始化](skills/social-media-setup/references/opencli-initialization.md) 與 `THIRD_PARTY_NOTICES.md`。本機憑證 helper 維持只使用 Python 標準函式庫與作業系統原生介面。Windows 成效分析另需 [固定 tzdata 執行期](skills/social-performance-analysis/references/python-runtime.md)，不由技能安裝器自動安裝。
 
 技能安裝與純策略設定不需要網路；平台整合模式若要刷新官方能力或實際連線則需要網路。登入、OAuth、建立 App、平台讀取與遠端寫入仍各自需要明確授權。共用 Meta 引導不代表三平台共用 App、OAuth、Token 或驗證結果。目前尚未完成 macOS／Windows 真實憑證寫入生命週期，也尚未完成真實 Meta 登入、App、OAuth 或平台讀取驗收。

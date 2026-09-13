@@ -53,6 +53,12 @@ OAuth 程式另外使用 `oauth-runtime.lock` 與 `.local/social-media/oauth/` �
 
 ## 成效資料與長期策略
 
+### Windows 檔案存取前提
+
+本文件的 0600 是 POSIX 權限描述，不代表 Windows 的讀取權限已受限制。Windows 執行前須確認私人工作區與產物的 DACL，只允許已授權主體；不能確認時先停止保存私人資料，不以 chmod 成功當成驗收。helper 不自動修改使用者工作區 ACL。本機測試只在新建的虛構目錄設定目前使用者、SYSTEM、Administrators 的存取權，並檢查原子寫入的證據及 handoff 沒有額外允許主體；另有 Everyone 可讀時必須失敗的反例。詳見 [Python 執行期](../skills/social-performance-analysis/references/python-runtime.md)。
+
+### 保存位置
+
 原始指標、必要去敏感證據、資料集與逐期報告只留私人 social-media/performance/；不存 Token、Cookie、訂閱者名單、私訊或簽名網址。本機備份、鎖、交易及收據留 .local/social-media/performance/。公開 metric-catalog.json 只含一般化指標口徑與官方來源，不含帳號、數值或資格結果；Substack artifact 的 eligibility 只保存分類狀態，不保存登入身分。不同來源時區分資料集，不把缺值填零。
 
 sources/strategy/social-media-strategy-and-insights.md 只在使用者提供判斷、看過完整寫入預覽並再次確認後追加精簡結論、期間、範圍、信心、再檢視日期與私人證據位置。保留原 frontmatter、既有內容及 not_configured，不把原始表格或逐期報告整份寫入。資料或策略變更使預覽失效；未知結果不重送。以上私人檔案不在技能安裝、回復或公開同步範圍。

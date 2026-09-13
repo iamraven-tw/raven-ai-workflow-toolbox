@@ -74,7 +74,7 @@ def _write_json(root, relative, value):
 def _relative(root, path):
     """證據位置只回傳私人工作區內的相對路徑。"""
 
-    return str(path.relative_to(root))
+    return path.relative_to(root).as_posix()
 
 
 def _item_context(root, batch_id, key):

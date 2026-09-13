@@ -5,8 +5,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -66,7 +68,7 @@ class CheckSiteTests(unittest.TestCase):
             self.write(name, "x")
 
     def run_check(self, *extra: str) -> tuple[int, dict]:
-        result = subprocess.run(["python3", str(CHECK), "--dist", str(self.dist), *extra], capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(CHECK), "--dist", str(self.dist), *extra], capture_output=True, text=True)
         return result.returncode, json.loads(result.stdout)
 
     def test_complete_dist_passes(self) -> None:
@@ -116,6 +118,15 @@ class NodeBuildAcceptanceTests(unittest.TestCase):
     def test_template_builds_and_passes_checks(self) -> None:
         with tempfile.TemporaryDirectory(prefix="fictional-website-node-") as temporary:
             root = Path(temporary)
+            client = root / "installed-workspace/.agents/skills"
+            installed = subprocess.run(
+                [sys.executable, str(ROOT / "scripts/manage_install.py"), "install",
+                 "--registration", "agents_workspace", "--client-root", str(client),
+                 "--state-root", str(root / "install-state")],
+                capture_output=True, text=True)
+            self.assertEqual(installed.returncode, 0, installed.stderr)
+            installed_scaffold = client / "website-build/scripts/scaffold_site.py"
+            installed_check = client / "website-build/scripts/check_site.py"
             config = root / "config.json"
             payload = json.loads(DEFAULT.read_text(encoding="utf-8"))
             payload["business"].update(
@@ -148,24 +159,43 @@ class NodeBuildAcceptanceTests(unittest.TestCase):
             (root / "posts/first-post.md").write_text("---\ntitle: \"虛構的第一篇\"\ndate: \"2026-01-02\"\ndescription: \"虛構描述\"\ntags: [\"虛構\"]\n---\n\n## 開始\n\n" + "這是虛構文章的內文。" * 12 + "\n", encoding="utf-8")
             target = root / "site"
             scaffold = subprocess.run(
-                ["python3", str(SCAFFOLD), "scaffold", "--config", str(config), "--target", str(target), "--confirm-write"],
+                [sys.executable, str(installed_scaffold), "scaffold", "--config", str(config), "--target", str(target), "--confirm-write"],
                 capture_output=True, text=True,
             )
             self.assertEqual(scaffold.returncode, 0, scaffold.stderr)
             self.assertTrue(json.loads(scaffold.stdout)["copy_layer"]["applied"])
             self.assertTrue((target / "src/content/posts/first-post.md").is_file())
             self.assertFalse((target / "src/content/posts/hello-world.md").exists())
-            install = subprocess.run(["npm", "ci", "--no-audit", "--no-fund"], cwd=target, capture_output=True, text=True)
+            npm = shutil.which("npm.cmd" if os.name == "nt" else "npm")
+            self.assertIsNotNone(npm, "Node 驗收需要 npm，不可靜默略過")
+            install = subprocess.run([npm, "ci", "--no-audit", "--no-fund"], cwd=target, capture_output=True, text=True, encoding="utf-8", timeout=600)
             self.assertEqual(install.returncode, 0, install.stderr[-2000:])
-            build = subprocess.run(["npm", "run", "build"], cwd=target, capture_output=True, text=True)
+            build = subprocess.run([npm, "run", "build"], cwd=target, capture_output=True, text=True, encoding="utf-8", timeout=180)
             self.assertEqual(build.returncode, 0, build.stdout[-2000:] + build.stderr[-2000:])
             check = subprocess.run(
-                ["python3", str(CHECK), "--dist", str(target / "dist"), "--config", str(config)], capture_output=True, text=True
+                [sys.executable, str(installed_check), "--dist", str(target / "dist"), "--config", str(config)], capture_output=True, text=True
             )
             self.assertEqual(check.returncode, 0, check.stdout)
             home_html = (target / "dist/index.html").read_text(encoding="utf-8")
             self.assertIn("虛構的新標題", home_html)
             self.assertTrue((target / "dist/blog/first-post/index.html").is_file())
+            # 以安裝副本建出的專案驗證全部六主題，不只驗證預設主題。
+            site_config = target / "site.config.mjs"
+            for theme in sorted((target / "src/themes").iterdir()):
+                if not (theme / "theme.json").is_file():
+                    continue
+                with self.subTest(theme=theme.name):
+                    changed, count = re.subn(r"theme: '[a-z0-9-]+'", f"theme: '{theme.name}'",
+                                             site_config.read_text(encoding="utf-8"))
+                    self.assertEqual(count, 1)
+                    site_config.write_text(changed, encoding="utf-8")
+                    built = subprocess.run([npm, "run", "build"], cwd=target, capture_output=True,
+                                           text=True, encoding="utf-8", timeout=180)
+                    self.assertEqual(built.returncode, 0, built.stdout[-2000:] + built.stderr[-2000:])
+                    checked = subprocess.run(
+                        [sys.executable, str(installed_check), "--dist", str(target / "dist"),
+                         "--config", str(config)], capture_output=True, text=True)
+                    self.assertEqual(checked.returncode, 0, checked.stdout)
 
 
 if __name__ == "__main__":

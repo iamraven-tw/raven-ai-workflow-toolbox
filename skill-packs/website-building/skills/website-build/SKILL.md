@@ -51,6 +51,8 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 
 起始範本位於技能包的 `template/`，結構、頁面與元件清單見 `references/template-structure.md`。範本的品牌、文案、聯絡方式與圖片全部是虛構佔位；`scaffold` 會用設定檔的內容覆寫 `site.config.mjs`，其餘頁面從這個檔案讀取。
 
+安裝版使用本技能內受雜湊管理的 `assets/template/`；來源版才使用技能包根層 template。缺少資產時停止並回報安裝不完整，不猜測維護者目錄或改用其他專案範本。不要直接修改安裝範本；使用者內容只寫到獨立網站專案。
+
 - 固定頁面：首頁、關於、服務、文章列表、單篇文章、聯絡、404，加上 RSS 與 sitemap。
 - 可選頁面：作品集、案例、價目、常見問題、電子報。只在 `pages.optional` 啟用時才複製進 `src/pages/`。
 - 六個主題在 `src/themes/<id>/`，由 `site.config.mjs` 的 `theme` 決定；換主題只改這個欄位並重建。

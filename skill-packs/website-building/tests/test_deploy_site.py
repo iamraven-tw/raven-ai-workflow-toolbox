@@ -4,21 +4,28 @@
 from __future__ import annotations
 
 import http.server
+import importlib.util
 import json
 import os
 import subprocess
+import sys
 import tempfile
 import threading
 import time
 import unittest
 from functools import partial
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEPLOY = ROOT / "skills/website-deploy/scripts/deploy_site.py"
 SCAFFOLD = ROOT / "skills/website-build/scripts/scaffold_site.py"
 DEFAULT = ROOT / "skills/website-setup/assets/default-config.json"
+
+SPEC = importlib.util.spec_from_file_location("website_deploy_tested", DEPLOY)
+deploy_module = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(deploy_module)
 
 FAKE_WRANGLER = '''#!/usr/bin/env python3
 import os, sys
@@ -84,15 +91,52 @@ def configured_config() -> dict:
 
 
 class DeploySiteTests(unittest.TestCase):
+    def test_native_command_resolution_and_missing_npx(self):
+        with mock.patch.dict(os.environ, {}, clear=True):
+            for platform, executable in (("nt", "npx.cmd"), ("posix", "npx")):
+                with self.subTest(platform=platform), mock.patch.object(os, "name", platform):
+                    with mock.patch.object(deploy_module.shutil, "which", return_value=executable) as which:
+                        self.assertEqual(deploy_module.wrangler_command(),
+                                         [executable, "--no-install", "wrangler"])
+                        which.assert_called_once_with(executable)
+            with mock.patch.object(deploy_module.shutil, "which", return_value=None):
+                with self.assertRaisesRegex(deploy_module.DeployError, "npx"):
+                    deploy_module.wrangler_command()
+
+    def test_subprocess_preserves_windows_environment_but_not_tokens(self):
+        environment = {"Path": "fictional-path", "SystemRoot": "fictional-system",
+                       "USERPROFILE": "fictional-profile", "TEMP": "fictional-temp",
+                       "APPDATA": "fictional-appdata", "CLOUDFLARE_API_TOKEN": "fictional-secret",
+                       "UNRELATED_SECRET": "fictional-secret"}
+        with mock.patch.dict(os.environ, environment, clear=True):
+            with mock.patch.object(deploy_module, "wrangler_command", return_value=["fictional.exe"]):
+                with mock.patch.object(deploy_module.subprocess, "run") as run:
+                    deploy_module.run_wrangler(self.project, ["whoami"])
+        arguments, options = run.call_args
+        self.assertEqual(arguments[0], ["fictional.exe", "whoami"])
+        child_env = {key.upper(): value for key, value in options["env"].items()}
+        for key in ("PATH", "SYSTEMROOT", "USERPROFILE", "TEMP", "APPDATA"):
+            self.assertIn(key, child_env)
+        self.assertNotIn("CLOUDFLARE_API_TOKEN", child_env)
+        self.assertNotIn("UNRELATED_SECRET", child_env)
+        self.assertEqual(options["encoding"], "utf-8")
+        self.assertFalse(options.get("shell", False))
+
+    def test_invalid_executable_reports_startup_failure(self):
+        with mock.patch.object(deploy_module, "wrangler_command", return_value=["fictional.exe"]):
+            with mock.patch.object(deploy_module.subprocess, "run", side_effect=OSError(8, "fictional format")):
+                with self.assertRaisesRegex(deploy_module.DeployError, "無法啟動"):
+                    deploy_module.run_wrangler(self.project, ["whoami"])
+
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="fictional-website-deploy-")
         self.root = Path(self.temporary.name)
         self.config = self.root / "config.json"
         self.config.write_text(json.dumps(configured_config(), ensure_ascii=False), encoding="utf-8")
         self.project = self.root / "site"
-        result = subprocess.run(["python3", str(SCAFFOLD), "scaffold", "--config", str(self.config), "--target", str(self.project), "--confirm-write"], capture_output=True, text=True)
+        result = subprocess.run([sys.executable, str(SCAFFOLD), "scaffold", "--config", str(self.config), "--target", str(self.project), "--confirm-write"], capture_output=True, text=True)
         assert result.returncode == 0, result.stderr
-        self.fake = self.root / "fake-wrangler"
+        self.fake = self.root / "虛構 fake-wrangler.py"
         self.fake.write_text(FAKE_WRANGLER, encoding="utf-8")
         self.fake.chmod(0o755)
         self.env = {**os.environ, "WEBSITE_WRANGLER_BIN": str(self.fake), "FAKE_WRANGLER_MODE": "logged_in"}
@@ -120,7 +164,7 @@ class DeploySiteTests(unittest.TestCase):
         env = dict(self.env)
         if mode:
             env["FAKE_WRANGLER_MODE"] = mode
-        return subprocess.run(["python3", str(DEPLOY), *arguments], capture_output=True, text=True, env=env)
+        return subprocess.run([sys.executable, str(DEPLOY), *arguments], capture_output=True, text=True, env=env)
 
     def test_status_parses_login_without_recording_account_id(self) -> None:
         logged_out = self.run_deploy("status", "--project", str(self.project), mode="logged_out")
@@ -218,6 +262,7 @@ class DeploySiteTests(unittest.TestCase):
             self.assertIn({"kind": "unexpected_status", "detail": "/sitemap-index.xml -> 404"}, missing["findings"])
         finally:
             server.shutdown()
+            server.server_close()
 
     def test_verify_rejects_plain_http_public_urls(self) -> None:
         result = self.run_deploy("verify", "--url", "http://fictional.example")

@@ -277,7 +277,7 @@ def transaction(root, relative, command, *, item_id, expected=None, approval_ref
             for folder in base.iterdir():
                 require(not folder.is_symlink(), "symlink")
                 if folder.is_dir():
-                    other_path = local(root, str((folder / "ledger.json").relative_to(root)), must_exist=False)
+                    other_path = local(root, (folder / "ledger.json").relative_to(root).as_posix(), must_exist=False)
                     if other_path.exists():
                         for attempt in read(other_path)["items"].values():
                             require(attempt["fingerprint"] != fingerprint(item), "duplicate_attempt")
@@ -331,7 +331,7 @@ def transaction(root, relative, command, *, item_id, expected=None, approval_ref
         save(state_path, ledger)
         return {"result": ledger["items"][item_id]["state"], "item_id": item_id,
                 "external_actions": False, "manual_only": item["interface"] == "manual",
-                "ledger": str(state_path.relative_to(root))}
+                "ledger": state_path.relative_to(root).as_posix()}
 
 
 def validate_receipt(root, item, receipt):

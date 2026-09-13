@@ -12,6 +12,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+try:
+    from .platform_support import symlink_or_skip
+except ImportError:
+    from platform_support import symlink_or_skip
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "skills/social-image-production/scripts/image_assets.py"
 SPEC = importlib.util.spec_from_file_location("image_assets", SCRIPT)
@@ -132,11 +137,14 @@ class ImageProductionTests(unittest.TestCase):
         record, root = self.render()
         target = root / record["assets"][0]["file"]
         target.rename(self.root / "preserved.png")
-        target.symlink_to(self.root / "preserved.png")
+        symlink_or_skip(self, target, self.root / "preserved.png")
         with self.assertRaises(images.ImageError):
             images.check(record, root)
+
+    def test_symlink_output_parent_is_rejected(self):
+        record, root = self.render()
         link = self.root / "linked"
-        link.symlink_to(root, target_is_directory=True)
+        symlink_or_skip(self, link, root, directory=True)
         with self.assertRaises(images.ImageError):
             images.render(self.brief, self.font, "fixture", link / "new")
 

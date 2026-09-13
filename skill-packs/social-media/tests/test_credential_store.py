@@ -389,12 +389,13 @@ class CredentialStoreTests(unittest.TestCase):
                 CREDENTIAL_STORE.interactive_put(args)
         self.assertFalse(self.backend.values)
 
-    @unittest.skipUnless(sys.platform == "darwin" and os.environ.get("SOCIAL_NATIVE_ACCEPTANCE") == "1",
+    @unittest.skipUnless(sys.platform in {"darwin", "win32"} and os.environ.get("SOCIAL_NATIVE_ACCEPTANCE") == "1",
                          "實機驗收延後；預設不存取原生憑證庫")
-    def test_macos_framework_loads_and_missing_lookup_is_read_only(self) -> None:
-        """確認 Apple Security framework 可載入並安全查詢不存在項目。"""
+    def test_native_backend_loads_and_missing_lookup_is_read_only(self) -> None:
+        """確認目前平台原生庫可載入；只查隨機不存在項目，不讀真實憑證。"""
 
-        backend = CREDENTIAL_STORE.MacOSKeychain()
+        backend = (CREDENTIAL_STORE.MacOSKeychain() if sys.platform == "darwin"
+                   else CREDENTIAL_STORE.WindowsCredentialManager())
         target = f"ai-workflow-toolbox.social-media.test-{uuid.uuid4().hex}"
         self.assertFalse(backend.exists(target))
 

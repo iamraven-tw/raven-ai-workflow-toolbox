@@ -45,22 +45,37 @@ def wrangler_command() -> list[str]:
 
     override = os.environ.get("WEBSITE_WRANGLER_BIN")
     if override:
+        # Windows 不支援直接執行 shebang；測試 Python 腳本沿用目前 interpreter。
+        if Path(override).suffix.lower() == ".py":
+            return [sys.executable, "-X", "utf8", override]
         return [override]
-    return ["npx", "--no-install", "wrangler"]
+    executable = shutil.which("npx.cmd" if os.name == "nt" else "npx")
+    if executable is None:
+        raise DeployError("找不到 npx；請先準備 Node.js 與專案的 npm ci")
+    return [executable, "--no-install", "wrangler"]
 
 
 def run_wrangler(project: Path, arguments: list[str], *, timeout: int = 600) -> subprocess.CompletedProcess[str]:
     """在專案目錄執行 wrangler，環境變數只保留必要項目，不注入任何 Token。"""
 
-    allowed = ("PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "WRANGLER_HOME", "XDG_CONFIG_HOME", "CI", "NODE_OPTIONS", "npm_config_cache")
-    env = {key: value for key, value in os.environ.items() if key in allowed or key.startswith(("WEBSITE_", "FAKE_WRANGLER_"))}
+    allowed = {"PATH", "HOME", "LANG", "LC_ALL", "TMPDIR", "WRANGLER_HOME",
+               "XDG_CONFIG_HOME", "CI", "NODE_OPTIONS", "NPM_CONFIG_CACHE",
+               "SYSTEMROOT", "COMSPEC", "PATHEXT", "TEMP", "TMP", "USERPROFILE",
+               "HOMEDRIVE", "HOMEPATH", "APPDATA", "LOCALAPPDATA"}
+    # Windows 的 Path／SystemRoot 不保證全大寫；仍不傳遞 Token 環境變數。
+    env = {key: value for key, value in os.environ.items()
+           if key.upper() in allowed or key.upper().startswith(("WEBSITE_", "FAKE_WRANGLER_"))}
     env["CI"] = "1"  # 避免互動式提示卡住；需要互動的情況由 Agent 另行處理
     try:
-        return subprocess.run(wrangler_command() + arguments, cwd=project, capture_output=True, text=True, timeout=timeout, env=env)
+        return subprocess.run(wrangler_command() + arguments, cwd=project,
+                              capture_output=True, text=True, encoding="utf-8",
+                              timeout=timeout, env=env)
     except FileNotFoundError as error:
         raise DeployError(f"找不到 wrangler：{error}；請先在專案執行 npm ci") from error
     except subprocess.TimeoutExpired as error:
         raise DeployError(f"wrangler {' '.join(arguments)} 超過 {timeout} 秒未完成") from error
+    except OSError as error:
+        raise DeployError(f"無法啟動 wrangler（OS error {error.errno}）；請檢查執行檔格式與權限") from error
 
 
 def validate_project(raw: str) -> Path:
