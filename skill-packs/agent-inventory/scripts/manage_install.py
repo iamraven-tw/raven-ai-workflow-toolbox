@@ -233,7 +233,7 @@ def build_desired_entries(
         "toolbox_version": manifest.get("installation", {}).get("candidate_version"),
         "upstream_ref": verified_upstream["ref"],
         "upstream_tree": verified_upstream["tree"],
-        "upstream_source": str(resolved_upstream),
+        "source_snapshot": str(resolved_upstream),
         "entries": {
             name: {"kind": entry.kind, "sha256": entry.sha256}
             for name, entry in sorted(desired.items())
@@ -719,6 +719,7 @@ def status_command(args: argparse.Namespace) -> dict[str, Any]:
 def add_target_arguments(parser: argparse.ArgumentParser) -> None:
     """加入所有生命週期命令共用的明確目標參數。"""
 
+    parser.add_argument("--runtime-config", type=Path, default=Path(os.environ.get("AGENT_INVENTORY_CONFIG", "~/.config/agent-inventory/config.json")), help="唯一執行來源設定；只更新 repoRoot，保留掃描範圍")
     parser.add_argument("--registration", required=True, help="manifest 的註冊 ID")
     parser.add_argument("--client-root", type=Path, required=True, help="實際技能根目錄")
     parser.add_argument("--state-root", type=Path, required=True, help="技能掃描目錄外的狀態根目錄")
@@ -763,13 +764,92 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def run_with_runtime_source(args: argparse.Namespace) -> dict[str, Any]:
+    """安裝與來源設定共用一次授權；設定是唯一執行來源，狀態只留回復快照。"""
+
+    config_path = args.runtime_config.expanduser().absolute()
+    if any(p.is_symlink() for p in (config_path, *config_path.parents)):
+        raise InstallError("來源設定路徑不得包含 symlink")
+    if config_path.exists() and not config_path.is_file():
+        raise InstallError("來源設定不是一般檔案")
+    original = config_path.read_bytes() if config_path.exists() else None
+    try:
+        config = json.loads(original) if original is not None else {}
+    except (ValueError, UnicodeDecodeError):
+        raise InstallError("來源設定不是有效 JSON") from None
+    if not isinstance(config, dict):
+        raise InstallError("來源設定必須是 JSON object")
+    if config.get("repoRoot") is not None and not isinstance(config["repoRoot"], str):
+        raise InstallError("repoRoot 必須是路徑字串")
+    if args.command in {"status", "remove"}:
+        result = args.handler(args)
+        if args.command == "status" and result.get("status") == "active":
+            source = config.get("repoRoot")
+            result["runtime_config"] = str(config_path)
+            result["runtime_source_status"] = "missing"
+            if source:
+                current = Path(source)
+                try:
+                    matches = (run_git(current, "rev-parse", "HEAD") == result["active"]["upstream_ref"]
+                               and run_git(current, "rev-parse", "HEAD^{tree}") == result["active"]["upstream_tree"]
+                               and not run_git(current, "status", "--porcelain", "--untracked-files=all"))
+                    result["runtime_source_status"] = "verified" if matches else "version_mismatch"
+                except InstallError:
+                    result["runtime_source_status"] = "unavailable"
+        return result
+    state = None
+    try:
+        _, _, _, state = load_target_state(args)
+    except InstallError as error:
+        if "找不到此註冊" not in str(error):
+            raise
+    previous = state.get("active", {}) if state else {}
+    previous_source = previous.get("source_snapshot", previous.get("upstream_source"))
+    if args.command == "rollback":
+        history = state.get("history", []) if state else []
+        if not history:
+            raise InstallError("沒有可回復的歷史版本")
+        snapshot = history[-1]["active"]
+        target = snapshot.get("source_snapshot", snapshot.get("upstream_source"))
+        if not target or run_git(Path(target), "rev-parse", "HEAD") != snapshot["upstream_ref"]:
+            raise InstallError("回復來源已不存在或版本不符")
+    else:
+        # 完整固定版本驗證必須在更新唯一設定之前完成。
+        manifest = read_manifest(args.manifest.expanduser().resolve())
+        verify_inventory_source(manifest, args.inventory_source)
+        target = str(args.inventory_source.expanduser().resolve())
+    existing = config.get("repoRoot")
+    if existing and existing not in {target, previous_source}:
+        raise InstallError("repoRoot 指向不同安裝；先釐清同一設定的使用範圍，不覆寫")
+    updated = dict(config, repoRoot=target)
+    changed = updated != config
+    if changed:
+        write_json_atomic(config_path, updated)
+    try:
+        result = args.handler(args)
+    except Exception:
+        # 一般執行失敗回復原始位元組，不遺失使用者的其他設定或格式。
+        if changed:
+            if original is None:
+                config_path.unlink()
+            else:
+                descriptor, temporary = tempfile.mkstemp(dir=config_path.parent)
+                with os.fdopen(descriptor, "wb") as handle:
+                    handle.write(original)
+                os.replace(temporary, config_path)
+        raise
+    result["runtime_config"] = str(config_path)
+    result["runtime_source_status"] = "configured"
+    return result
+
+
 def main() -> None:
     """執行命令並輸出機器可讀結果。"""
 
     args = build_parser().parse_args()
     try:
-        result = args.handler(args)
-    except InstallError as error:
+        result = run_with_runtime_source(args)
+    except (InstallError, OSError) as error:
         print(json.dumps({"result": "stopped", "error": str(error)}, ensure_ascii=False), file=sys.stderr)
         raise SystemExit(2) from error
     print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))

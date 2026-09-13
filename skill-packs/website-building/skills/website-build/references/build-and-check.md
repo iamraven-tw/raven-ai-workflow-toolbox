@@ -22,7 +22,7 @@ npm run preview   # 本機預覽 dist/，預設 http://localhost:4321
 
 | 檢查 | 說明 |
 |---|---|
-| 必要頁面 | 六個固定頁面與啟用的可選頁面都有對應 HTML |
+| 必要頁面 | 設定選取的核心頁面與可選頁面都有對應 HTML |
 | 必要檔案 | `rss.xml`、`sitemap-index.xml`、`favicon.svg`、`og-image.png`、`apple-touch-icon.png` |
 | 每頁 | `<title>`、`lang`、description、robots、og:title、og:description、og:image、恰好一個 `h1` |
 | robots | 與 `--expected-indexing` 一致；建置階段一律 `noindex` |

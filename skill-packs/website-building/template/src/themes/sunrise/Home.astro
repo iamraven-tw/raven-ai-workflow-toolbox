@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../../lib/nav';
 // 晨光首頁：漸層面板裡的導覽、置中巨標與四張高低交錯、會隨捲動漂移的照片 → 信任依據小字列
 // → 淺灰面板裡的服務卡（最後一張是漸層行動卡）→ 視窗式最新文章 → 漸層面板裡的「怎麼合作」三步驟
 // → 信任引言卡 → 結尾邀請。
@@ -8,7 +9,7 @@ import { site } from '../../../site.config.mjs';
 import { copy } from '../../../site.copy.mjs';
 import { ctaHref, ctaAttrs } from '../../lib/nav';
 
-const posts = (await getCollection('posts'))
+const posts = (hasPage('blog') ? await getCollection('posts') : [])
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 4);
 const portraits = [
@@ -34,7 +35,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
     <p class="t-lead mx-auto mt-6 max-w-xl" data-reveal="up" data-reveal-delay="180">{copy.home.lead ?? site.audience}</p>
     <div class="mt-8 flex flex-wrap items-center justify-center gap-3" data-reveal="up" data-reveal-delay="280">
       <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
-      <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>
+      {hasPage('services') && (<a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>)}
     </div>
   </div>
   <div class="t-container pb-4">
@@ -106,7 +107,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
         </a>
       ))}
     </div>
-    <div class="mt-10 text-center" data-reveal="fade"><a href="/blog" class="t-btn-secondary">全部文章</a></div>
+    <div class="mt-10 text-center" data-reveal="fade">{hasPage('blog') && (<a href="/blog" class="t-btn-secondary">全部文章</a>)}</div>
   </section>
 )}
 
@@ -130,7 +131,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
             </div>
           </div>
         ))}
-        <div class="pt-2 text-right"><a href="/services" class="t-btn">{copy.home.secondary_cta ?? '看服務內容'}</a></div>
+        <div class="pt-2 text-right">{hasPage('services') && (<a href="/services" class="t-btn">{copy.home.secondary_cta ?? '看服務內容'}</a>)}</div>
       </div>
     </div>
   </div>

@@ -30,7 +30,8 @@ class FirstInstallInventoryOfferTest(unittest.TestCase):
     def test_offer_does_not_authorize_install_or_scan(self) -> None:
         self.assertIn("不得自動開始掃描", self.install)
         self.assertIn("詢問不是掃描授權", self.agents)
-        self.assertIn("不會跳過下方的下載、寫入與掃描範圍授權", self.inventory_install)
+        self.assertIn("下載、安裝、技能註冊與來源設定合併成一次完整確認", self.inventory_install)
+        self.assertIn("安裝不等於掃描授權", self.inventory_install)
 
     def test_decline_and_non_first_operations_do_not_reprompt(self) -> None:
         for phrase in ("拒絕", "稍後處理", "同一安裝流程中重複詢問"):

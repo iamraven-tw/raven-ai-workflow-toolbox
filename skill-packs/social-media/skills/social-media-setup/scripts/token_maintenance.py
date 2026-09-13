@@ -34,6 +34,11 @@ def maintain(workspace, platform, connection="main", *, confirmed_read=False,
             return result
         runtime.access(confirmed_read=True, allow_refresh=allow_refresh,
                        resume=state in RECOVERABLE_READ_STATES, maintenance=True)
+        if platform == "instagram":
+            config = runtime.config()
+            if (config.get("login_route") == "instagram_facebook_login"
+                    and "instagram_manage_contents" in config.get("scopes", [])):
+                runtime.access_instagram_user(confirmed_read=True, maintenance=True)
         after = runtime.status()
         result.update(status=after["status"],
                       refreshed=before.get("revision") != after.get("revision"),

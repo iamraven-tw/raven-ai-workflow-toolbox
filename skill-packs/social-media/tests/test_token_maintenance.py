@@ -33,6 +33,10 @@ class FakeRuntime:
             raise OAuthError(self.outcome)
         return "fictional-token-never-output"
 
+    def config(self):
+        """既有測試維持直接 Instagram Login，不包含刪文 User Token。"""
+        return {"login_route": "instagram_login", "scopes": []}
+
 
 class TokenMaintenanceTests(unittest.TestCase):
     def setUp(self):

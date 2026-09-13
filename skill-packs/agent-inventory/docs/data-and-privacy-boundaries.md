@@ -4,11 +4,11 @@
 
 | 動作 | 是否連網 | 讀什麼 | 寫什麼 |
 |---|---|---|---|
-| `status` | 否 | 安裝狀態檔、目標技能目錄 | 無 |
+| `status` | 否 | 安裝狀態檔、目標技能目錄、來源設定及版本 | 無 |
 | clone 上游 | **是** | 無 | 狀態目錄下的 `source/v0.2.1/` |
-| `install`、`update` | 否 | 上游 clone、manifest | 六個技能目錄、狀態檔、備份快照 |
+| `install`、`update` | 否 | 上游 clone、manifest | 六個技能目錄、狀態檔、備份快照、唯一來源設定 |
 | `rollback`、`remove` | 否 | 狀態檔、備份快照 | 技能目錄、隔離區、狀態檔 |
-| 寫入 `repoRoot`（Agent，經確認） | 否 | `~/.config/agent-inventory/config.json` | 同一檔案，只新增或更新 `repoRoot` 一個鍵 |
+| 寫入 `repoRoot`（安裝器，同一次安裝確認） | 否 | `~/.config/agent-inventory/config.json` | 同一檔案，只新增或更新 `repoRoot` 一個鍵 |
 
 安裝器不讀取使用者的規則內容，也不執行掃描。
 

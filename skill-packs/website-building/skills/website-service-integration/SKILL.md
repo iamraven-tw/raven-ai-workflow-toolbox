@@ -9,6 +9,8 @@ description: "把已建置的一人公司官網串接聯絡表單、電子報、
 
 本版支援四種低耦合模式：聯絡表單使用標準 HTTPS POST（`html_post`）；電子報、預約與付款使用服務商提供的 HTTPS hosted URL（`hosted_link`）。需要第三方 JavaScript、iframe、API secret、Cloudflare Worker function、webhook、會員登入或資料庫的整合不在本版自動套用範圍，先列為後續方案。
 
+完整建站或跨技能任務先讀 [技能接續契約](../website-setup/references/workflow-handoff.md)：沿用同一批次確認，自動完成已核准的本機步驟、技術狀態與下一技能，不重複問是否繼續；外部權限仍依實際範圍判定。
+
 ## 啟動流程
 
 這是多階段技能。開始前先用 Mermaid 顯示本次啟用的服務、外部帳號關卡、網站寫入、部署授權與停止位置。
@@ -21,7 +23,7 @@ description: "把已建置的一人公司官網串接聯絡表單、電子報、
 6. `plan --candidate` 驗證候選設定、秘密與網址邊界，列出會寫入的檔案、對外資料流、公開連結與剩餘人類步驟。取得使用者對同一份 plan 的明確授權。
 7. `apply --expected-plan-sha256 <雜湊> --confirm-write` 寫入 `website/integrations.json`、專案 `src/data/integrations.json`、共用 Astro 元件並以標記區塊接上聯絡頁；已有電子報頁時同步接上。寫入失敗要回復本次涉及的所有檔案。
 8. 執行 `npm run build`，再以 `verify` 檢查設定、原始碼、`dist/contact/index.html`、表單欄位、公開連結與隱私揭露。finding 必須修正後重跑；一次修正仍失敗就停止。
-9. 需要更新已上線網站時，交給 `website-deploy` 產生新的部署預覽並另外取得部署授權；「授權串接」不等於「授權部署」。部署後以 `verify --url <正式網址>` 讀回公開頁面。
+9. 需要更新已上線網站時，交給 `website-deploy` 產生新的部署預覽並另外取得部署授權；「授權串接」不等於「授權部署」。部署後以 `verify --config <workspace>/website/config.json --url <正式網址>` 讀回公開頁面。
 10. 依 `references/privacy-and-live-verification.md` 開啟每個 hosted URL 驗證目的地。聯絡表單與電子報的真實送出屬額外外部寫入，取得明確授權後使用虛構測試資料並從服務端讀回；付款只驗證結帳入口，不自動扣款或建立測試交易。
 11. 回報每項服務的四層狀態：設定、網站本機建置、公開頁讀回、端到端動作。沒有服務端讀回證據時，不得宣稱表單或訂閱已可收到資料。
 

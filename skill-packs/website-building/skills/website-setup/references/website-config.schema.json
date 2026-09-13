@@ -143,13 +143,29 @@
       ],
       "properties": {
         "required": {
-          "const": [
-            "home",
-            "about",
-            "services",
-            "blog",
-            "contact",
-            "not_found"
+          "type": "array",
+          "items": {
+            "enum": [
+              "home",
+              "about",
+              "services",
+              "blog",
+              "contact",
+              "not_found"
+            ]
+          },
+          "uniqueItems": true,
+          "allOf": [
+            {
+              "contains": {
+                "const": "home"
+              }
+            },
+            {
+              "contains": {
+                "const": "not_found"
+              }
+            }
           ]
         },
         "optional": {
@@ -431,5 +447,37 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "business": {
+            "properties": {
+              "primary_call_to_action": {
+                "properties": {
+                  "kind": {
+                    "const": "form_later"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "pages": {
+            "properties": {
+              "required": {
+                "contains": {
+                  "const": "contact"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

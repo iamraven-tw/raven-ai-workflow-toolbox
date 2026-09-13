@@ -60,11 +60,13 @@ def validate_config(config):
     if type(config["callback_port"]) is not int or not 0 <= config["callback_port"] <= 65535:
         raise OAuthError("invalid_configuration")
     if config["callback_mode"] == "token_import":
-        # 官方測試權杖匯入不假設回呼已設定；仍共用 Threads 身分與刷新驗證。
-        if (config["platform"] != "threads" or config["login_route"] != "threads_login"
-                or not config["client_id"].isdigit() or not config["target_id"].isdigit()
+        # 匯入既有官方權杖，不假設回呼已設定；沿用各平台身分與權限驗證。
+        supported = ((config["platform"] == "threads" and config["login_route"] == "threads_login"
+                      and "threads_basic" in scopes and all(s.startswith("threads_") for s in scopes))
+                     or (config["platform"] == "facebook" and config["login_route"] == "facebook_pages"
+                         and "pages_show_list" in scopes))
+        if (not supported or not config["client_id"].isdigit() or not config["target_id"].isdigit()
                 or not re.fullmatch(r"v[0-9]+\.0", config["graph_version"])
-                or "threads_basic" not in scopes or any(not s.startswith("threads_") for s in scopes)
                 or config["callback_port"] != 0
                 or any(config[k] for k in ("redirect_uri", "tls_cert", "tls_key"))):
             raise OAuthError("invalid_configuration")
@@ -428,6 +430,21 @@ class Runtime:
             self.mark("storage_incomplete" if self.status()["status"] == "saving" else "remote_result_unknown")
             raise OAuthError(self.status()["status"]) from None
         return self.status()
+
+    def access_instagram_user(self, *, confirmed_read=False, maintenance=False):
+        """只供 Instagram 刪文；不把 User Token 交給既有 Page Token 消費者。"""
+        if confirmed_read is not True:
+            raise OAuthError("authorization_required")
+        with self.lock():
+            if self.platform != "instagram" or self.status()["status"] != "ready":
+                raise OAuthError("recovery_required")
+            config, bundle = self.config(), self._bundle()
+            if config["login_route"] != instagram_facebook_oauth.LOGIN_ROUTE:
+                raise OAuthError("invalid_configuration")
+            self.maintenance_mode = maintenance
+            instagram_facebook_oauth.verify(self, config, bundle)
+            # User Token 失效只阻擋刪文，不改掉原本仍有效的 Page 連線狀態。
+            return instagram_facebook_oauth.verify_user(self, config, bundle)
 
     def access(self, *, confirmed_read=False, allow_refresh=False, resume=False, maintenance=False):
         """供後續受信任技能取用；每次讀回驗證，必要時只刷新一次。不得列印回傳值。"""

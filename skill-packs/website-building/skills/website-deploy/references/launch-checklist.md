@@ -2,7 +2,7 @@
 
 ## 正式公開前
 
-- `verify --url <正式網址> --expect-indexing noindex` 全部通過。
+- `verify --config <workspace>/website/config.json --url <正式網址> --expect-indexing noindex` 全部通過。
 - `site.url` 已是正式網址（`workers.dev` 或自訂網域），不再是 `example.invalid`。
 - 佔位文案與示範照片是否已替換由使用者決定；未替換要在報告中明列，不擋公開。
 - 使用者明確授權移除 `noindex`。
@@ -11,7 +11,7 @@
 
 1. `publish --confirm-write` 把 `site.indexing` 改為 `index`。
 2. `npm run build`、`deploy --confirm-deploy --expect-indexing index`。
-3. `verify --url <正式網址> --expect-indexing index`。
+3. `verify --config <workspace>/website/config.json --url <正式網址> --expect-indexing index`。
 4. 設定檔 `verification.public_index = index_verified`。
 
 ## 上線報告內容

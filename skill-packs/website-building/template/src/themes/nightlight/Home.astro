@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../../lib/nav';
 // 小夜燈首頁：打招呼式首屏（左兩行大字、右瀏覽器視窗框放照片與貼紙）→ 關於我一句話加信任依據 → 最近寫的做成一疊視窗卡
 // → 四色服務卡 → 結尾大字中間嵌一張圓形照片。
 import { getCollection } from 'astro:content';
@@ -6,7 +7,7 @@ import { site } from '../../../site.config.mjs';
 import { copy } from '../../../site.copy.mjs';
 import { ctaHref, ctaAttrs } from '../../lib/nav';
 
-const posts = (await getCollection('posts'))
+const posts = (hasPage('blog') ? await getCollection('posts') : [])
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 4);
 const fallbackCovers = ['/images/samples/creative-desk.jpg', '/images/samples/raspberries.jpg', '/images/samples/phone-edge.jpg', '/images/samples/vintage-camera.jpg'];
@@ -64,7 +65,7 @@ const year = new Date().getFullYear();
           ))}
         </div>
       )}
-      <a href="/about" class="t-btn mt-12" data-reveal="fade">{copy.about.cta_heading ?? '更多關於我'}</a>
+      {hasPage('about') && (<a href="/about" class="t-btn mt-12" data-reveal="fade">{copy.about.cta_heading ?? '更多關於我'}</a>)}
     </div>
   </div>
 </section>
@@ -75,7 +76,7 @@ const year = new Date().getFullYear();
       <div class="lg:sticky lg:top-24 lg:self-start">
         <h2 class="t-h2" data-reveal="up">{copy.blog.title ?? '最近'}<br /><span class="nl-accent">寫的</span></h2>
         <p class="mt-4 text-[14px] font-medium" style="color: var(--nl-lime);" data-reveal="fade">({year}©)</p>
-        <a href="/blog" class="t-btn mt-8" data-reveal="fade">全部文章</a>
+        {hasPage('blog') && (<a href="/blog" class="t-btn mt-8" data-reveal="fade">全部文章</a>)}
       </div>
       <div class="space-y-6" data-reveal-stagger="140">
         {posts.map((post, index) => (

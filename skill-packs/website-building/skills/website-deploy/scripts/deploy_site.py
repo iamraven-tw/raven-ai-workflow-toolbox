@@ -316,7 +316,7 @@ def fetch(url: str, *, method: str = "GET", timeout: int = 20) -> tuple[int, dic
         raise DeployError(f"無法連線 {url}：{error}") from error
 
 
-def command_verify(url: str, *, expect_indexing: str) -> dict[str, Any]:
+def command_verify(url: str, *, expect_indexing: str, config: dict[str, Any] | None = None) -> dict[str, Any]:
     """從公開網址讀回：必要頁面 200、404 頁、RSS、sitemap、robots、OG。"""
 
     base = url.rstrip("/")
@@ -324,7 +324,15 @@ def command_verify(url: str, *, expect_indexing: str) -> dict[str, Any]:
         raise DeployError("verify 只接受 https:// 網址（本機測試允許 127.0.0.1／localhost）")
     findings: list[dict[str, str]] = []
     checks: dict[str, Any] = {}
-    for path in REQUIRED_PATHS + REQUIRED_FILES:
+    # 新工作區依已選頁面驗證；未提供設定時保留舊六頁相容行為。
+    paths = REQUIRED_PATHS + REQUIRED_FILES
+    if config is not None:
+        selected = config["pages"]["required"]
+        routes = {"home": "/", "about": "/about/", "services": "/services/", "blog": "/blog/", "contact": "/contact/"}
+        optional = {"portfolio": "/portfolio/", "case_studies": "/case-studies/", "pricing": "/pricing/", "faq": "/faq/", "newsletter": "/newsletter/"}
+        paths = tuple(routes[p] for p in selected if p in routes) + tuple(optional[p] for p in config["pages"]["optional"])
+        paths += tuple(p for p in REQUIRED_FILES if p != "/rss.xml" or "blog" in selected)
+    for path in paths:
         status, headers, body = fetch(base + path)
         checks[path] = status
         if status != 200:
@@ -501,6 +509,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     verify = sub.add_parser("verify"); verify.add_argument("--url", required=True); verify.add_argument("--expect-indexing", choices=("noindex", "index"), default="noindex")
 
+    verify.add_argument("--config", default=None)
+
     set_url = sub.add_parser("set-url"); set_url.add_argument("--project", required=True); set_url.add_argument("--url", required=True); set_url.add_argument("--confirm-write", action="store_true")
 
     domain = sub.add_parser("domain"); domain_sub = domain.add_subparsers(dest="domain_command", required=True)
@@ -522,7 +532,7 @@ def main() -> int:
         elif args.command == "deploy":
             result = command_deploy(validate_project(args.project), confirmed=args.confirm_deploy, expect_indexing=args.expect_indexing)
         elif args.command == "verify":
-            result = command_verify(args.url, expect_indexing=args.expect_indexing)
+            result = command_verify(args.url, expect_indexing=args.expect_indexing, config=load_config(Path(args.config)) if args.config else None)
         elif args.command == "set-url":
             result = command_set_url(validate_project(args.project), args.url, confirmed=args.confirm_write)
         elif args.command == "domain":

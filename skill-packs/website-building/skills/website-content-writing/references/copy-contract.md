@@ -7,6 +7,7 @@
   "schema_version": 1,
   "status": "draft | final",
   "language": "zh-TW",
+  "selected_pages": ["home", "not_found"],
   "facts_snapshot": ["產生骨架時的商業事實，供數字比對"],
   "home": { "title": { "text": "…", "source": "user_fact" }, "...": "共 13 個欄位" },
   "about": { "title": {}, "intro": {}, "sections": [{ "heading": {}, "body": {} }], "cta_heading": {} },
@@ -31,7 +32,7 @@
 
 ## 文章
 
-文章由使用者自己寫，本技能不代寫；`source` 通常是 `user_fact`，AI 潤稿過才標 `ai_suggestion`（此時工具會檢查沒有依據的數字）。格式見 `user-posts.md`。`website/posts/<slug>.md`，frontmatter 需要 `title`、`date`（YYYY-MM-DD）、`description`，可選 `tags`、`coverImage`；內文至少 100 字。slug 只用小寫字母、數字與連字號。
+只有選擇部落格且要求文章工作時才處理；可以沿用使用者文章，也可由 Agent 依已確認素材產稿並批次審閱；`source` 通常是 `user_fact`，AI 潤稿過才標 `ai_suggestion`（此時工具會檢查沒有依據的數字）。格式見 `user-posts.md`。`website/posts/<slug>.md`，frontmatter 需要 `title`、`date`（YYYY-MM-DD）、`description`，可選 `tags`、`coverImage`；內文至少 100 字。slug 只用小寫字母、數字與連字號。
 
 ## 套用方式
 

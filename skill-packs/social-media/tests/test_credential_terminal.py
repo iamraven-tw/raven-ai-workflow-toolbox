@@ -64,6 +64,38 @@ class TerminalTests(unittest.TestCase):
         self.assertEqual(result["status"], "launch_failed")
         self.assertEqual(process.call_count, 1)
 
+    def test_four_platforms_use_one_hidden_input_and_secret_free_receipt(self):
+        """四平台只貼一次；Enter 確認保存，Agent 只收到非敏感收據。"""
+        for platform in ("facebook", "instagram", "threads", "youtube"):
+            with self.subTest(platform=platform), mock.patch.object(TERMINAL, "launch_process"):
+                result = TERMINAL.launch(self.workspace, platform, "app-secret", confirmed=True)
+                with mock.patch.object(sys.stdin, "isatty", return_value=True), mock.patch.object(
+                    sys.stderr, "isatty", return_value=True), mock.patch.object(
+                    CREDENTIAL_STORE.getpass, "getpass", return_value="fictional-terminal-only-value") as hidden, mock.patch(
+                    "builtins.input", side_effect=AssertionError("不得新增一般輸入或第二次確認")):
+                    output = TERMINAL.receive(self.workspace, result["ticket"])
+                hidden.assert_called_once()
+                self.assertIn("按 Enter 即確認儲存", hidden.call_args.args[0])
+                self.assertEqual(output["status"], "verified")
+                self.assertIs(output["contains_credentials"], False)
+                self.assertNotIn("fictional-terminal-only-value", json.dumps(output))
+                for path in self.workspace.rglob("*.json"):
+                    self.assertNotIn("fictional-terminal-only-value", path.read_text())
+
+    def test_echo_fallback_and_pipe_stop_before_storage(self):
+        """管線與無法關閉回顯均不得保存，即使啟動視窗已回報成功。"""
+        for tty in (False, True):
+            with self.subTest(tty=tty):
+                result = self.launch()
+                with mock.patch.object(sys.stdin, "isatty", return_value=tty), mock.patch.object(
+                    sys.stderr, "isatty", return_value=tty), mock.patch.object(
+                    CREDENTIAL_STORE.getpass, "getpass", side_effect=CREDENTIAL_STORE.getpass.GetPassWarning) as hidden, mock.patch.object(
+                    CREDENTIAL_STORE, "store_secret") as store:
+                    output = TERMINAL.receive(self.workspace, result["ticket"])
+                self.assertEqual(output["status"], "stopped")
+                store.assert_not_called()
+                self.assertEqual(hidden.call_count, 1 if tty else 0)
+
     def test_cancel_error_and_timeout_are_not_success(self):
         """取消和逾時不得顯示秘密或被推定為完成。"""
         result = self.launch()

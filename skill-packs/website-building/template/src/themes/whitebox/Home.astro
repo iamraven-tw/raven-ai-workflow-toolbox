@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../../lib/nav';
 // 白盒子首頁：滿版照片首屏（加引號的超大標題、年份角標、白色大按鈕、右下小卡）→ 淡色巨字背景的關於（照片＋兩段文字）
 // → 細線事實卡 → 錯落的文章格 → 編號可展開的服務列 → 超大標題的合作方式 → 文字跑馬燈。
 import { getCollection } from 'astro:content';
@@ -6,7 +7,7 @@ import { site } from '../../../site.config.mjs';
 import { copy } from '../../../site.copy.mjs';
 import { ctaHref, ctaAttrs } from '../../lib/nav';
 
-const posts = (await getCollection('posts'))
+const posts = (hasPage('blog') ? await getCollection('posts') : [])
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 4);
 const fallbackCovers = ['/images/samples/clean-desk.jpg', '/images/samples/mono-desk.jpg', '/images/samples/phone-edge.jpg', '/images/samples/keyboard-coffee.jpg'];
@@ -34,12 +35,12 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
             <img src={heroCard.data.coverImage ?? fallbackCovers[0]} alt="" width="1200" height="900" />
             <span><strong>{heroCard.data.title}</strong><small>{heroCard.data.description}</small><small class="mt-2 font-semibold uppercase" style="letter-spacing: 0.1em; color: var(--wb-black);">閱讀 →</small></span>
           </a>
-        ) : (
+        ) : hasPage('services') ? (
           <a href="/services" class="wb-hero-card">
             <img src="/images/samples/mono-desk.jpg" alt="" width="1200" height="800" />
             <span><strong>{site.offerings[0]?.name}</strong><small>{site.offerings[0]?.summary}</small></span>
           </a>
-        )}
+        ) : null}
       </div>
     </div>
   </div>
@@ -48,10 +49,10 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
 <section class="relative overflow-hidden">
   <div class="wb-ghost" aria-hidden="true">{site.name}</div>
   <div class="t-container t-section relative">
-    <div class="flex justify-end"><a href="/about" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">{copy.about.title ?? '關於'}</a></div>
+    <div class="flex justify-end">{hasPage('about') && (<a href="/about" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">{copy.about.title ?? '關於'}</a>)}</div>
     <div class="mt-16 grid gap-10 lg:grid-cols-[minmax(0,4fr)_minmax(0,4fr)_minmax(0,4fr)] lg:items-start">
       <div class="order-3 lg:order-1 lg:pt-24" data-reveal="up" data-reveal-delay="200">
-        <a href="/about" class="t-btn" data-magnet="12,12"><span data-magnet-target>{copy.about.cta_heading ?? '更多關於'}</span></a>
+        {hasPage('about') && (<a href="/about" class="t-btn" data-magnet="12,12"><span data-magnet-target>{copy.about.cta_heading ?? '更多關於'}</span></a>)}
       </div>
       <div class="t-media order-1 aspect-[4/3] lg:order-2" data-reveal="scale">
         <img src="/images/samples/mono-desk.jpg" alt="" width="1200" height="800" class="h-full w-full object-cover" style="filter: saturate(0.4); scale: 1.1;" data-parallax="-0.08" loading="lazy" />
@@ -79,7 +80,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
   <section class="t-container t-section" style="padding-top: 0;">
     <div class="flex flex-wrap items-end justify-between gap-6">
       <h2 class="t-h2" data-split="words" data-split-step="60">{copy.blog.title ?? '最近寫的'}</h2>
-      <a href="/blog" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">全部文章</a>
+      {hasPage('blog') && (<a href="/blog" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">全部文章</a>)}
     </div>
     <div class="wb-works mt-16" data-reveal-stagger="160" data-reveal-variant="up">
       {posts.map((post, index) => (
@@ -96,7 +97,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
 <section class="relative overflow-hidden">
   <div class="wb-ghost" aria-hidden="true">{copy.home.offerings_eyebrow ?? 'Services'}</div>
   <div class="t-container t-section relative">
-    <div class="flex justify-end"><a href="/services" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">{copy.home.offerings_eyebrow ?? '服務'}</a></div>
+    <div class="flex justify-end">{hasPage('services') && (<a href="/services" class="t-eyebrow" data-reveal="fade" style="text-decoration: none;">{copy.home.offerings_eyebrow ?? '服務'}</a>)}</div>
     <h2 class="t-h2 mt-12 max-w-4xl" data-split="words" data-split-step="60">{copy.home.offerings_heading ?? '三件我能幫上的事'}</h2>
     <div class="mt-14" data-reveal-stagger="120" data-reveal-variant="fade">
       {site.offerings.map((offering, index) => (

@@ -101,7 +101,8 @@ def check(dist: Path, config: dict[str, Any] | None, expected_indexing: str) -> 
     if not dist.is_dir():
         return {"result": "failed", "findings": [{"kind": "dist_missing", "detail": str(dist)}]}
 
-    expected_pages = dict(REQUIRED_HTML)
+    selected = config.get("pages", {}).get("required", list(REQUIRED_HTML)) if config else list(REQUIRED_HTML)
+    expected_pages = {key: value for key, value in REQUIRED_HTML.items() if key in selected}
     optional = config.get("pages", {}).get("optional", []) if config else []
     for page in optional:
         if page in OPTIONAL_HTML:
@@ -110,6 +111,8 @@ def check(dist: Path, config: dict[str, Any] | None, expected_indexing: str) -> 
         if not (dist / relative).is_file():
             fail("missing_page", f"{page}: {relative}")
     for relative in REQUIRED_FILES:
+        if relative == "rss.xml" and "blog" not in selected:
+            continue
         if not (dist / relative).is_file():
             fail("missing_file", relative)
 

@@ -204,6 +204,10 @@ class PublishExecutor:
         # 先驗證身分與既有權限，再 claim 發布寫入；此步驟不發布內容。
         self.adapter.verify_access(grant)
         try:
+            if item["action"] == "delete_content":
+                return self._delete_content(context)
+            if item["action"] == "update_content" and item["platform"] == "youtube":
+                return self._youtube_update(context)
             if item["platform"] == "youtube":
                 return self._youtube(context)
             if item["platform"] == "facebook":
@@ -221,6 +225,38 @@ class PublishExecutor:
                 } else "failed"), source="official_api",
                 reason=error.kind, selected={"error_category": error.kind},
             )
+
+    def _youtube_update(self, context):
+        """標題／說明更新，不以既有發布時間冒充本次修改時間。"""
+        item, grant = context["item"], context["grant"]
+        settings = item["settings"]
+        result = self._mutate(context, "youtube-update-content", lambda:
+            self.adapter.youtube_update_content(grant, resource_id=settings["resource_id"],
+                before=settings["before"], title=item["title"], description=item["body"]))
+        after = self.adapter.management_readback(grant, result["remote_id"])
+        expected = dict(settings["before"]["details"]["snippet"])
+        expected.update(title=item["title"], description=item["body"])
+        complete = (after.get("id") == settings["resource_id"] and after.get("title") == item["title"]
+            and after.get("body") == item["body"] and after.get("details", {}).get("snippet") == expected
+            and after.get("details", {}).get("privacy_status") == settings["before"]["details"]["privacy_status"])
+        return self._save_record(item, state="updated" if complete else "pending", source="official_api",
+            reason="metadata_verified" if complete else "supplemental_readback_required",
+            platform_id=result["remote_id"], content_matches=complete, media_matches=complete,
+            settings_readback=settings, selected=after)
+
+    def _delete_content(self, context):
+        """只刪已確認快照；成功受理與完整唯讀查無結果必須同時成立。"""
+        item, grant = context["item"], context["grant"]
+        settings = item["settings"]
+        result = self._mutate(context, "delete-content", lambda:
+            self.adapter.delete_content(grant, resource_id=settings["resource_id"], before=settings["before"]))
+        proof = self.adapter.deletion_readback(grant, result["remote_id"])
+        complete = (proof == {"resource_id": settings["resource_id"], "absent": True,
+                             "complete": True, "connection_verified": True})
+        return self._save_record(item, state="deleted" if complete else "pending", source="official_api",
+            reason="deletion_verified" if complete else "deletion_readback_incomplete",
+            platform_id=result["remote_id"], content_matches=complete, media_matches=complete,
+            settings_readback=proof, selected=proof)
 
     def _youtube(self, context):
         """建立一次上傳 session、送一次檔案，再獨立讀回影片。"""
@@ -298,10 +334,29 @@ class PublishExecutor:
             settings_readback=settings_back, selected=readback,
         )
 
+    def _facebook_update(self, context):
+        """沿用既有帳本單次送出，獨立讀回文案與平台更新時間。"""
+        item, grant = context["item"], context["grant"]
+        settings = item["settings"]
+        result = self._mutate(context, "facebook-update-message", lambda:
+            self.adapter.facebook_update_message(grant, post_id=settings["post_id"],
+                message=item["body"], before_message=settings["before_message"],
+                before_updated_time=settings["before_updated_time"]))
+        readback = self.adapter.facebook_readback(grant, result["remote_id"], management=True)
+        matches = readback.get("id") == settings["post_id"] and readback.get("message") == item["body"]
+        complete = bool(matches and readback.get("permalink_url") and readback.get("updated_time"))
+        return self._save_record(item, state="updated" if complete else "pending",
+            source="official_api", reason="verified" if complete else "supplemental_readback_required",
+            platform_id=result["remote_id"], url=readback.get("permalink_url"),
+            platform_time=readback.get("updated_time"), content_matches=matches,
+            media_matches=True, settings_readback=settings, selected=readback)
+
     def _facebook(self, context):
         """支援文字、連結與 HTTPS 圖片；影片留待 PUB-03。"""
 
         item, grant, settings = context["item"], context["grant"], context["item"]["settings"]
+        if item["action"] == "update_content":
+            return self._facebook_update(context)
         if (set(settings) - {"visibility", "crosspost", "link", "media_urls"}
                 or settings.get("visibility") != "public"
                 or settings.get("crosspost", False) is not False):
@@ -559,17 +614,40 @@ def main():
     """CLI 永不輸出 Token、原始平台回應或例外本文。"""
 
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("execute-api", "prepare-browser",
+    parser.add_argument("command", choices=("inspect-content", "execute-api", "prepare-browser",
                                             "claim-browser", "record-observation"))
     parser.add_argument("--workspace", required=True)
-    parser.add_argument("--plan", required=True)
-    parser.add_argument("--item", required=True)
+    parser.add_argument("--plan")
+    parser.add_argument("--item")
+    parser.add_argument("--platform", choices=("facebook", "threads", "youtube", "instagram"))
+    parser.add_argument("--target-id")
+    parser.add_argument("--resource-id")
+    parser.add_argument("--snapshot")
+    parser.add_argument("--confirm-read", action="store_true")
     parser.add_argument("--connection", default="main")
     parser.add_argument("--observation")
     parser.add_argument("--execute-external-write", action="store_true")
     parser.add_argument("--no-token-refresh", action="store_true")
     args = parser.parse_args()
     try:
+        if args.command == "inspect-content":
+            # 前置唯讀查詢不需發布帳本；結果留指定私人檔案，CLI 不印內容。
+            root = job.workspace_path(args.workspace)
+            if (not args.confirm_read or not args.platform or not args.target_id or not args.resource_id
+                    or not args.snapshot or not re.fullmatch(
+                        r"social-media/publishing/[a-z0-9][a-z0-9-]{0,79}/before\.json", args.snapshot)):
+                raise ValueError("snapshot_arguments_required")
+            path = job.local(root, args.snapshot, must_exist=False)
+            if path.exists():
+                raise ValueError("snapshot_already_exists")
+            snapshot = official.OfficialAPIAdapter(root, connection=args.connection).inspect_content(
+                args.platform, args.target_id, args.resource_id, confirmed_read=True)
+            job.secrets(snapshot)
+            job.save(path, snapshot)
+            print(json.dumps({"result": "snapshot_saved", "snapshot": args.snapshot, "external_actions": False}))
+            return 0
+        if not args.plan or not args.item:
+            raise ValueError("plan_and_item_required")
         executor = PublishExecutor(
             args.workspace, args.plan, connection=args.connection,
             allow_token_refresh=not args.no_token_refresh,

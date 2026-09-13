@@ -76,10 +76,35 @@ def exchange(runtime, config, code, redirect_uri, secret):
             or _linked_instagram(page) != config["target_id"]):
         raise OAuthError("target_mismatch")
 
-    # 短期及長期 User Token、其他 Page Token 都不持久保存。
-    return {"platform": "instagram", "login_route": LOGIN_ROUTE,
+    # 只有已確認刪文 scope 時保存長期 User Token；短期與其他 Page Token 不保存。
+    bundle = {"platform": "instagram", "login_route": LOGIN_ROUTE,
             "access_token": page_token, "page_id": page_id,
             "facebook_user_id": user_id}
+    if "instagram_manage_contents" in config["scopes"]:
+        bundle["facebook_user_access_token"] = user
+    return bundle
+
+
+def verify_user(runtime, config, bundle):
+    """刪文專用 User Token：每次核對 App、使用者、權限與可管理資源。"""
+    if config["login_route"] != LOGIN_ROUTE or "instagram_manage_contents" not in config["scopes"]:
+        raise OAuthError("permission_mismatch")
+    user = bundle.get("facebook_user_access_token")
+    if not isinstance(user, str) or not user:
+        raise OAuthError("reauth_required")
+    info = runtime._debug(config, user, "USER")
+    if runtime.maintenance_mode and any(type(info.get(key)) is int and 0 < info[key] <= runtime.clock() + 7 * 86400
+                                        for key in ("expires_at", "data_access_expires_at")):
+        raise OAuthError("reauth_required")
+    if identifier(info.get("user_id")) != bundle["facebook_user_id"]:
+        raise OAuthError("target_mismatch")
+    _scope_rows(runtime, config, user)
+    pages = runtime._rows(config, "me/accounts", user, {"fields": "id,tasks,instagram_business_account"})
+    matches = [page for page in pages if str(page.get("id")) == bundle["page_id"]]
+    if (len(matches) != 1 or _linked_instagram(matches[0]) != config["target_id"]
+            or not isinstance(matches[0].get("tasks"), list) or not matches[0]["tasks"]):
+        raise OAuthError("target_mismatch")
+    return user
 
 
 def verify(runtime, config, bundle):

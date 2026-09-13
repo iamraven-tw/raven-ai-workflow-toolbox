@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; form-action 'none'">
+<title>安全輸入交接示意圖</title>
+<style>
+/* 自有教學示意；沒有輸入欄位，也不連接憑證庫。 */
+*{box-sizing:border-box}body{margin:0;padding:48px;background:#f2f5f3;color:#18342d;font:24px/1.6 system-ui,sans-serif}h1{font-size:40px;margin:8px 0}p{margin:8px 0}.badge{font-size:20px;color:#50685f}.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px}.card{background:white;border:1px solid #c9d7d0;border-radius:18px;padding:26px;min-height:274px}h2{font-size:27px;margin:0 0 16px}.message{background:#e8f2ed;border-radius:10px;padding:16px}.terminal{background:#17241f;color:#f1f5f3;border-radius:10px;padding:18px;font:20px/1.6 monospace}.hint{font-size:20px;color:#50685f}.foot{margin-top:24px;font-size:21px}
+</style>
+<div class="badge">四平台共用 · 自有流程示意，非作業系統截圖 · 不含真實憑證</div>
+<h1>秘密只貼到 Agent 開好的安全終端機</h1>
+<p>Facebook、Instagram、Threads、YouTube 都使用同一個交接方式。</p>
+<div class="grid">
+<section class="card"><h2>1　你告訴 Agent 準備好了</h2><div class="message">「我準備好輸入了。」</div><p class="hint">只說這句話，不把秘密貼進對話。<br>Agent 說明這次要輸入的憑證種類。</p></section>
+<section class="card"><h2>2　Agent 開啟安全終端機</h2><div class="terminal">請貼上本次指定的憑證<br>（輸入不回顯；按 Enter 即確認儲存，<br>Ctrl+C 取消）：▌</div><p class="hint">視窗外觀因作業系統不同；這裡沒有可輸入欄位。</p></section>
+<section class="card"><h2>3　你貼上一次，再按 Enter</h2><div class="message">在真正的終端機貼上 → 按 Enter</div><p class="hint">畫面不顯示文字，通常也沒有星號，屬於正常情況。不要因此重複貼上。<br>接著告訴 Agent：「已輸入完畢。」</p></section>
+<section class="card"><h2>4　Agent 接續檢查並回報</h2><div class="message">範例回報：安全保存與讀回成功。<br>接下來核對平台帳號、權限與有效期限。</div><p class="hint">這是回報格式示例，不代表已替你保存。<br>保存成功與平台驗證成功，分開說明。</p></section>
+</div>
+<p class="foot">已授權 OAuth 程式交換、刷新產生的 Token，由程式直接保存，不需要你再複製。<br>保存失敗或結果不明：先讓 Agent 查狀態，不把秘密改貼到聊天或一般檔案。</p>
+</html>

@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../../lib/nav';
 // 暗房首頁：黑底巨字首屏（游標留下照片拖尾）→ 服務與信任依據的跑馬燈 → 一句大敘述加信任列
 // → 編號 01／02／03 的服務長列表配右側黏住的照片 → 最新文章列 → 疊照片與結尾邀請。
 import { getCollection } from 'astro:content';
@@ -6,7 +7,7 @@ import { site } from '../../../site.config.mjs';
 import { copy } from '../../../site.copy.mjs';
 import { ctaHref, ctaAttrs } from '../../lib/nav';
 
-const posts = (await getCollection('posts'))
+const posts = (hasPage('blog') ? await getCollection('posts') : [])
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 3);
 const trail = ['/images/samples/dark-desk.jpg', '/images/samples/mono-desk.jpg', '/images/samples/vintage-camera.jpg', '/images/samples/keyboard-coffee.jpg', '/images/samples/dark-flatlay.jpg', '/images/samples/phone-edge.jpg'].join(',');
@@ -25,7 +26,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
     <p class="t-lead mx-auto mt-8 max-w-xl" data-reveal="up" data-reveal-delay="420">{copy.home.lead ?? site.audience}</p>
     <div class="mt-10 flex flex-wrap items-center justify-center gap-3" data-reveal="up" data-reveal-delay="560">
       <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
-      <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>
+      {hasPage('services') && (<a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>)}
     </div>
   </div>
   <div class="dr-hero-bar">
@@ -54,7 +55,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
     </h2>
     <div data-reveal="up" data-reveal-delay="150">
       <p class="t-muted text-[15px] leading-7">目前提供：{site.offerings.map((offering) => offering.name).join('、')}。</p>
-      <a href="/about" class="dr-arrow-link mt-6">更多關於 {site.name} ↗</a>
+      {hasPage('about') && (<a href="/about" class="dr-arrow-link mt-6">更多關於 {site.name} ↗</a>)}
     </div>
   </div>
   {site.trustSignals.length > 0 && (
@@ -103,7 +104,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
           <p class="t-eyebrow" data-reveal="fade">文章</p>
           <h2 class="t-h2 mt-4" data-reveal="up">{copy.blog.title ?? '最近寫的'}</h2>
         </div>
-        <a href="/blog" class="dr-arrow-link" data-reveal="fade">全部文章 ↗</a>
+        {hasPage('blog') && (<a href="/blog" class="dr-arrow-link" data-reveal="fade">全部文章 ↗</a>)}
       </div>
       <div class="mt-12" data-reveal-stagger="100">
         {posts.map((post, index) => (

@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../../lib/nav';
 // 週刊：深橄欖頁尾，三欄連結（頁面、聯絡、其他），底部版權與 RSS。
 import { site } from '../../../site.config.mjs';
 import { copy } from '../../../site.copy.mjs';
@@ -27,6 +28,6 @@ const pages = footerLinks.filter((link) => link.href !== '/rss.xml');
   </div>
   <div class="t-container flex flex-col gap-2 py-6 text-[12px] sm:flex-row sm:items-center sm:justify-between" style="border-top: 1px solid rgba(255,255,255,0.12);">
     <p class="flex items-center gap-3"><span class="inline-flex h-6 w-6 items-center justify-center rounded-full" style="background: #c9b27e; color: var(--wk-dark); font-family: var(--wk-serif);">{site.name.slice(0, 1)}</span>© {year} {site.name}</p>
-    <a href="/rss.xml">RSS</a>
+    {hasPage('blog') && (<a href="/rss.xml">RSS</a>)}
   </div>
 </footer>

@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../../lib/nav';
 // 週刊首頁：三欄雜誌首屏（左：主標與導言；中：傾斜封面；右：服務當側欄）→ 會輪播的引言（信任依據）
 // → 最近文章的雜誌格 → 對談卡（關於頁段落）→ 排行榜（服務）配右側深色行動盒。
 import { getCollection } from 'astro:content';
@@ -6,7 +7,7 @@ import { site } from '../../../site.config.mjs';
 import { copy } from '../../../site.copy.mjs';
 import { ctaHref, ctaAttrs } from '../../lib/nav';
 
-const posts = (await getCollection('posts'))
+const posts = (hasPage('blog') ? await getCollection('posts') : [])
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 5);
 const [lead, ...rest] = posts;
@@ -24,7 +25,7 @@ const today = new Date().toISOString().slice(0, 10);
 <section class="t-container">
   <div class="wk-hero">
     <article class="wk-hero-left order-2 lg:order-1" data-reveal="up">
-      <a href="/about" class="wk-lead-link">
+      <a href={hasPage('about') ? '/about' : undefined} class="wk-lead-link">
         <span class="t-tag">{copy.home.eyebrow ?? '本期'}</span>
         <h1 class="t-h1 mt-4">{copy.home.title ?? site.positioning}</h1>
         <p class="t-lead mt-5">{copy.home.lead ?? site.audience}</p>
@@ -32,16 +33,16 @@ const today = new Date().toISOString().slice(0, 10);
       </a>
       <div class="mt-7 flex flex-wrap justify-center gap-3">
         <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
-        <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '服務'}</a>
+        {hasPage('services') && (<a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '服務'}</a>)}
       </div>
     </article>
-    <a href="/about" class="wk-cover order-1 lg:order-2" data-reveal="scale" data-reveal-delay="120" aria-label="關於">
+    <a href={hasPage('about') ? '/about' : undefined} class="wk-cover order-1 lg:order-2" data-reveal="scale" data-reveal-delay="120" aria-label="關於">
       <img src="/images/samples/open-book.jpg" alt="" width="1200" height="800" fetchpriority="high" />
     </a>
     <aside class="order-3" data-reveal="up" data-reveal-delay="220">
       {site.offerings.map((offering, index) => (
         <article class="wk-side">
-          <a href="/services" style="text-decoration: none; color: inherit;">
+          <a href={hasPage('services') ? '/services' : undefined} style="text-decoration: none; color: inherit;">
             <span class="t-tag">{copy.home.offerings_eyebrow ?? '服務'} {pad(index)}</span>
             <h3>{offering.name}</h3>
             <p class="wk-meta" style="display: block; font-family: var(--wk-body); font-size: 13px; line-height: 1.6;">{offering.summary}</p>
@@ -74,7 +75,7 @@ const today = new Date().toISOString().slice(0, 10);
   <section class="t-container t-section">
     <div class="flex items-end justify-between gap-6" style="border-bottom: 1px solid var(--wk-line); padding-bottom: 14px;">
       <h2 class="t-h2" data-reveal="up">{copy.blog.title ?? '最近寫的'}</h2>
-      <a href="/blog" class="t-tag" data-reveal="fade" style="text-decoration: none;">全部 →</a>
+      {hasPage('blog') && (<a href="/blog" class="t-tag" data-reveal="fade" style="text-decoration: none;">全部 →</a>)}
     </div>
     <div class={`mt-10 grid gap-8 ${rest.length > 0 ? 'lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : ''}`}>
       {rest.length > 0 && (
@@ -126,7 +127,7 @@ const today = new Date().toISOString().slice(0, 10);
       </div>
       <div data-reveal-stagger="110">
         {site.offerings.map((offering, index) => (
-          <a href="/services" class="wk-rank">
+          <a href={hasPage('services') ? '/services' : undefined} class="wk-rank">
             <span class="wk-rank__num">{pad(index)}</span>
             <img src={thumbs[index % thumbs.length]} alt="" width="1200" height="800" loading="lazy" />
             <div>

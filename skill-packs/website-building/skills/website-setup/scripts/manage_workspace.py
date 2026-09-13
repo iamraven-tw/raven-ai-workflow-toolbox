@@ -337,8 +337,10 @@ def validate_pages(pages: dict[str, Any]) -> None:
     """驗證頁面清單。"""
 
     require_exact_keys(pages, {"required", "optional"}, path="$.pages")
-    if pages["required"] != REQUIRED_PAGES:
-        raise ConfigurationError("pages.required 必須是固定六頁")
+    selected = pages["required"]
+    if (not isinstance(selected, list) or any(page not in REQUIRED_PAGES for page in selected)
+            or len(selected) != len(set(selected)) or not {"home", "not_found"}.issubset(selected)):
+        raise ConfigurationError("pages.required 必須是無重複的已選頁面，至少含 home 與 not_found")
     optional = pages["optional"]
     if not isinstance(optional, list) or any(item not in OPTIONAL_PAGES for item in optional):
         raise ConfigurationError("pages.optional 含不支援的頁面")
@@ -456,6 +458,8 @@ def validate_configuration(payload: dict[str, Any]) -> None:
         raise ConfigurationError("schema_version 必須是 1")
     validate_business(payload["business"])
     validate_pages(payload["pages"])
+    if payload["business"]["primary_call_to_action"]["kind"] == "form_later" and "contact" not in payload["pages"]["required"]:
+        raise ConfigurationError("form_later 需要已選 contact 頁面")
     validate_design(payload["design"])
     validate_hosting(payload["hosting"])
     validate_verification(payload["verification"], payload["hosting"])

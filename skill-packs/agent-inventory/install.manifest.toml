@@ -123,7 +123,7 @@ source_repository_removal = "separate_explicit_action_not_performed_by_manager"
 user_data_removal = "never"
 
 [human_authorization_gates]
-clone_upstream_repository = "explicit_confirmation_before_any_network_download"
+clone_upstream_repository = "single_install_confirmation_covers_download_registration_and_runtime_source"
 scan_scope_selection = "upstream_inventory_setup_asks_which_tools_and_project_roots"
 summary_generation_reads_rule_contents = "explicit_confirmation_before_the_agent_reads_full_rule_files"
 delete_rule_or_skill_to_trash = "upstream_site_api_delete_requires_typed_confirmation_never_performed_by_this_installer"
@@ -163,7 +163,7 @@ status = "pinned_and_fresh_github_clone_verified_locally"
 [[known_limitations]]
 id = "skills_locate_clone_via_config_repo_root"
 detail = "上游 v0.2.1 起，六個技能開頭都先從 ~/.config/agent-inventory/config.json 的 repoRoot 取得 clone 路徑，再以絕對路徑執行；沒有 repoRoot 且目前目錄不是 clone 時會問使用者。安裝到全域技能目錄後要能直接使用，設定檔必須先有 repoRoot。"
-workaround = "本套件 INSTALL.md 的最後一步由 Agent 在使用者確認後把 clone 路徑寫進 repoRoot（設定檔不存在就只建立這一個鍵）；上游 inventory-setup 與 scan.py 之後也會維護它。"
+workaround = "安裝、更新及回復由管理器一併對齊唯一 repoRoot，保留掃描設定；source_snapshot 只作歷史回復線索。掃描範圍一次確認後由上游總入口自動接續。"
 
 [[known_limitations]]
 id = "upstream_paths_not_verified_on_all_tools"

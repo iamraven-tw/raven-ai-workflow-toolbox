@@ -107,6 +107,7 @@ class InstallLifecycleTest(unittest.TestCase):
             "--registration", "claude_user",
             "--client-root", str(self.client_root),
             "--state-root", str(self.state_root),
+            "--runtime-config", str(self.root / "runtime/config.json"),
             *extra,
         ])
 
@@ -120,6 +121,57 @@ class InstallLifecycleTest(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         return json.loads(result.stdout)
+
+    def test_runtime_source_preserves_scope_and_follows_update_rollback(self):
+        """一次安裝寫入唯一來源，更新與回復保留使用者掃描範圍。"""
+        config_path = self.root / "runtime/config.json"
+        config_path.parent.mkdir()
+        config_path.write_text(json.dumps({"tools": ["codex"], "projectRoots": ["fictional-project"]}))
+        self.payload(self.install(self.manifest_v1, self.upstream_v1))
+        stored = json.loads(config_path.read_text())
+        self.assertEqual(stored["repoRoot"], str(self.upstream_v1))
+        self.assertEqual(stored["tools"], ["codex"])
+        state = self.payload(self.manage("status"))
+        self.assertEqual(state["runtime_source_status"], "verified")
+        self.assertNotIn("upstream_source", state["active"])
+        self.payload(self.manage("update", "--manifest", str(self.manifest_v2), "--inventory-source", str(self.upstream_v2)))
+        self.assertEqual(json.loads(config_path.read_text())["repoRoot"], str(self.upstream_v2))
+        self.payload(self.manage("rollback"))
+        self.assertEqual(json.loads(config_path.read_text())["repoRoot"], str(self.upstream_v1))
+        self.payload(self.manage("remove"))
+        self.assertEqual(json.loads(config_path.read_text())["projectRoots"], ["fictional-project"])
+
+    def test_failed_install_restores_original_config_bytes(self):
+        """同名入口衝突後，來源設定必須回復原值與格式。"""
+        config_path = self.root / "runtime/config.json"
+        config_path.parent.mkdir()
+        original = b'{ "tools": ["codex"] }'
+        config_path.write_bytes(original)
+        (self.client_root / "inventory").mkdir()
+        (self.client_root / "inventory/SKILL.md").write_text("使用者既有技能")
+        result = self.install(self.manifest_v1, self.upstream_v1)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(config_path.read_bytes(), original)
+
+    def test_conflicting_or_invalid_config_stops_before_registration(self):
+        """不能覆蓋別的安裝來源或損壞設定。"""
+        config_path = self.root / "runtime/config.json"
+        config_path.parent.mkdir()
+        for original in ('{"repoRoot": "/different-install"}', '{broken'):
+            config_path.write_text(original)
+            result = self.install(self.manifest_v1, self.upstream_v1)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(config_path.read_text(), original)
+            self.assertEqual(list(self.client_root.iterdir()), [])
+
+    def test_runtime_drift_is_reported_not_silently_repaired(self):
+        """唯讀狀態檢查揭露來源版本不符，不改回歷史路徑。"""
+        self.payload(self.install(self.manifest_v1, self.upstream_v1))
+        config_path = self.root / "runtime/config.json"
+        config_path.write_text(json.dumps({"repoRoot": str(self.upstream_v2)}))
+        result = self.payload(self.manage("status"))
+        self.assertEqual(result["runtime_source_status"], "version_mismatch")
+        self.assertEqual(json.loads(config_path.read_text())["repoRoot"], str(self.upstream_v2))
 
     def test_status_before_install_reports_not_installed(self) -> None:
         """尚未安裝時只回報狀態，不建立任何檔案。"""

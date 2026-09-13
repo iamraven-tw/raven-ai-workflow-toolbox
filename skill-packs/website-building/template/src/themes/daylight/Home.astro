@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../../lib/nav';
 // 日光首頁：滿版照片首屏（白色大標、黃綠按鈕、右下說明框）→ 黑色跑馬燈橫條 → 大字敘述加白色事實卡
 // → 左側編號路線圖（用關於頁段落）配右側黏住的照片 → 滿版照片上的一句引言 → 三張服務卡（游標聚光）
 // → 黑底的最新文章橫向列 → 結尾邀請。
@@ -7,7 +8,7 @@ import { site } from '../../../site.config.mjs';
 import { copy } from '../../../site.copy.mjs';
 import { ctaHref, ctaAttrs } from '../../lib/nav';
 
-const posts = (await getCollection('posts'))
+const posts = (hasPage('blog') ? await getCollection('posts') : [])
   .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
   .slice(0, 5);
 const fallbackCovers = ['/images/samples/keyboard-coffee.jpg', '/images/samples/phone-edge.jpg', '/images/samples/creative-desk.jpg', '/images/samples/open-book.jpg', '/images/samples/clean-desk.jpg'];
@@ -28,7 +29,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
       <h1 class="dl-hero__title mt-6" data-reveal="blur" data-reveal-delay="120">{copy.home.title ?? site.positioning}</h1>
       <div class="dl-on-dark mt-9 flex flex-wrap items-center gap-3" data-reveal="blur" data-reveal-delay="260">
         <a href={ctaHref} class="t-btn" {...ctaAttrs}>{copy.home.primary_cta ?? site.cta.label}</a>
-        <a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>
+        {hasPage('services') && (<a href="/services" class="t-btn-secondary">{copy.home.secondary_cta ?? '看服務內容'}</a>)}
       </div>
     </div>
     <div class="dl-hero__aside lg:justify-self-end" data-reveal="blur" data-reveal-delay="400">
@@ -53,7 +54,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
     <p class="text-[20px] font-semibold" style="color: var(--dl-secondary);" data-reveal="blur">© {site.name}</p>
     <div>
       <h2 class="dl-statement" data-reveal="blur">{copy.home.offerings_intro ?? copy.about.intro ?? '先弄清楚問題值不值得解，再決定做法；每一步都交付你能自己維護的成果。'}</h2>
-      <a href="/about" class="t-btn mt-8" style="padding: 11px 18px; font-size: 14px;" data-reveal="blur" data-reveal-delay="120">關於 {site.name}</a>
+      {hasPage('about') && (<a href="/about" class="t-btn mt-8" style="padding: 11px 18px; font-size: 14px;" data-reveal="blur" data-reveal-delay="120">關於 {site.name}</a>)}
     </div>
   </div>
   {site.trustSignals.length > 0 && (
@@ -134,7 +135,7 @@ const pad = (index: number) => String(index + 1).padStart(2, '0');
           <span class="t-tag" data-reveal="blur">文章</span>
           <h2 class="t-h2 mt-5" data-reveal="blur" data-reveal-delay="80">{copy.blog.title ?? '最近寫的'}</h2>
         </div>
-        <a href="/blog" class="t-btn" data-reveal="blur" data-reveal-delay="160">全部文章</a>
+        {hasPage('blog') && (<a href="/blog" class="t-btn" data-reveal="blur" data-reveal-delay="160">全部文章</a>)}
       </div>
       <div class="dl-posts mt-12" data-reveal-stagger="120" data-reveal-variant="blur">
         {posts.map((post, index) => (

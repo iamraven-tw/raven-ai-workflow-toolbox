@@ -6,6 +6,18 @@
 
 ## 路徑與界線
 
+### Facebook Page Token 免回呼匯入（2026-09-13）
+
+`facebook_token_import.py` 可驗證並整理本人已存入原生庫的 `dashboard-token`。先沿用有效連線；新匯入另需同一 App 的 `app-secret`，用於現有 debugger 與 appsecret proof 驗證，不代表所有官方匯入方式都必須使用 App Secret。兩項後台秘密均由本人在 Agent 開啟的不回顯終端機貼上一次並按 Enter。
+
+Agent 依已確認的 App、Page 與完整權限清單執行：
+
+```sh
+python3 scripts/facebook_token_import.py --workspace-root <私人工作區> --client-id <App-ID> --page-id <Page-ID> --scope pages_show_list --scope <其他已確認權限> --graph-version <已核對版本> --confirm-read --confirm-store
+```
+
+此分支沒有 redirect、TLS 或 callback。先核對 App、PAGE 類型、權限（含已揭露的 public_profile）、期限與專頁身分，再保存連線；缺少秘密、目標不符時不建立連線。既有連線不覆寫，保存中斷不自動重跑。`ready` 不代表所有管理功能已驗收。依據：[官方 debugger](https://developers.facebook.com/docs/graph-api/reference/debug_token/)；本機虛構測試 `test_facebook_token_import.py` 已建立，真實平台與原生庫仍待驗收。
+
 | 路徑 | 程式實作 | 仍需外部條件 |
 |---|---|---|
 | YouTube Desktop app | 本機 HTTP loopback、state、PKCE S256、code 交換、refresh、頻道讀回 | 已核准 client、API 啟用、登入同意、scope／審查資格 |

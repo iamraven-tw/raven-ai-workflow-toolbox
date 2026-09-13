@@ -65,7 +65,7 @@ def apply_copy_layer(target: Path, config_path: Path) -> dict[str, Any]:
     if renderer is None:
         return {"applied": False, "reason": "website-content-writing_not_installed"}
     copy = json.loads(copy_path.read_text(encoding="utf-8"))
-    findings = renderer.validate_copy(copy, None)
+    findings = renderer.validate_copy(copy, read_json(config_path, label="官網設定"))
     blocking = [f for f in findings if f["kind"] in ("unverified_number", "placeholder_source", "empty_text")]
     if blocking:
         raise ScaffoldError("website/copy.json 有阻擋項（未驗證的數字或空白來源），請先用 website-content-writing 修正")
@@ -180,7 +180,8 @@ def render_site_config(config: dict[str, Any], site_url: str, theme_id: str) -> 
         )
     lines.append("  ],")
     optional = ", ".join(js_string(page) for page in config.get("pages", {}).get("optional", []))
-    lines.append(f"  pages: {{ optional: [{optional}] }},")
+    selected = json.dumps(config["pages"]["required"])
+    lines.append(f"  pages: {{ required: {selected}, optional: [{optional}] }},")
     lines.append("  indexing: 'noindex',")
     lines.append("};")
     return "\n".join(lines) + "\n"
@@ -419,6 +420,7 @@ def plan(config: dict[str, Any], template: Path, target: Path, site_url: str, th
         "target": str(target),
         "site_url": site_url,
         "worker_name": derive_worker_name(config),
+        "selected_pages": config["pages"]["required"],
         "optional_pages": [OPTIONAL_PAGE_FILES[page] for page in optional if page in OPTIONAL_PAGE_FILES],
         "theme": theme_id,
         "theme_name": theme["name"],
@@ -454,6 +456,15 @@ def scaffold(config: dict[str, Any], template: Path, target: Path, site_url: str
     (target / "site.config.mjs").write_text(render_site_config(config, site_url, theme_id), encoding="utf-8")
     worker_name = derive_worker_name(config)
     (target / "wrangler.jsonc").write_text(render_wrangler(worker_name), encoding="utf-8")
+
+    # 只移除剛複製的範本路由；不碰既有使用者專案。
+    selected = config["pages"]["required"]
+    for page in ("about", "services", "contact"):
+        if page not in selected:
+            (target / "src/pages" / f"{page}.astro").unlink()
+    if "blog" not in selected:
+        shutil.rmtree(target / "src/pages/blog")
+        (target / "src/pages/rss.xml.ts").unlink()
 
     copied_pages: list[str] = []
     for page in config.get("pages", {}).get("optional", []):

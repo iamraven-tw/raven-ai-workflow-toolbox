@@ -4,7 +4,15 @@
 
 Agent 是執行者；五份平台文件定義操作差異，`publish_job.py` 處理檢查、雜湊、鎖、一次性階段 claim 與結果紀錄，`official_publish_api.py` 提供 YouTube、Facebook、Instagram、Threads 的低階正式 API 請求，`publish_execute.py` 負責從已 begin 的 ledger 產生 grant、先驗證 setup Runtime、依序呼叫低階 adapter、checkpoint、讀回及形成 receipt。低階 adapter 仍不自行判斷人類是否真的同意；Agent 必須以對話中的真實確認參照執行 begin。Substack 只採受控瀏覽器或手動路徑，不存在套件自造的寫入 API。
 
-目前支援整理全新的貼文／媒體立即發布；YouTube、Facebook、Substack 可走文件列出的原生排程。IG／Threads 不建立等待發布的本機服務；需要排程先交本機計畫並回報未實作。現有內容的修改／刪除、草稿另存、留言、私訊、Notes、Stories、直播不放進這份交易 MVP。Substack 的編輯器自動保存只是發布交易中的中間狀態，不代表獨立草稿功能已驗收。
+目前支援整理全新的貼文／媒體立即發布；YouTube、Facebook、Substack 可走文件列出的原生排程。IG／Threads 不建立等待發布的本機服務；需要排程先交本機計畫並回報未實作。另有 Facebook 同 App 貼文文字修改，沿用同一帳本，不另建工作流。其他內容修改／刪除、草稿另存、留言、私訊、Notes、Stories、直播仍未放進這份交易。Substack 的編輯器自動保存只是發布交易中的中間狀態，不代表獨立草稿功能已驗收。
+
+### Facebook 文字修改
+
+`action=update_content`、`platform=facebook`、`interface=official_api`、`format=text`、`title=""`、`assets=[]`、`scheduled_at=null`。`body` 是完整新文案；settings 只含 `post_id`、`before_message`、`before_updated_time`，後兩者來自先前已授權唯讀查詢，原樣保存平台值。向使用者呈現確切貼文與新舊內容，再沿用 preview → begin → execute-api；`--confirm-publish` 是共用歷史旗標，此處只允許已核准修改，不能用原本發布核准代替。
+
+執行器重新核對專頁、建立貼文的 application 與目前連線 App ID、pages_manage_posts，以及原文／更新時間未變。缺欄或別人已修改即停止；這不是平台原子條件更新，查驗至送出間仍可能有並行修改。每次只 POST message，不改媒體、連結、可見性或排程。寫後獨立 GET 文案、網址與 updated_time，相符才記 `updated`；不足記 pending，未知結果不重送。修改前快照與指定 post ID 一起納入預覽及去重，不沿用新貼文的文案去重規則。
+
+官方：[專頁貼文更新與同 App 限制](https://developers.facebook.com/documentation/pages-api/posts)。程式與虛構測試已建立，未執行真實修改。其他平台及刪除仍不可套用這個 action。
 
 ## plan.json：由 AI 填，人類看成品預覽
 

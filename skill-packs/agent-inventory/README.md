@@ -12,6 +12,8 @@
 | 受管理技能 | `inventory`、`inventory-setup`、`inventory-scan`、`inventory-summarize`、`inventory-flow`、`inventory-serve` |
 | 本套件自有技能 | 無。上游已提供 `/inventory` 總入口，不再多包一層 |
 
+完成安裝後，使用者一次確認工具與專案掃描範圍，Agent 自動完成掃描、摘要、所選流程圖與本機報告；不需要逐技能重新下指令。
+
 ## 使用者會得到什麼
 
 安裝後，在任何支援的 Agent 用戶端輸入 `/inventory`，Agent 會依序完成五步：
@@ -68,7 +70,7 @@ flowchart LR
 
 ## 已知限制
 
-- 上游六個技能靠 `~/.config/agent-inventory/config.json` 的 `repoRoot` 找到 clone，再以絕對路徑執行腳本與讀寫 `data/`。安裝流程最後一步會由 Agent 在你確認後寫入這個鍵；沒有它而且目前目錄不是 clone 時，技能會問你 clone 放在哪。
+- 上游六個技能靠 `~/.config/agent-inventory/config.json` 的 `repoRoot` 找到 clone，再以絕對路徑執行腳本與讀寫 `data/`。安裝器會在同一次安裝確認內寫入這個唯一來源鍵，保留掃描範圍。狀態中的來源快照只供回復，不作為第二份執行設定。
 - Cursor 與 OpenClaw 的路徑尚未在真機驗證；Antigravity 的對話紀錄是二進位資料庫，使用次數無法對應。
 - 完整清單見 `install.manifest.toml` 的 `[[known_limitations]]`。
 

@@ -28,9 +28,9 @@ https://www.example.invalid/* https://example.invalid/:splat 301
 | 向其他註冊商購買，或既有網域 DNS 不在 Cloudflare | 準備 Cloudflare 會給的 nameserver 值、定期 `domain check` 輪詢；NS 生效後同上 | 付款、Cloudflare 後台 Add a site 選免費方案、到註冊商改 nameserver |
 | 既有網域已在 Cloudflare | `domain check`、`plan`、`apply`、部署、讀回 | 授權一次 |
 
-## Add a site 為什麼不代辦
+## 一般後台設定的人機分工
 
-`wrangler whoami` 的權限範圍通常只有 `zone (read)`，沒有建立 zone 的權限；`status` 會回報 `zone_edit`。改用 API Token 代辦也要人進後台建 Token，人類步驟沒有減少，而且套件政策是不保存 Token。所以 Add a site 維持人類步驟，Agent 只準備要填的值並讀回結果。
+`wrangler whoami` 的權限範圍通常只有 `zone (read)`，沒有建立 zone 的權限；`status` 會回報 `zone_edit`。改用 API Token 代辦也要人進後台建 Token，人類步驟沒有減少，而且套件政策是不保存 Token。一般後台設定先用已授權 API／CLI／OpenCLI；確認沒有其他方法、只剩 Computer Use 時，提供較快的人工指引或經使用者選擇由 Agent 操作，提醒速度可能較慢。登入、本人驗證、條款與付款仍由本人完成；不為少一次點擊新增秘密保存方式。
 
 ## Cloudflare Registrar 與 `.tw`
 
@@ -38,4 +38,4 @@ Registrar 支援的頂級網域清單頁面為動態載入，2026-09-05 未能�
 
 ## 讀回
 
-`domain check --domain <網域>` 用系統的 `nslookup` 讀 NS 是否以 `cloudflare.com` 結尾，並確認能解析；沒有 `nslookup` 時回 `null` 並改由 `verify` 直接連線判斷。綁定後 `verify --url https://<網域>` 檢查 HTTPS 200、404、sitemap、robots、OG。DNS 傳播時間不在檢查範圍，未生效時等一段時間再重跑。
+`domain check --domain <網域>` 用系統的 `nslookup` 讀 NS 是否以 `cloudflare.com` 結尾，並確認能解析；沒有 `nslookup` 時回 `null` 並改由 `verify` 直接連線判斷。綁定後 `verify --config <workspace>/website/config.json --url https://<網域>` 檢查 HTTPS 200、404、sitemap、robots、OG。DNS 傳播時間不在檢查範圍，未生效時等一段時間再重跑。

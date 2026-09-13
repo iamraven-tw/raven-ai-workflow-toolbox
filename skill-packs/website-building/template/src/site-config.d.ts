@@ -32,6 +32,6 @@ export interface SiteConfig {
   trustSignals: string[];
   cta: CallToAction;
   contacts: ContactChannel[];
-  pages: { optional: OptionalPage[] };
+  pages: { required?: string[]; optional: OptionalPage[] };
   indexing: 'noindex' | 'index';
 }

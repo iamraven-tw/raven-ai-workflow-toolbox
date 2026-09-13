@@ -4,6 +4,8 @@
 
 ## 實際執行來源
 
+2026-09-13 補充：同一套 `publish_execute.py` 現可處理 `update_content`，只修改本 App 建立貼文的 message。先讀回確切貼文與更新時間，將新舊文案納入一次確認；程式重新核對 App、權限與未變的舊內容，單次送出後獨立讀回。完整欄位與未知結果規則見 [共用修改契約](../publishing-contract.md#facebook-文字修改)。已通過虛構測試，未修改任何真實貼文；刪除、媒體替換及其他管理功能不因此視為完成。
+
 文字／連結與圖片 URL／多圖主要走本技能 `scripts/publish_execute.py` 串接 `official_publish_api.py`：Agent 在 begin 後執行 `execute-api`，協調器在每張 unpublished photo 與最後 feed 前分別 claim、取得 ID 立即 checkpoint，再以 `facebook_readback` 讀 PagePost 並形成 receipt。Token 由 setup `Runtime.access()` 取得，不經命令列。這個最小路徑不代建素材主機，也尚未處理本機圖片 multipart、影片或 Reels；本機圖片沒有已核准 HTTPS 來源、或格式是影片時，改走已核准的 Business Suite 受控瀏覽器，否則手動交付。
 
 ## 影片／Reels 的正式判定

@@ -154,21 +154,26 @@ class OfficialPublishHTTP:
         path = parsed.path
         if parsed.netloc == "www.googleapis.com":
             return ((method == "POST" and path == "/upload/youtube/v3/videos")
-                    or (method == "GET" and path == "/youtube/v3/videos"))
+                    or (method in {"GET", "PUT", "DELETE"} and path == "/youtube/v3/videos"))
         versioned = r"/v[0-9]+\.0/"
         graph_id = r"[0-9]+(?:_[0-9]+)?"
         if parsed.netloc == "graph.facebook.com":
             if method == "POST":
-                return bool(re.fullmatch(versioned + graph_id + r"/(?:feed|photos|media|media_publish)", path))
-            return bool(re.fullmatch(versioned + graph_id, path))
+                return bool(re.fullmatch(versioned + graph_id + r"/(?:feed|photos|media|media_publish)", path)
+                            or re.fullmatch(versioned + r"[0-9]+_[0-9]+", path))
+            if method == "DELETE":
+                return bool(re.fullmatch(versioned + graph_id, path))
+            return method == "GET" and bool(re.fullmatch(versioned + graph_id + r"(?:/(?:feed|media))?", path))
         if parsed.netloc == "graph.instagram.com":
             if method == "POST":
                 return bool(re.fullmatch(versioned + r"[0-9]+/(?:media|media_publish)", path))
-            return bool(re.fullmatch(versioned + r"[0-9]+", path))
+            return method == "GET" and bool(re.fullmatch(versioned + r"[0-9]+", path))
         if parsed.netloc == "graph.threads.net":
             if method == "POST":
                 return bool(re.fullmatch(versioned + r"me/(?:threads|threads_publish)", path))
-            return bool(re.fullmatch(versioned + r"(?:me/threads|[0-9]+)", path))
+            return method == "GET" and bool(re.fullmatch(versioned + r"(?:me/threads|[0-9]+)", path))
+        if parsed.netloc == "graph.threads.com":
+            return method == "DELETE" and bool(re.fullmatch(versioned + r"[0-9]+", path))
         return False
 
     @staticmethod
@@ -209,7 +214,9 @@ class OfficialPublishHTTP:
         """送出一次 JSON／表單請求；例外時不含 URL、本文或 Token。"""
 
         method = str(method).upper()
-        if method not in {"GET", "POST"} or not self._allowed(method, endpoint):
+        if method not in {"GET", "POST", "PUT", "DELETE"} or not self._allowed(method, endpoint):
+            raise PublishAPIError("invalid_request")
+        if mutation is not (method != "GET") or (method == "DELETE" and (form is not None or json_body is not None)):
             raise PublishAPIError("invalid_request")
         if sum(value is not None for value in (form, json_body)) > 1:
             raise PublishAPIError("invalid_request")
@@ -343,12 +350,19 @@ class OfficialAPIAdapter:
         """先核准交易，再由 setup Runtime 驗證與取用記憶體 Token。"""
 
         grant = self._grant(grant, platform, target_id)
+        return self._read_access(platform, target_id, confirmed_read=True,
+                                 allow_refresh=grant["allow_token_refresh"])
+
+    def _read_access(self, platform, target_id, *, confirmed_read, allow_refresh=False):
+        """共用身分核對；唯讀準備不用捏造發布確認或先 begin。"""
+        if confirmed_read is not True or type(allow_refresh) is not bool:
+            raise PublishAPIError("authorization_required")
         try:
             runtime = self.runtime_factory(self.workspace, platform, self.connection)
             config = runtime.config()
             if str(config.get("target_id")) != str(target_id):
                 raise PublishAPIError("target_mismatch")
-            token = runtime.access(confirmed_read=True, allow_refresh=grant["allow_token_refresh"])
+            token = runtime.access(confirmed_read=True, allow_refresh=allow_refresh)
             if not isinstance(token, str) or not token:
                 raise PublishAPIError("reauth_required")
             return config, token
@@ -379,6 +393,211 @@ class OfficialAPIAdapter:
         config, _ = self._access(grant, platform, target_id)
         return {"platform": platform, "target_id": str(target_id),
                 "login_route": config.get("login_route"), "ready": True}
+
+    def _management_rows(self, endpoint, token, resource_id, fields):
+        """最多五頁，只用游標組固定端點；不跟隨回應中的 next 網址。"""
+        query, seen = {"fields": fields, "limit": 100}, set()
+        for _ in range(5):
+            payload = _safe_json(self.http.request_json("GET", endpoint, query=query,
+                bearer=token, mutation=False).payload, mutation=False)
+            rows = payload.get("data")
+            if not isinstance(rows, list) or any(not isinstance(row, dict) or not row.get("id") for row in rows):
+                raise PublishAPIError("read_failed")
+            matches = [row for row in rows if str(row["id"]) == resource_id]
+            if len(matches) > 1:
+                raise PublishAPIError("read_failed")
+            if matches:
+                return matches[0], True
+            paging = payload.get("paging", {})
+            if not isinstance(paging, dict):
+                raise PublishAPIError("read_failed")
+            if not paging.get("next"):
+                return None, True
+            cursor = paging.get("cursors", {}).get("after")
+            if not isinstance(cursor, str) or not re.fullmatch(r"[A-Za-z0-9._-]{1,2048}", cursor) or cursor in seen:
+                raise PublishAPIError("read_failed")
+            seen.add(cursor)
+            query["after"] = cursor
+        return None, False
+
+    def _content_snapshot(self, platform, target_id, resource_id, config, token):
+        """只選內容、版本與擁有者證據；原始回應及秘密不落盤。"""
+        if platform == "youtube":
+            resource_id = _youtube_resource_id(resource_id)
+            payload = _safe_json(self.http.request_json("GET", "https://www.googleapis.com/youtube/v3/videos",
+                query={"id": resource_id, "part": "snippet,status"}, bearer=token, mutation=False).payload,
+                mutation=False)
+            rows = payload.get("items")
+            if not isinstance(rows, list) or len(rows) != 1 or not isinstance(rows[0], dict):
+                raise PublishAPIError("read_failed")
+            row, snippet = rows[0], rows[0].get("snippet", {})
+            if row.get("id") != resource_id or snippet.get("channelId") != target_id:
+                raise PublishAPIError("target_mismatch")
+            details = {"snippet": {key: snippet[key] for key in (
+                "title", "description", "categoryId", "tags", "defaultLanguage", "defaultAudioLanguage") if key in snippet},
+                "privacy_status": (row.get("status") or {}).get("privacyStatus")}
+            result = {"id": resource_id, "title": snippet.get("title"), "body": snippet.get("description", ""),
+                      "version": row.get("etag"), "url": None, "details": details}
+        elif platform == "facebook":
+            resource_id = _identifier(resource_id, graph=True)
+            if not resource_id.startswith(target_id + "_"):
+                raise PublishAPIError("target_mismatch")
+            endpoint = f"https://graph.facebook.com/{config['graph_version']}/{resource_id}"
+            row = _safe_json(self.http.request_json("GET", endpoint, query={"fields":
+                "id,message,updated_time,from,permalink_url,is_published,application"},
+                bearer=token, mutation=False).payload, mutation=False)
+            if row.get("id") != resource_id or (row.get("from") or {}).get("id") != target_id:
+                raise PublishAPIError("target_mismatch")
+            result = {"id": resource_id, "title": "", "body": row.get("message", ""),
+                "version": row.get("updated_time"), "url": row.get("permalink_url"),
+                "details": {"is_published": row.get("is_published"),
+                            "application_id": (row.get("application") or {}).get("id")}}
+        elif platform in {"threads", "instagram"}:
+            resource_id = _identifier(resource_id)
+            if platform == "instagram" and config.get("login_route") != "instagram_facebook_login":
+                raise PublishAPIError("adapter_unavailable")
+            endpoint = (f"https://graph.threads.net/{config['graph_version']}/me/threads" if platform == "threads"
+                        else f"https://graph.facebook.com/{config['graph_version']}/{target_id}/media")
+            fields = "id,text,permalink,timestamp,media_type" if platform == "threads" else "id,caption,permalink,timestamp,media_type,children{id}"
+            row, _ = self._management_rows(endpoint, token, resource_id, fields)
+            if row is None:
+                raise PublishAPIError("read_failed")
+            result = {"id": resource_id, "title": "", "body": row.get("text" if platform == "threads" else "caption", ""),
+                "version": row.get("timestamp"), "url": row.get("permalink"),
+                "details": {"media_type": row.get("media_type")}}
+            if platform == "instagram":
+                children = (row.get("children") or {}).get("data", [])
+                if not isinstance(children, list) or any(not isinstance(child, dict) for child in children):
+                    raise PublishAPIError("read_failed")
+                result["details"]["children"] = [_identifier(child.get("id")) for child in children]
+        else:
+            raise PublishAPIError("adapter_unavailable")
+        if not isinstance(result["version"], str) or not result["version"]:
+            raise PublishAPIError("read_failed")
+        if any(not isinstance(result[key], str) for key in ("title", "body")):
+            raise PublishAPIError("read_failed")
+        if result["url"] is not None:
+            _https_url(result["url"])
+        return result
+
+    def inspect_content(self, platform, target_id, resource_id, *, confirmed_read=False, allow_refresh=False):
+        """預覽前獨立唯讀入口；不建立交易、不寫入平台。"""
+        if platform not in {"facebook", "threads", "youtube", "instagram"}:
+            raise PublishAPIError("adapter_unavailable")
+        target_id = _youtube_resource_id(target_id) if platform == "youtube" else _identifier(target_id)
+        config, token = self._read_access(platform, target_id, confirmed_read=confirmed_read, allow_refresh=allow_refresh)
+        return self._content_snapshot(platform, target_id, resource_id, config, token)
+
+    @staticmethod
+    def _management_permission(platform, config):
+        """檢查既有權限，不從發布權限推定可以刪除。"""
+        scopes = set(config.get("scopes", []))
+        needed = {"facebook": {"pages_manage_posts"}, "threads": {"threads_basic", "threads_delete"},
+                  "instagram": {"instagram_basic", "instagram_manage_contents"}}
+        if platform == "youtube":
+            valid = bool(scopes & {"https://www.googleapis.com/auth/youtube",
+                "https://www.googleapis.com/auth/youtube.force-ssl", "https://www.googleapis.com/auth/youtubepartner"})
+        else:
+            valid = needed.get(platform, {"unsupported"}).issubset(scopes)
+        if not valid:
+            raise PublishAPIError("permission_mismatch")
+
+    def delete_content(self, grant, *, resource_id, before):
+        """核對完整舊快照後送一次刪除；受理不冒充刪除讀回。"""
+        platform, target = grant.get("platform"), grant.get("target_id")
+        config, token = self._access(grant, platform, target)
+        self._management_permission(platform, config)
+        current = self._content_snapshot(platform, target, resource_id, config, token)
+        if current != before:
+            raise PublishAPIError("asset_changed")
+        if platform == "instagram":
+            # 已從自己 media 列表核對父媒體；刪除只用另行驗證的 Facebook User Token。
+            try:
+                runtime = self.runtime_factory(self.workspace, platform, self.connection)
+                if runtime.config().get("target_id") != target:
+                    raise PublishAPIError("target_mismatch")
+                token = runtime.access_instagram_user(confirmed_read=True)
+            except PublishAPIError:
+                raise
+            except Exception as error:
+                raise PublishAPIError(getattr(error, "kind", "reauth_required")) from None
+        if platform == "youtube":
+            result = self.http.request_json("DELETE", "https://www.googleapis.com/youtube/v3/videos",
+                query={"id": resource_id}, bearer=token, mutation=True, allow_empty=True)
+            accepted = result.status == 204
+        else:
+            if platform == "facebook" and current["details"]["is_published"] is not True:
+                raise PublishAPIError("adapter_unavailable")
+            host = "graph.facebook.com" if platform in {"facebook", "instagram"} else "graph.threads.com"
+            result = self.http.request_json("DELETE", f"https://{host}/{config['graph_version']}/{resource_id}",
+                bearer=token, mutation=True)
+            payload = _safe_json(result.payload, mutation=True)
+            accepted = payload.get("success") is True
+            if platform in {"threads", "instagram"}:
+                accepted = accepted and str(payload.get("deleted_id")) == resource_id
+        if not accepted:
+            raise PublishAPIError("remote_result_unknown")
+        return {"remote_id": resource_id, "status": "deletion_accepted"}
+
+    def youtube_update_content(self, grant, *, resource_id, before, title, description):
+        """只改標題與說明；保留既有 snippet 可寫欄位，不觸碰可見性。"""
+        target = _youtube_resource_id(grant.get("target_id"))
+        config, token = self._access(grant, "youtube", target)
+        self._management_permission("youtube", config)
+        current = self._content_snapshot("youtube", target, resource_id, config, token)
+        if current != before:
+            raise PublishAPIError("asset_changed")
+        snippet = dict(current["details"]["snippet"])
+        # 當前 update 文件未列 defaultAudioLanguage 可寫，不能猜測送出或刪掉它。
+        if snippet.get("defaultAudioLanguage"):
+            raise PublishAPIError("adapter_unavailable")
+        snippet.pop("defaultAudioLanguage", None)
+        if not snippet.get("categoryId"):
+            raise PublishAPIError("read_failed")
+        snippet.update(title=_plain_text(title, maximum=100), description=_plain_text(description, allow_empty=True, maximum=5000))
+        result = self.http.request_json("PUT", "https://www.googleapis.com/youtube/v3/videos",
+            query={"part": "snippet"}, json_body={"id": resource_id, "snippet": snippet},
+            bearer=token, mutation=True)
+        if _safe_json(result.payload, mutation=True).get("id") != resource_id:
+            raise PublishAPIError("remote_result_unknown")
+        return {"remote_id": resource_id, "status": "pending_readback"}
+
+    def management_readback(self, grant, resource_id):
+        """已核准交易的獨立內容讀回。"""
+        config, token = self._access(grant, grant.get("platform"), grant.get("target_id"))
+        return self._content_snapshot(grant["platform"], grant["target_id"], resource_id, config, token)
+
+    def deletion_readback(self, grant, resource_id):
+        """有效連線下獨立列舉；缺頁、錯誤、單純 404 均不算已刪除。"""
+        platform, target = grant.get("platform"), grant.get("target_id")
+        config, token = self._access(grant, platform, target)
+        self._management_permission(platform, config)
+        if platform == "youtube":
+            payload = _safe_json(self.http.request_json("GET", "https://www.googleapis.com/youtube/v3/videos",
+                query={"id": _youtube_resource_id(resource_id), "part": "id"}, bearer=token, mutation=False).payload,
+                mutation=False)
+            rows = payload.get("items")
+            if not isinstance(rows, list):
+                raise PublishAPIError("read_failed")
+            absent, complete = rows == [], True
+        else:
+            if platform == "facebook":
+                resource_id = _identifier(resource_id, graph=True)
+                if not resource_id.startswith(target + "_"):
+                    raise PublishAPIError("target_mismatch")
+                endpoint = f"https://graph.facebook.com/{config['graph_version']}/{target}/feed"
+            elif platform == "instagram":
+                resource_id = _identifier(resource_id)
+                if config.get("login_route") != "instagram_facebook_login":
+                    raise PublishAPIError("adapter_unavailable")
+                endpoint = f"https://graph.facebook.com/{config['graph_version']}/{target}/media"
+            else:
+                resource_id = _identifier(resource_id)
+                endpoint = f"https://graph.threads.net/{config['graph_version']}/me/threads"
+            row, complete = self._management_rows(endpoint, token, resource_id, "id")
+            absent = row is None and complete
+        return {"resource_id": resource_id, "absent": absent, "complete": complete,
+                "connection_verified": True}
 
     def _asset(self, relative):
         """YouTube 本機檔案只能位於工作區內且不得是 symlink。"""
@@ -561,7 +780,32 @@ class OfficialAPIAdapter:
         return {"stage": "photo-uploaded", "remote_id": photo_id, "post_id": post_id,
                 "status": "pending_readback"}
 
-    def facebook_readback(self, grant, post_id):
+    def facebook_update_message(self, grant, *, post_id, message, before_message, before_updated_time):
+        """只改同一 App 建立的指定專頁貼文；先查版本再送一次，不重試。"""
+        target_id = _identifier(grant.get("target_id") if isinstance(grant, dict) else None)
+        post_id = _identifier(post_id, graph=True)
+        if not post_id.startswith(target_id + "_"):
+            raise PublishAPIError("target_mismatch")
+        message = _plain_text(message)
+        config, token = self._access(grant, "facebook", target_id)
+        if "pages_manage_posts" not in config.get("scopes", []):
+            raise PublishAPIError("permission_mismatch")
+        endpoint = f"https://graph.facebook.com/{config['graph_version']}/{post_id}"
+        before = _safe_json(self.http.request_json("GET", endpoint,
+            query={"fields": "id,message,updated_time,application"}, bearer=token, mutation=False).payload,
+            mutation=False)
+        if (before.get("id") != post_id or not config.get("client_id")
+                or (before.get("application") or {}).get("id") != config["client_id"]):
+            raise PublishAPIError("target_mismatch")
+        if before.get("message", "") != before_message or before.get("updated_time") != before_updated_time:
+            raise PublishAPIError("asset_changed")
+        result = _safe_json(self.http.request_json("POST", endpoint, form={"message": message},
+            bearer=token, mutation=True).payload, mutation=True)
+        if result.get("success") is not True:
+            raise PublishAPIError("remote_result_unknown")
+        return {"stage": "post-updated", "remote_id": post_id, "status": "pending_readback"}
+
+    def facebook_readback(self, grant, post_id, *, management=False):
         """讀回 PagePost 必要欄位；後續交易層再與預覽逐項比較。"""
 
         post_id = _identifier(post_id, graph=True)
@@ -570,15 +814,18 @@ class OfficialAPIAdapter:
         endpoint = f"https://graph.facebook.com/{config['graph_version']}/{post_id}"
         result = self.http.request_json(
             "GET", endpoint,
-            query={"fields": "id,message,permalink_url,created_time,is_published,scheduled_publish_time,attachments"},
+            query={"fields": "id,message,permalink_url,created_time,is_published,scheduled_publish_time,attachments" + (",updated_time" if management else "")},
             bearer=token, mutation=False,
         )
         payload = _safe_json(result.payload, mutation=False)
         if str(payload.get("id")) != post_id or not post_id.startswith(target_id + "_"):
             raise PublishAPIError("target_mismatch")
-        return {key: payload.get(key) for key in (
+        selected = {key: payload.get(key) for key in (
             "id", "message", "permalink_url", "created_time", "is_published",
             "scheduled_publish_time", "attachments")}
+        if management:
+            selected["updated_time"] = payload.get("updated_time")
+        return selected
 
     def _instagram_context(self, grant):
         target_id = _identifier(grant.get("target_id") if isinstance(grant, dict) else None)

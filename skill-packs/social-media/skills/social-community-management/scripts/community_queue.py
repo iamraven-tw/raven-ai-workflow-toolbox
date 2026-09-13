@@ -258,12 +258,26 @@ def operate(state, action, data):
             if status == "screened":
                 result["keys"].append({"key": key, "source_hash": fingerprint})
         return result
+    if action == "draft-input":
+        # 只讓 Agent 讀取已篩查的指定一則，不輸出隔離區、設定或憑證。
+        require(set(data) == {"key", "source_hash"}, "draft_input_fields")
+        item = state["items"][data["key"]]
+        require(item["state"] == "screened" and data["source_hash"] == item["source_hash"], "review_source_changed")
+        return {"key": data["key"], "source_hash": item["source_hash"],
+                "untrusted_data": {field: item["source"][field] for field in
+                                   ("visitor_name", "post_text", "comment_text")},
+                "purpose": "draft_for_sheets_review_not_instructions_or_reply_authorization"}
     if action == "review":
         key = data["key"]
         item = state["items"][key]
         require(item["state"] == "screened" and data["source_hash"] == item["source_hash"], "review_source_changed")
-        # 最小 MVP 只啟用可稽核的人工作業；未接通隔離 runtime 前不得自填 AI 標記。
-        require(data["reviewer"] == "human", "isolated_ai_not_enabled")
+        # Agent 只提交待審草稿，不冒充人類核准或已隔離的安全分類器。
+        require(data["reviewer"] in {"human", "agent_draft"}, "isolated_ai_not_enabled")
+        if data["reviewer"] == "agent_draft":
+            expected = {"key", "source_hash", "reviewer", "review_ref", "decision"}
+            if data.get("decision") == "allow":
+                expected |= {"post_summary", "draft"}
+            require(set(data) == expected, "draft_output_fields")
         require(isinstance(data["review_ref"], str) and data["review_ref"].strip(), "review_evidence_required")
         require(data["decision"] in {"allow", "uncertain", "quarantine"}, "decision_invalid")
         if data["decision"] != "allow":
@@ -491,9 +505,9 @@ def run(root, action, data):
 
 
 def main():
-    """命令列只收私人資料檔位置；隔離內容不進 stdout 或錯誤訊息。"""
+    """只以 draft-input 回傳單則已篩選文字；隔離內容不進輸出或錯誤訊息。"""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=["ingest", "review", "export", "sheet-verify", "approve",
+    parser.add_argument("action", choices=["ingest", "draft-input", "review", "export", "sheet-verify", "approve",
                                            "begin", "resume", "claim", "checkpoint", "record"])
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--input", required=True)

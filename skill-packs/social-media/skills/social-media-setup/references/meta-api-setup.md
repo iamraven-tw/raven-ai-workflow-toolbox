@@ -10,7 +10,7 @@
 
 ## Meta 三平台合併初始化
 
-Facebook、Instagram 與 Threads 都從 Meta 開發者平台開始，因此使用者選取其中一個平台時，Agent 應在同一次設定對話中詢問是否一併設定另外兩個。使用者同意後：
+Facebook、Instagram 與 Threads 都從 Meta 開發者平台開始，但只處理已選平台，不追問未選平台。使用者已選多個 Meta 平台時：
 
 1. 以一份總預覽列出三個平台各自的目標資源、App／use case、登入路線、permission、callback、審查與驗證請求。
 2. 依目前後台實際支援情況判斷可否使用同一個 Meta App；不可預設一定共用，也不可為了減少步驟把不相容 use case 塞入同一 App。
@@ -40,7 +40,7 @@ Agent 在要求使用者登入前完成以下唯讀工作：
 - 將建立或修改的 Meta App，以及目前後台顯示的 use case／產品名稱。
 - App 擁有者或 Business portfolio 關係；不確定時不得自動選擇。
 - 完整核心 permission、每項用途、讀寫影響、相依關係及使用者要求移除的 permission。
-- 平台自動附帶的基本身分 permission，以及不屬於核心但可選的廣告、企業、商務、商品與其他延伸 permission。
+- 平台自動附帶的基本身分 permission；延伸 permission 只在使用者提出需求或已查證為必要相依項時列入，不主動詢問。
 - OAuth callback 類型、偵測到的原生憑證庫、預計保存的憑證名稱，以及未來受信任 Agent adapter 可取用的範圍；不顯示私人完整目標名稱或秘密值。
 - 人類須依文字指引執行的後台動作、使用者必須處理的關卡、各功能驗證請求與停止條件。
 - App Review、Business Verification、公開使用者支援與遠端寫入測試是否排除在本輪之外。

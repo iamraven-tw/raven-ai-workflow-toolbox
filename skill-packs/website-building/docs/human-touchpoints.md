@@ -5,20 +5,20 @@
 | 接觸點 | 類型 | 頻率 | 為何不能由 Agent 代辦 | 負責技能 |
 |---|---|---|---|---|
 | 回答商業資訊訪談（服務對象、提供什麼、為何可信、希望訪客做什麼、聯絡方式） | 提供事實 | 一次 | 只有使用者知道 | `website-setup` |
-| 確認頁面清單、風格與文案的預設方案，或說「全部用預設」 | 決定 | 每個技能一次批次確認 | 品牌取捨屬於使用者 | `website-setup`、`website-content-writing`、`website-design-preview` |
+| 確認頁面清單、風格與文案的預設方案，或說「全部用預設」 | 決定 | 整體提案一次批次確認 | 品牌取捨屬於使用者 | `website-setup`、`website-content-writing`、`website-design-preview` |
 | 建立 Cloudflare 帳號 | 帳號 | 一次 | Agent 不得建立帳號 | `website-deploy` |
 | 在瀏覽器完成 `wrangler login` 的 OAuth 同意 | 登入 | 一次，Token 到期後再一次 | 登入與同意必須由本人操作 | `website-deploy` |
 | 決定 `workers.dev` 帳號子網域名稱（首次啟用時） | 決定 | 一次 | 名稱屬於品牌取捨 | `website-deploy` |
 | 授權首次部署到 `workers.dev` | 授權 | 一次 | 建立公開連結 | `website-deploy` |
 | 購買網域（若要自訂網域） | 付費 | 一次 | 付費操作，Agent 不得輸入付款資料 | `website-deploy` |
-| 在 Cloudflare 後台「Add a site」加入網域並選免費方案（只在網域不是向 Cloudflare 購買時） | 外部帳號 | 一次 | Wrangler 的 OAuth 沒有建立 zone 的權限；改用 API Token 同樣要人進後台建立，人直接加入反而較省 | `website-deploy` |
-| 在網域註冊商改 nameserver 指向 Cloudflare（只在網域不是向 Cloudflare 購買時） | 外部帳號 | 一次 | 註冊商後台需要本人登入 | `website-deploy` |
+| 在 Cloudflare 後台「Add a site」加入網域並選免費方案（只在網域不是向 Cloudflare 購買時） | 外部帳號 | 一次 | 先檢查已授權工具；只有 Computer Use 時提供人工或較慢代做選項，不新增 Token 流程 | `website-deploy` |
+| 在網域註冊商改 nameserver 指向 Cloudflare（只在網域不是向 Cloudflare 購買時） | 外部帳號 | 一次 | 本人登入後一般設定依可用工具由 Agent 接手；只剩 Computer Use 時提供速度取捨 | `website-deploy` |
 | 授權綁定自訂網域與正式公開（移除 `noindex`） | 授權 | 一次 | 公開發布 | `website-deploy` |
 | 決定要啟用哪些服務並批次確認預設供應商 | 決定 | 每次新增一批服務 | 供應商、價格與資料處理是商業取捨 | `website-service-integration` |
 | 建立或登入表單、電子報、預約與付款服務，完成條款、OAuth 或 Email 驗證 | 帳號／登入 | 每個服務一次，平台要求時重做 | 帳號建立、登入與同意必須由本人操作 | `website-service-integration` |
 | 輸入付款服務要求的身分、稅務、銀行與收款資料 | 身分／財務 | 付款服務要求時 | Agent 不得接觸或代填這些高敏感資料 | `website-service-integration` |
-| 授權建立或修改外部服務資源、網站整合寫入、重新部署與選擇性的端到端測試 | 授權 | 每批變更各階段一次 | 這些分別改變服務端、網站檔案、公開網站或名單／預約資料 | `website-service-integration` |
-| 批次確認維運設定，並授權建立備份、隔離復原或套用更新 | 決定／授權 | 初次設定一次；每批本機寫入一次 | 備份可能含私人網站內容，復原與更新會建立或修改本機資料 | `website-operations` |
+| 授權建立或修改外部服務資源、公開部署與選擇性的端到端測試 | 授權 | 每批變更各階段一次 | 這些分別改變服務端、網站檔案、公開網站或名單／預約資料 | `website-service-integration` |
+| 批次確認維運設定，並授權建立備份、隔離復原或套用更新 | 決定／授權 | 初次設定一次；已授權的本機執行不逐次確認 | 備份可能含私人網站內容，復原與更新會建立或修改本機資料 | `website-operations` |
 | 授權監控排程、異地備份、線上部署、Cloudflare rollback 或舊備份清理 | 授權 | 使用者要求該動作時 | 這些會持續發出請求、上傳資料、改變公開版本或移除本機檔案，彼此不能互相代替 | `website-operations`、`website-deploy` |
 | 完成網域與付費服務的續約、付款資料或平台強制身分驗證 | 付費／身分 | 平台要求時 | Agent 不得代購、輸入付款資料或處理高敏感身分資訊 | `website-operations` |
 | 提供 Logo、個人照片等自有素材 | 提供事實 | 可選 | Agent 可先用佔位圖，使用者想換再提供 | `website-build` |
@@ -28,6 +28,9 @@
 人類只做四件事：回答訪談、批次確認、`wrangler login` 同意、授權首次部署。
 
 ## 使用規則
+
+- Agent 先完成文案與設計推薦再批次確認；一般設定、建置、測試、截圖、技術修正與狀態記錄由 Agent 自動接續，不另加人工關卡。七技能不是七次指令。
+- 已知事實不重問；本人登入／驗證、首次公開、網域購買與付費保留。外部服務、DNS、後續部署可在同一明確範圍中批次授權，不等於不限範圍的永久授權。
 
 - 技能不得新增本清單以外的人類步驟。真的需要時，先更新本清單與 ADR，說明為何無法由 Agent 代辦。
 - 每次只交回一個當下必要的人工作業，說明完成後如何把控制權交回 Agent。

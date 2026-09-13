@@ -4,10 +4,10 @@
 
 1. 唯讀執行 `npm outdated --json`，再查每個候選套件的官方 release notes、支援的 Node 版本、遷移說明與安全公告；不要只依 `latest` 或記憶決定。
 2. 先列完整預設批次：目前版本、候選精確版本、patch／minor／major、理由、破壞性風險、預計修改檔與回復方式。major update 單獨一批。
-3. 取得備份授權並建立、驗證備份。沒有可驗證備份時停止。
+3. 在已要求的本機更新範圍內自動建立、驗證備份。沒有可驗證備份時停止。
 4. 在隔離複本用精確版本執行 `npm install --save-exact <package>@<version>`（dev dependency 保留 `--save-dev`），檢查 `package.json` 與 `package-lock.json` 差異；不得使用無參數 `npm update`、版本 tag、寬鬆範圍或 `npm audit fix --force`。
 5. 在隔離複本執行 `npm ci`、`npm run build` 與 `check_site.py`；模板或頁面有變更時再做瀏覽器檢查。`npm ci` 依 lockfile 做 frozen install，若兩份套件檔不同步應直接失敗。
-6. 顯示測試證據與檔案差異，取得本機更新寫入授權後才套用。套用後在實際專案重跑 `npm ci`、建置與頁面檢查。
+6. 顯示測試證據與檔案差異，核對已確認的更新範圍後套用，不另加同一項本機授權。套用後在實際專案重跑 `npm ci`、建置與頁面檢查。
 7. 已上線網站另交 `website-deploy` 預覽並取得部署授權；部署後由正式網址讀回。失敗時用已驗證備份回復本機檔案；若需要 Cloudflare rollback，另行預覽與授權。
 
 ## 內容與整合維護

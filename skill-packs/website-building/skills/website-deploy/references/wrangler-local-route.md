@@ -24,7 +24,7 @@ Wrangler 以 `4.129.0` 鎖在範本的 `devDependencies`，由 `npm ci` 安裝�
 
 ## 讀回
 
-`verify --url <網址>` 檢查：首頁、關於、服務、文章列表、聯絡、範例文章回 200；不存在路徑回 404；`rss.xml`、`sitemap-index.xml`、`favicon.svg`、`og-image.png` 存在；首頁 robots 與預期一致；`og:image` 不再指向 `example.invalid`。
+`verify --config <workspace>/website/config.json --url <網址>` 檢查：已選頁面及既有文章回 200；不存在路徑回 404；啟用部落格時檢查 `rss.xml`；另檢查 `sitemap-index.xml`、`favicon.svg`、`og-image.png` 存在；首頁 robots 與預期一致；`og:image` 不再指向 `example.invalid`。
 
 首次部署後 `site.url` 仍是 `example.invalid`，`verify` 會回報 `placeholder_site_url`。處理方式：`set-url --url <workers.dev 網址> --confirm-write`，重建、重部署、再 `verify`。
 

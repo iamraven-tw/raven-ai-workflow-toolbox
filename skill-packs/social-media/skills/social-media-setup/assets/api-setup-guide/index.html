@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>社群 API 設定教學</title>
+  <link rel="stylesheet" href="guide.css">
+  <!-- 更新教學與導覽時同步版本，避免預覽沿用舊版腳本。 -->
+  <script defer src="guides.js?v=20260913-user-guide"></script>
+  <script defer src="guide.js?v=20260913-user-guide"></script>
+</head>
+<body>
+  <a class="skip" href="#step-title">跳至目前步驟</a>
+  <header>
+    <div><p class="product">AI 工作流工具箱</p><h1>社群 API 設定教學</h1></div>
+    <p class="privacy">你完成帳號設定<br>Agent 接手驗證與後續工作</p>
+  </header>
+  <nav id="platforms" aria-label="選擇平台"></nav>
+  <p class="release-note" id="coverage" role="status"></p>
+  <div class="layout">
+    <aside>
+      <label id="route-label" for="route">登入路線</label>
+      <select id="route"></select>
+      <p id="route-description"></p>
+      <nav id="steps" aria-label="操作步驟"></nav>
+      <p class="side-note">切換步驟不會操作平台，也不代表設定已通過驗證。</p>
+    </aside>
+    <main id="main">
+      <div class="step-heading"><span id="step-number"></span><div><p id="owner"></p><h2 id="step-title" tabindex="-1"></h2></div></div>
+      <p id="intro" class="intro"></p>
+      <div class="instructions"><section><h3>照著做</h3><ol id="actions"></ol></section><section class="checkpoint"><h3>完成時應該看到</h3><p id="expected"></p></section></div>
+      <div id="visual"></div>
+      <details id="trouble"><summary>畫面不同，或卡在這一步？</summary><p id="help"></p></details>
+      <section class="links"><a id="entry" target="_blank" rel="noopener noreferrer"></a><a id="source" target="_blank" rel="noopener noreferrer">查看這一步的官方依據</a></section>
+      <p class="safety">秘密不要貼進對話或這個網頁。後台秘密由本人貼入安全終端機；已授權 OAuth 程式交換、刷新產生的 Token 可直接保存到系統憑證庫。</p>
+      <footer><button id="previous" type="button">上一步</button><span id="position"></span><button id="next" type="button">下一步</button></footer>
+    </main>
+  </div>
+  <dialog id="zoom"><button id="close-zoom" type="button">關閉放大畫面</button><div id="zoom-image"></div></dialog>
+  <noscript>請啟用 JavaScript 以切換教學步驟。此網頁只在本機顯示教學，不傳送資料。也可閱讀技能的 references/meta-api-setup.md 與 references/youtube-api-setup.md。</noscript>
+</body>
+</html>

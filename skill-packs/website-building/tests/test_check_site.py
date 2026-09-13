@@ -140,6 +140,7 @@ class NodeBuildAcceptanceTests(unittest.TestCase):
                     "contact_channels": [{"kind": "email", "label": "Email", "target": "mailto:hello@example.invalid"}],
                 }
             )
+            payload["pages"]["required"] = ["home", "about", "services", "blog", "contact", "not_found"]
             payload["pages"]["optional"] = ["portfolio", "case_studies", "pricing", "faq", "newsletter"]
             config.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
             # 文案層：一份最小 copy.json 與一篇文章，確認 site.copy.mjs 與文章替換在真實建置下可用

@@ -7,6 +7,8 @@ description: "為一人公司官網挑選視覺風格。當使用者走到選風
 
 這是官網打造工作流的第三個技能。目標是把「選風格」變成看圖選號：Agent 先把六個主題真正建出來的樣子秀給使用者，人只回一個編號。
 
+完整建站或跨技能任務先讀 [技能接續契約](../website-setup/references/workflow-handoff.md)：沿用同一批次確認，自動完成已核准的本機步驟、技術狀態與下一技能，不重複問是否繼續；外部權限仍依實際範圍判定。
+
 ## 六個主題
 
 主題實體在範本 `template/src/themes/<id>/`，每個都有自己的 theme.css、BaseLayout、Header、Footer、Home、BlogIndex、BlogPost。六個都參考公開示範頁的版面手法自行實作（程式碼與素材未複製）；全部共用 `src/lib/motion.ts` 的進場、跑馬燈、視差與懸停動畫。目錄與來源見 `references/style-catalog.md`。

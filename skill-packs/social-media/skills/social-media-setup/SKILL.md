@@ -11,8 +11,8 @@ description: "建立或調整社群媒體工作流的策略與平台整合。當
 
 - 盤點既有一般設定、策略來源與已選功能。
 - 實際初始化選取 YouTube 時，預設將 Data API 與 Analytics API 一起設定，供選題規劃與成效分析共用；依 [YouTube 初始化與共用驗收](references/youtube-api-setup.md) 分別驗證內容和成效讀取。使用者明確刪減或延後時記錄缺口，不能把網頁登入當 API 已完成。
-- 實際初始化專案時，依 [圖片製作偏好](references/image-production-preferences.md) 一次設定 Codex、Antigravity、網頁模型或 HTML＋CSS、資訊密集圖卡方式，以及使用者已有的品牌色、字型與主視覺參考；後續製圖不每次重問。缺少品牌可留空，推測先預覽、確認才保存。這是一般設定，不建立生圖 API、不呼叫模型。
-- 實際初始化專案時，預設準備 OpenCLI；下載前揭露作者 GitHub、固定版本、用途、位置、依賴與擴充權限，依同一份預覽核准範圍由 Agent 代辦，不要求使用者自行下載。
+- 本次包含製圖或使用者要求設定偏好時，才依 [圖片製作偏好](references/image-production-preferences.md) 補足設定。連接帳號、發布既有成品、留言、私訊及查成效不要求先選品牌、字型或生圖工具。
+- 已確認所選路徑需要 OpenCLI 且尚未安裝時才準備工具；下載前揭露來源、版本、用途、位置、依賴與擴充權限，取得涵蓋安裝影響的確認。已有可用工具先沿用。
 - 只收集目前決策真正需要的資訊，一次詢問一個主要問題。
 - 依使用者選取的平台，查核目前官方能力、完整核心權限、相依權限、延伸權限與人工步驟。
 - 預設提出該平台所有已支援核心功能的完整權限；逐項說明用途、可執行能力、寫入影響與不同意後失去的功能，並讓使用者在 OAuth 前刪減。
@@ -40,6 +40,10 @@ description: "建立或調整社群媒體工作流的策略與平台整合。當
 
 ## 啟動流程
 
+實際開始平台 App／API 人工設定時，先依 [啟用圖文教學與安全交接](references/setup-guide.md) 開啟並呈現本機教學網頁，定位本次平台與登入路線，不只交付文字文件路徑。先讀該文件的「自用管理的選路契約」，依 Facebook → Instagram → Threads → YouTube 的已選平台順序，沿用既有連線、跳過完成項目，不要求全部平台都做。Instagram 新設定含刪文時預設 Facebook Login；Threads 自用優先評估官方權杖匯入；YouTube 使用 Desktop OAuth，不要求 API key 或公開 HTTPS。Facebook 先評估既有 Page Token；新匯入依程式核對相同 App Secret，不強迫架設回呼。
+
+圖文教學已完成，啟動時直接呈現對應步驟；拍攝紀錄與平台實機驗收不是使用者教學的前置關卡。後台 Secret／API key／測試 Token 由本人取得；使用者說「我準備好輸入了」時，由 Agent 開啟隱藏輸入終端機，本人貼上、按 Enter 儲存後告知完成，Agent 檢查非敏感收據並接續驗證。已授權 OAuth 程式自行交換、刷新產生的 Token 可直接存入系統憑證庫，不要求本人再次複製或確認；不把秘密交到聊天。原生保存與平台有效性仍分開驗證。
+
 先依「工具選擇與 Computer Use 例外」檢查 API、MCP、OpenCLI 能否完成本次操作，不先問 AI／人類模式。需要操作後台畫面時說明：「ChatGPT 執行 Computer Use 的速度較慢，可能影響使用者體驗，因此預設提供完整文字指引讓你自行操作。只有你特別要求，且優先工具無法完成時，才使用 Computer Use 作為最後手段。」
 
 人工路線依 [完整申請清單](references/integration-mode.md#人類自行操作) 一次交付指引，不要求每一步回覆。需要的金鑰透過本機隱藏輸入提供；不要貼進聊天。已保存的相符憑證先盤點並沿用，不重複索取。設定失敗不代表已獲准切換 Computer Use；提供修正文字步驟並保留進度。此原則適用 Meta、YouTube、Substack 與日後新增平台。
@@ -56,8 +60,8 @@ description: "建立或調整社群媒體工作流的策略與平台整合。當
    - 沒有，且設定不足：一次只問一個最重要的問題，判斷要走策略初始化，還是設定某個平台功能。
    - 沒有，且設定足夠：摘要目前狀態，詢問這次要修改哪一部分。
 3. 選擇一個主要模式；若兩種模式都需要，先完成當前任務的必要部分，再明確交接另一模式。
-   - 實際初始化專案時，一併讀 [圖片製作偏好](references/image-production-preferences.md)，從對話已有選擇填入；缺少才問一個製圖方式問題，連同資訊密集圖卡預設併入同一份設定預覽。已有明確非圖片任務不強制補問。只修改製圖偏好時，不重新跑平台整合或 OpenCLI 安裝。
-   - 使用者要求實際初始化專案時，同時讀取 [OpenCLI 初始化流程](references/opencli-initialization.md)，預設納入工具準備，先提醒再下載；取得一次涵蓋完整影響的安裝確認後，AI 執行可代辦步驟，不逐條命令重問。已有可用安裝先沿用；拒絕或延後不阻擋仍可完成的工作。只討論策略、讀設定或做既有任務，不強制安裝。
+   - 本次需要製圖偏好才讀 [圖片製作偏好](references/image-production-preferences.md)；已有選擇就沿用。只修改偏好時不重新跑平台整合。
+   - 已確認所選路徑需要 OpenCLI 且尚未安裝，才讀 [OpenCLI 初始化流程](references/opencli-initialization.md)。拒絕或延後不阻擋其他可完成的工作，不把安裝列為每次初始化的前提。
 4. 讀取該模式的參考文件：
    - 策略初始化：`references/strategy-mode.md`
    - 平台整合初始化：先讀 `references/integration-mode.md`、`references/permission-selection.md` 與 `references/local-credential-storage.md`，並且只讀使用者選取的 `references/platforms/<platform>.md`
@@ -75,7 +79,9 @@ description: "建立或調整社群媒體工作流的策略與平台整合。當
 
 「完整權限」只代表使用者允許建立技術能力，不代表允許 Agent 立即發布、回覆、刪除、建立廣告、傳送私訊或排程。每次遠端寫入仍由對應技能依其預覽與確認關卡執行。使用者刪減權限時，Agent 不反覆勸說；改用 `custom` 權限設定，列出受影響功能並繼續處理仍可完成的部分。
 
-選取 Facebook、Instagram 或 Threads 任一平台時，主動詢問使用者是否要在同一次 Meta 初始化中一併設定另外兩個平台。可以共用一次規劃與外部變更確認，但各平台的 App／use case、帳號關係、permission、OAuth、Token 與讀回證據仍分開，不因其中一個成功而推定另外兩個成功。
+只處理已選平台，不因選取 Facebook、Instagram 或 Threads 就追問另外兩個。使用者已選多個平台時，可在同一次 Meta 初始化共用規劃與外部變更確認；各平台的 App／use case、帳號關係、permission、OAuth、Token 與讀回證據仍分開。
+
+自用管理的核心範圍包含內容新增／修改／刪除、帳號與單篇成效、公開留言及私訊管理。完整管理不是申請所有產品權限；廣告、商店、商品目錄等只在使用者提出時評估，不逐項詢問。先區分平台能力、套件已實作能力與實測證據：內容修改／刪除、留言隱藏／刪除及單篇成效仍須逐項盤點，取得權限不能填補執行器缺口。
 
 Agent 完成已授權的優先工具操作、本機準備與驗收；登入、安全驗證、法律條款及 OAuth 同意仍由本人處理。
 
@@ -100,7 +106,7 @@ Agent 完成已授權的優先工具操作、本機準備與驗收；登入、�
 3. 人類自行完成後台設定、登入、安全驗證、條款與測試邀請。角色必須選取搜尋結果並保存，再核對邀請是否接受；提供這些檢查方法；只有符合 Computer Use 例外才代操作必要畫面。
 4. 列出本輪實際需要的 App ID／client ID、目標資源、App Secret／client secret 或 API key，註明用途及提供位置。依 [憑證盤點](references/local-credential-storage.md#先盤點再取得避免重複輸入) 沿用相符且可用的既有值；只有缺少的秘密由人類在 `credential_terminal.py launch` 的隱藏輸入提供。不要要求所有平台都提供 API key；需要使用者 OAuth 的平台，金鑰本身不代表授權完成。
 5. 使用者準備好進行 OAuth 後，Agent 啟動本機接收器並提供短期 `launch_url` 連結與有效時間，讓人類自行開啟、核對帳號／資源／權限並同意。不要在使用者尚未完成後台設定時反覆啟動接收器等待逾時。
-6. 程式驗證 `state` 與 callback，交換 Token 並直接透過 `store_secret()` 寫入已確認的原生憑證庫。命令、日誌、預覽與錯誤輸出不含秘密。OAuth 逾時不代表 App Secret 過期；先查狀態再恢復，不重用 code、不重複要求輸入、不把 `pending_write` 交給後續技能。
+6. 授權碼分支才驗證 `state` 與 callback 並交換 Token；OAuth 程式產生的 Token 可在已授權流程中直接透過 `store_secret()` 保存並讀回比對，不再增加本人輸入關卡。後台秘密仍須本人貼入安全終端機。命令、日誌、預覽與錯誤輸出不含秘密。OAuth 逾時不代表 App Secret 過期；先查狀態再恢復，不重用 code、不重複要求輸入、不把 `pending_write` 交給後續技能。
 
    五條 OAuth 路徑都必須使用 `oauth_callback.py` 的 `preview → configure → run → status`，不得另寫臨時接收器繞過 state、適用路線的 PKCE、儲存及不明結果保護。後續技能依 `oauth-runtime.md` 透過 `Runtime.access()` 在記憶體取用、檢查並依授權刷新；原生 `verified` 不等於平台憑證有效，`ready` 也不代表所有內容功能均已驗證。Instagram Login 的權限清單來自初次交換；目前官方資料未文件化全部當前 scope 讀回，因此當次基本帳號讀回不證明額外功能仍有權限。交接必須標示初次授權證據，發布、留言、insights 與私訊再由各自正式端點判定，明確拒絕或結果不明即停止且不重送。Instagram via Facebook Login 必須明傳 `--login-route instagram_facebook_login`，舊設定不自動改路線。
 7. 以正式 API 讀回目標帳號、資源、授權範圍與可判斷的有效期限。解析含 Token 的原始回應時只輸出遮蔽後結果。
@@ -112,7 +118,7 @@ Agent 完成已授權的優先工具操作、本機準備與驗收；登入、�
 
 ## Threads 官方測試權杖替代路線
 
-Threads 回呼註冊受阻且使用者仍要求完成自有帳號 API 測試時，可依 [官方測試權杖匯入](references/threads-token-import.md) 使用後台用戶權杖產生器。這是獨立於上述 authorization-code callback 的匯入流程：沿用既有授權，先核對原生庫與相容匯入程式，再取得秘密；不需要一個已成功註冊的 callback。不得把匯入成功標成回呼驗收成功，也不得自行輸入或重放 OAuth code。權杖產生器的開啟、帳號選擇、同意與隱藏輸入全部由人類操作；匯入與 API 驗證由 Agent 完成。
+Threads 自有 App／測試角色的設定，優先評估 [官方測試權杖匯入](references/threads-token-import.md)，不必等 HTTPS 回呼失敗才採用。這是獨立於 authorization-code callback 的匯入流程，不先索取 App Secret；先核對原生庫與相容匯入程式。後台 Token 先由本人透過 Terminal 存入原生庫，匯入器只在可信程序內讀取、驗證並整理同一筆已保存 Token，不由瀏覽器搬運秘密。不得把匯入成功標成回呼驗收成功，也不得自行輸入或重放 OAuth code。本人選帳號、同意與隱藏輸入，Agent 準備入口、讀取非敏感結果並驗證。
 
 ## 最小化人類操作
 
@@ -121,7 +127,7 @@ Threads 回呼註冊受阻且使用者仍要求完成自有帳號 API 測試時�
 - 最早一次完整說明平台、App／API、實際 permission 名稱與用途、可刪減項、回呼與 HTTPS 前提、原生保存／刷新方式、維護排程、所需金鑰及分層驗收。已確認的授權與目標跨訊息沿用，只補問缺項或新增影響，不重複問「是否繼續」。
 - 一次提供完整申請清單，包括手動選 use case、填 redirect URI、保存與重新載入檢查；人類可整批操作完再回報。出錯時只補充失敗步驟，不要求重建已完成 App 或重貼可用金鑰。
 - Agent 可以在核准範圍內準備本機程式、HTTPS、原生憑證輸入及 API 驗收；設定先評估 API、MCP、OpenCLI；剩餘畫面預設提供文字指引，Computer Use 僅依例外條件執行。
-- 需要的 App Secret／API key 由人類貼入已準備好的 Terminal 隱藏輸入；使用者只貼上一次。OAuth callback 可取得的 Token 由程式直接保存，不要求人工複製 code 或 Token。
+- 只索取所選路線缺少的後台 Secret／Token，由人類貼入已準備好的 Terminal 隱藏輸入；使用者只貼上一次、按 Enter 儲存後告知完成。OAuth callback 不要求人工複製 code 或 Token，交換／刷新產生的 Token 由已授權程式直接保存到系統憑證庫。
 - 一般設定仍依 preview、digest、確認與讀回流程執行；既有確認涵蓋且候選未變就沿用。缺少必要資料或安全輸入能力時清楚列出缺口，不暗中改用明文或自動操作。
 
 ## 寫入流程

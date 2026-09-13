@@ -1,4 +1,5 @@
 ---
+import { hasPage } from '../lib/nav';
 // 404：回首頁與看文章兩個出口。
 import BaseLayout from '@theme/BaseLayout.astro';
 import { copy } from '../../site.copy.mjs';
@@ -12,7 +13,7 @@ import { copy } from '../../site.copy.mjs';
       <p class="t-lead mt-6">{copy.not_found.lead ?? '你要找的內容可能還沒上線，或是網址打錯了。'}</p>
       <div class="mt-10 flex flex-col gap-3 sm:flex-row">
         <a href="/" class="t-btn">回首頁</a>
-        <a href="/blog" class="t-btn-secondary">看文章</a>
+        {hasPage('blog') && (<a href="/blog" class="t-btn-secondary">看文章</a>)}
       </div>
     </div>
   </section>

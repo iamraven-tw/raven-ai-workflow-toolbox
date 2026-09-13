@@ -35,6 +35,7 @@ tags: ["虛構"]
 
 def configured_config() -> dict:
     payload = json.loads(DEFAULT.read_text(encoding="utf-8"))
+    payload["pages"]["required"] = ["home", "about", "services", "blog", "contact", "not_found"]
     payload["business"].update(
         {
             "status": "configured", "site_name": "虛構工作室", "one_line_positioning": "幫虛構的小店把流程交給 AI",

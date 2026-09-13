@@ -296,7 +296,7 @@ def validate_manifest(manifest: dict) -> None:
         "execution": "agent_calls_sheets_coordinator_then_community_coordinator_after_separate_approvals",
         "api_adapter_status": "implemented_local_fictional_tests_live_not_performed",
         "transaction_integration": "implemented_local_fictional_tests_live_not_performed",
-        "review_mode": "human_review_only_local_loopback",
+        "review_mode": "agent_draft_then_single_sheets_review",
         "manual_review_status": "implemented_local_fictional_tests_live_not_performed",
         "classifier": "isolated_ai_disabled_not_bundled_or_selectable",
         "network_access_by_manual_review_helper": False,
@@ -698,7 +698,7 @@ def validate_sheets_source(path: Path) -> None:
 
 
 def validate_review_source(path: Path) -> None:
-    """驗證人工 MVP、回環介面與未啟用 AI 的真實邊界。"""
+    """驗證 Agent 草稿、唯一人工審核及舊人工介面的適用邊界。"""
 
     try:
         source = json.loads(path.read_text(encoding="utf-8"))
@@ -706,9 +706,12 @@ def validate_review_source(path: Path) -> None:
         raise ValidationError("互動審查來源表不是有效 JSON") from None
     if (source.get("schema_version") != 1
             or source.get("checked_on") != "2026-09-06"
-            or source.get("mvp_mode") != "human_review_only"
+            or source.get("mvp_mode") != "agent_draft_then_sheets_review"
+            or source.get("public_comment_reviewer") != "agent_draft"
+            or source.get("human_review_surface") != "six_column_google_sheets_only"
+            or source.get("manual_review_scope") != "legacy_batches_and_direct_messages_only"
             or source.get("manual_review_helper") != "scripts/manual_review.py"):
-        raise ValidationError("互動審查必須明列本機人工 MVP")
+        raise ValidationError("互動審查必須區分 Agent 草稿、Sheets 審核與舊人工介面")
     if ("127.0.0.1" not in source.get("network_policy", "")
             or "no external requests" not in source.get("network_policy", "")
             or "no source or draft text" not in source.get("output_policy", "")
@@ -813,7 +816,7 @@ def validate_skill_structure(manifest: dict) -> None:
         community / "SKILL.md": ("social-media-setup", "Runtime.access()", "讀取授權與稍後的回覆確認仍是不同關卡",
                                       "official_community_api.py", "community_execute.py", "record-observation",
                                       "official_sheets_api.py", "community_sheets.py", "refresh_sheet",
-                                      "manual_review.py", "human", "isolated_ai_not_enabled"),
+                                      "manual_review.py", "agent_draft", "draft-input"),
         community / "references/platforms/instagram.md": ("Runtime.access", "當次 `/{ig-media-id}/comments` 成功", "初次交換"),
         community / "references/platforms/threads.md": ("Runtime.access", "官方 debugger", "完整回覆列表與父關係"),
         performance / "SKILL.md": ("social-media-setup", "Runtime.access()", "runtime 成功、SDK 欄位存在或 OAuth scope 已取得", "metric_catalog.py", "Substack eligibility"),
@@ -964,7 +967,7 @@ def validate_skill_structure(manifest: dict) -> None:
     behavior_text = (ROOT / "tests/behavior-cases.md").read_text(encoding="utf-8")
     meta_requirements = (
         "Meta 三平台合併初始化",
-        "同一次設定對話中詢問是否一併設定另外兩個",
+        "只處理已選平台，不追問未選平台",
         "不可預設一定共用",
         "人工關卡一：身分、安全與法律同意",
         "人工關卡二：OAuth 同意",

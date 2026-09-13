@@ -18,7 +18,6 @@ if str(SCRIPT_DIR) not in sys.path:
 import community_execute as execute
 import community_queue as queue
 import community_sheets
-import manual_review
 
 
 class FakePlatform:
@@ -175,18 +174,17 @@ class CommunityEndToEndTests(unittest.TestCase):
         return [key for key, item in self.state()["items"].items()
                 if item["state"] == "screened"]
 
-    def human_review(self, keys):
-        """用實際 ManualReviewSession 模擬人類逐則 allow。"""
-
-        session = manual_review.ManualReviewSession.create(
-            self.workspace, {"review_id": "review-001", "keys": keys},
-            token="fictional-review-capability-1234567890")
-        for number, _key in enumerate(keys, start=1):
-            result = session.submit({"decision": "allow",
-                                     "post_summary": f"虛構摘要 {number}。",
-                                     "draft": f"人工初稿 {number}。"})
-        self.assertEqual(result["remaining"], 0)
-        return session
+    def agent_drafts(self, keys):
+        """以虛構 Agent 產出串接真實 queue，沒有本機人工寫稿頁。"""
+        for number, key in enumerate(keys, start=1):
+            pair = {"key": key, "source_hash": self.state()["items"][key]["source_hash"]}
+            material = queue.run(self.workspace, "draft-input", pair)
+            self.assertIn("untrusted_data", material)
+            queue.run(self.workspace, "review", pair | {
+                "reviewer": "agent_draft", "review_ref": f"fictional-draft-{number}",
+                "decision": "allow", "post_summary": f"虛構摘要 {number}。",
+                "draft": f"Agent 草稿 {number}。"})
+        self.assertFalse((self.workspace / "social-media/community/manual-reviews").exists())
 
     def write_request(self, keys):
         return {"batch_id": "batch-001", "keys": keys,
@@ -214,7 +212,7 @@ class CommunityEndToEndTests(unittest.TestCase):
         fetched = self.fetch(records)
         self.assertEqual(fetched["result"], "complete")
         keys = self.screened_keys()
-        self.human_review(keys)
+        self.agent_drafts(keys)
         self.write_and_approve(keys, final_texts)
         return keys
 
@@ -244,7 +242,7 @@ class CommunityEndToEndTests(unittest.TestCase):
         duplicate = self.fetch(records, fetch_id="fetch-002")
         self.assertEqual((duplicate["screened"], duplicate["duplicates"]), (0, 3))
         keys = self.screened_keys()
-        self.human_review(keys)
+        self.agent_drafts(keys)
         self.write_and_approve(
             keys, ["人類修改後的最終回覆一。", "人類修改後的最終回覆二。"],
             reverse_rows=True)
@@ -302,7 +300,7 @@ class CommunityEndToEndTests(unittest.TestCase):
         record = self.record(1)
         self.fetch([record])
         key = self.screened_keys()[0]
-        self.human_review([key])
+        self.agent_drafts([key])
         exported = queue.run(self.workspace, "export", self.write_request([key]))
         queue.run(self.workspace, "sheet-claim", {"batch_id": "batch-001"})
         # 模擬 request 已送出但程序在保存結果前中斷；遠端已有唯一一份內容。

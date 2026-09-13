@@ -12,12 +12,12 @@
 
 ## 目前切片
 
-目前七個技能都已建立：`website-setup`、`website-content-writing`、`website-design-preview`、`website-build`、`website-deploy`、`website-service-integration` 與 `website-operations`。`website-content-writing` 列出每頁必填與可選欄位、用途與範例，引導使用者自己填，AI 只在他要求時填起點並標記為建議；文案寫進 `website/copy.json`，每個欄位帶來源標記，工具擋下 AI 建議裡沒有依據的數字與定稿時的必填空白。建站階段不寫部落格文章，文章由使用者自己寫；`website-build` 建站時自動渲染成 `site.copy.mjs`，已建好的站用 `sync`。`website-deploy` 用 `deploy_site.py` 做 Wrangler 登入檢查、部署預覽、`wrangler deploy`、HTTP 讀回、自訂網域與正式公開；每個外部動作都有預覽、授權旗標與讀回。`website-service-integration` 用 `manage_integrations.py` 管理 `website/integrations.json`，把公開 HTTPS 表單 endpoint 與電子報、預約、付款 hosted links 接到共用 Astro 元件，並分開驗證本機 HTML、公開網站與選擇性的端到端動作；不保存憑證、不植入第三方 script／iframe、不自動測試扣款。`website-operations` 用 `manage_operations.py` 管理公開健康檢查、帶逐檔雜湊的 ZIP 備份與隔離復原，依賴更新則要求精確版本、已驗證備份、隔離建置與獨立部署授權。`website-design-preview` 用範本內建的六個完整主題產生本機畫廊；`website-setup` 一次完成商業訪談；`website-build` 從 `template/` 建立並檢查網站。設定與建置技能都不登入、不部署。
+目前七個技能都已建立：`website-setup`、`website-content-writing`、`website-design-preview`、`website-build`、`website-deploy`、`website-service-integration` 與 `website-operations`。`website-content-writing` 由 Agent 先完成已選頁面的文案，標明來源，再與設計一起批次確認；文案寫進 `website/copy.json`，每個欄位帶來源標記，工具擋下 AI 建議裡沒有依據的數字與定稿時的必填空白。部落格選配，無文章不阻擋建站；`website-build` 建站時自動渲染成 `site.copy.mjs`，已建好的站用 `sync`。`website-deploy` 用 `deploy_site.py` 做 Wrangler 登入檢查、部署預覽、`wrangler deploy`、HTTP 讀回、自訂網域與正式公開；每個外部動作都有預覽、授權旗標與讀回。`website-service-integration` 用 `manage_integrations.py` 管理 `website/integrations.json`，把公開 HTTPS 表單 endpoint 與電子報、預約、付款 hosted links 接到共用 Astro 元件，並分開驗證本機 HTML、公開網站與選擇性的端到端動作；不保存憑證、不植入第三方 script／iframe、不自動測試扣款。`website-operations` 用 `manage_operations.py` 管理公開健康檢查、帶逐檔雜湊的 ZIP 備份與隔離復原，依賴更新則要求精確版本、已驗證備份、隔離建置與獨立部署授權。`website-design-preview` 用範本內建的六個完整主題產生本機畫廊；`website-setup` 一次完成商業訪談；`website-build` 從 `template/` 建立並檢查網站。設定與建置技能都不登入、不部署。
 
 ## 技能間的資料流
 
 ```text
-website-setup ──► website/config.json ──► website-content-writing（引導填文案）──► website/copy.json（文章由使用者自己寫進 website/posts/）
+website-setup ──► website/config.json ──► website-content-writing（Agent 撰寫文案）──► website/copy.json（需要文章時寫入 website/posts/）
                                       ├──► website-design-preview（畫廊展示）──► website/design.json
                                       ├──► website-build（Astro 專案、建置、自動檢查，自動讀 design.json 選主題）
                                       └──► website-deploy（deploy_site.py：登入、部署、讀回、網域、公開）

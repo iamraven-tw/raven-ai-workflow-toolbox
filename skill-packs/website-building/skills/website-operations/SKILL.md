@@ -7,20 +7,22 @@ description: "維護已建置或已上線的一人公司官網。當使用者要
 
 這是官網打造工作流的第七個技能。它讀取 `website/config.json`、`website/operations.json` 與既有網站專案，提供公開健康檢查、可驗證本機備份、隔離式復原、依賴更新與事件處理。不得重問已保存的商業資訊，也不得把 Cloudflare 登入狀態、API Token、表單內容、名單、預約或交易資料放進設定、狀態或備份。
 
+完整建站或跨技能任務先讀 [技能接續契約](../website-setup/references/workflow-handoff.md)：沿用同一批次確認，自動完成已核准的本機步驟、技術狀態與下一技能，不重複問是否繼續；外部權限仍依實際範圍判定。
+
 ## 啟動與分流
 
 這是多階段技能。開始時先用 Mermaid 顯示本次範圍、外部請求、本機寫入、部署／回復授權與停止位置。
 
 1. 讀取一般設定、網站專案與既有維運設定，執行 `manage_operations.py status`。區分未設定、健康檢查失敗、備份過期、依賴待評估與已完成，不把其中一層當成另一層通過。
 2. 依需求分流：監控或故障讀 [monitoring-and-incidents.md](references/monitoring-and-incidents.md)；備份／復原讀 [backup-and-recovery.md](references/backup-and-recovery.md)；依賴、內容或整合更新讀 [updates-and-maintenance.md](references/updates-and-maintenance.md)。設定欄位見 [operations-config.schema.json](references/operations-config.schema.json)。
-3. 尚未設定時，以 [default-operations.json](assets/default-operations.json) 為起點，從已部署網址產生完整候選。先執行 `configure-plan` 並一次批次確認；使用者說「全部用預設」仍必須在實際寫入前確認 plan SHA-256。
-4. `configure`、`backup`、`restore` 或健康紀錄寫入前，都必須先在對話中取得相符的明確授權，再傳入 plan SHA-256 與 `--confirm-write`。命令旗標不是對話核准。
+3. 尚未設定時，以 [default-operations.json](assets/default-operations.json) 為起點，從已部署網址產生完整候選。先執行 `configure-plan` 並一次批次確認；使用者說「全部用預設」且已看過範圍後，由 Agent 核對 plan SHA-256，不要求使用者核對技術雜湊。
+4. `configure`、`backup`、隔離 `restore` 與健康紀錄在已要求的維運範圍內，由 Agent 自動預覽、核對 plan SHA-256 並以 `--confirm-write` 執行，不每個本機寫入再問一次。超出原範圍或覆寫既有資料仍停止。命令旗標不是對話核准。
 
 ## 監控
 
 - `check` 只做公開 GET、必要文字、狀態碼、延遲與 TLS 到期檢查，不送表單、不建立預約、不測試付款。
 - 只有 `check --record --confirm-write` 會把結果寫到 `.local/website/operations/health-history.json`；排程需使用者明確要求並先確認頻率與通知規則。沒有排程能力時只提供可重跑命令，不自行建立作業系統排程。
-- 失敗時先讀回一次並定位來源；結果不明就停止，不反覆部署或重送外部動作。修復與 Cloudflare rollback 皆另行預覽與授權。
+- 失敗時先讀回一次並定位來源；結果不明就停止，不反覆部署或重送外部動作。範圍內本機修復自動執行並重測；Cloudflare rollback 須相符的獨立授權。
 
 ## 備份與復原
 

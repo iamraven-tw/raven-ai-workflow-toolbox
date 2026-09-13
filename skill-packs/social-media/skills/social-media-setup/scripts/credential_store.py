@@ -873,7 +873,9 @@ def interactive_put(args: argparse.Namespace) -> dict[str, Any]:
         raise CredentialStoreError("恢復前必須確認；尚未要求秘密輸入")
     if not recovering and f"{platform}/{name}" in registry["entries"] and not args.confirm_replace:
         raise CredentialStoreError("同名憑證已存在；先確認取代，不要求重貼")
-    prompt = f"請貼上 {platform} 的 {name}（輸入不會顯示）："
+    # 貼上後的 Enter 就是保存確認，不再要求第二次輸入或確認。
+    action = "比對恢復" if recovering else "儲存"
+    prompt = f"請貼上 {platform} 的 {name}（輸入不回顯；按 Enter 即確認{action}，Ctrl+C 取消）："
     try:
         with warnings.catch_warnings():
             # getpass 無法關閉回顯時不得降級成普通輸入。

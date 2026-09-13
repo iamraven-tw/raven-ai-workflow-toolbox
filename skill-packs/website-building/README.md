@@ -19,7 +19,7 @@
 ## 目前可用
 
 - `website-setup`：讀取工作區既有設定當預設值，一次完成商業訪談，產生頁面清單、風格推薦、託管方案與網域路線的預設方案，批次確認後寫入 `website/config.json` 與不含秘密的狀態檔。本技能不建立專案、不部署、不碰任何 Cloudflare 資源。
-- `website-content-writing`：引導使用者填寫首頁、關於、服務、聯絡、文章列表與 404 的文案。Agent 依設定檔列出每欄的用途、字數與一個虛構範例，必填五欄請使用者自己寫；他沒空時 AI 先填起點並標記為建議、明講建議親自改過一遍。工具會擋下 AI 建議裡沒依據的數字、定稿仍含佔位或必填空白。建站階段不寫部落格文章，文章由使用者自己用 Markdown 寫，技能只檢查格式並帶進網站。確認後寫入 `website/copy.json`，`website-build` 建站時自動套用，已建好的站用 `sync` 同步。
+- `website-content-writing`：Agent 依事實完成已選頁面文案，與設計推薦一起批次確認；不要求人類先寫。部落格與文章依需求選用。確認後寫入 `website/copy.json`，`website-build` 建站時自動套用，已建好的站用 `sync` 同步。
 - `website-design-preview`：範本內建六個主題，各參考一個公開商業示範頁的版面手法與動畫類型自行實作（程式碼與素材未複製；版面、字型、間距、元件、動畫都不同，不是換色）。走到選風格的步驟時 Agent 主動產生本機畫廊，用真正建置出來的首頁展示、替換成使用者的站名與文案、截圖並標示建議；使用者只回一個編號。選定後寫入 `website/design.json`，建站或重建時整站換主題。使用者端不需要 Node，不需要網路。
 - `website-deploy`：Wrangler 登入檢查、部署預覽、`wrangler deploy` 到 `workers.dev`、HTTP 讀回、四條網域路線與 custom domain 綁定、移除 `noindex` 正式公開。每個外部動作都先預覽、取得授權、執行後讀回；套件不保存任何 Token。人類只做建立帳號、瀏覽器點一次同意、授權部署、買網域與必要的 Add a site／改 nameserver、授權公開。
 - `website-service-integration`：把已建好的靜態網站接上聯絡表單、電子報、預約與付款服務。預設使用原生 HTTPS POST 與 hosted links，不加入第三方 SDK、iframe 或網站端 secret；每項整合都帶服務商與隱私政策揭露。Agent 先規劃、寫入、建置與讀回；人類只處理服務帳號登入／同意、付款身分與收款資料，以及分階段授權。付款只驗證結帳入口，不自動扣款。

@@ -20,7 +20,7 @@ HOSTS = {"youtube": {"youtube.com", "www.youtube.com", "youtu.be"},
          "facebook": {"facebook.com", "www.facebook.com"},
          "threads": {"threads.net", "www.threads.net", "threads.com", "www.threads.com"}}
 INTERFACES = {"official_api", "official_connector", "reliable_cli", "controlled_browser", "computer_use", "manual"}
-FINAL = {"published", "scheduled"}
+FINAL = {"published", "scheduled", "updated", "deleted"}
 ITEM_KEYS = {"id", "platform", "target_label", "target_id", "target_url", "interface",
              "format", "title", "body", "assets", "action", "scheduled_at", "settings", "review_ref", "unresolved"}
 
@@ -151,17 +151,47 @@ def preview(root, relative):
         if platform in HOSTS:
             require(host in HOSTS[platform], "target_host_invalid")
         require(isinstance(item["title"], str) and isinstance(item["body"], str)
-                and bool((item["title"] + item["body"]).strip()), "copy_missing")
+                and (bool((item["title"] + item["body"]).strip()) or item["action"] == "delete_content"), "copy_missing")
         require(item["unresolved"] == [], "unresolved")
         require(isinstance(item["settings"], dict) and bool(item["settings"]), "settings_missing")
-        require(item["action"] in ("publish_now", "native_schedule"), "action_invalid")
+        require(item["action"] in ("publish_now", "native_schedule", "update_content", "delete_content"), "action_invalid")
+        if item["action"] == "delete_content" or (item["action"] == "update_content" and platform == "youtube"):
+            require(platform in {"facebook", "threads", "youtube", "instagram"} and item["interface"] == "official_api"
+                    and item["assets"] == [], "management_unsupported")
+            exact(item["settings"], {"resource_id", "before"})
+            before = item["settings"]["before"]
+            exact(before, {"id", "title", "body", "version", "url", "details"})
+            resource = item["settings"]["resource_id"]
+            pattern = (r"[A-Za-z0-9_-]{6,100}" if platform == "youtube" else
+                       re.escape(item["target_id"]) + r"_[0-9]+" if platform == "facebook" else r"[0-9]+")
+            require(isinstance(resource, str) and re.fullmatch(pattern, resource), "post_target_invalid")
+            require(before["id"] == resource and isinstance(before["details"], dict), "snapshot_invalid")
+            if item["action"] == "delete_content":
+                require(before["title"] == item["title"] and before["body"] == item["body"], "snapshot_invalid")
+            else:
+                require(isinstance(before["title"], str) and isinstance(before["body"], str)
+                        and bool(item["title"].strip()) and (item["title"], item["body"]) != (before["title"], before["body"]), "no_content_change")
+            short(before["version"], 1000)
+            if before["url"] is not None:
+                require(url_host(before["url"]) in HOSTS[platform], "target_host_invalid")
+        if item["action"] == "update_content" and platform != "youtube":
+            # 首批只改專頁文字；舊內容快照也綁定在預覽，避免覆蓋別人的新修改。
+            require(platform == "facebook" and item["format"] == "text"
+                    and item["interface"] == "official_api" and item["assets"] == []
+                    and item["title"] == "", "management_unsupported")
+            exact(item["settings"], {"post_id", "before_message", "before_updated_time"})
+            require(isinstance(item["settings"]["post_id"], str) and re.fullmatch(
+                re.escape(item["target_id"]) + r"_[0-9]+", item["settings"]["post_id"]), "post_target_invalid")
+            require(isinstance(item["settings"]["before_message"], str)
+                    and item["body"] != item["settings"]["before_message"], "no_content_change")
+            timestamp(item["settings"]["before_updated_time"])
         if item["action"] == "native_schedule":
             require(platform in ("youtube", "facebook", "substack"), "schedule_unsupported")
             timestamp(item["scheduled_at"])
         else:
             require(item["scheduled_at"] is None, "unexpected_schedule")
         require(isinstance(item["assets"], list), "assets_invalid")
-        if item["format"] in ("image", "carousel", "video", "reel"):
+        if item["action"] not in {"delete_content", "update_content"} and item["format"] in ("image", "carousel", "video", "reel"):
             require(len(item["assets"]) >= (2 if item["format"] == "carousel" else 1), "media_missing")
         for asset in item["assets"]:
             exact(asset, {"path", "sha256", "alt_text"})
@@ -173,6 +203,14 @@ def preview(root, relative):
 
 def fingerprint(item):
     """忽略 job 名稱、介面與排程，攔截改名重送相同內容。"""
+    if item["action"] == "delete_content":
+        return digest({k: item[k] for k in ("platform", "target_id", "action")}
+                      | {"resource_id": item["settings"]["resource_id"]})
+    if item["action"] == "update_content":
+        keys = ("platform", "target_id", "action", "body", "settings")
+        if item["platform"] == "youtube":
+            keys += ("title",)
+        return digest({k: item[k] for k in keys})
     return digest({k: item[k] for k in ("platform", "target_id", "format", "title", "body")}
                   | {"media": [a["sha256"] for a in item["assets"]]})
 
@@ -323,6 +361,10 @@ def transaction(root, relative, command, *, item_id, expected=None, approval_ref
             elif command == "record":
                 receipt = read(local(root, receipt_path))
                 validate_receipt(root, item, receipt)
+                if receipt["state"] == "deleted":
+                    require(any(op.get("stage") == "delete-content" and op.get("state") == "completed"
+                                and op.get("remote_id") == item["settings"]["resource_id"]
+                                for op in attempt.get("operations", [])), "delete_ack_required")
                 require(timestamp(receipt["observed_at"]) >= timestamp(attempt["begun_at"]), "readback_predates_attempt")
                 attempt["state"] = receipt["state"]
                 attempt["receipts"].append(receipt)
@@ -351,14 +393,40 @@ def validate_receipt(root, item, receipt):
         allowed = HOSTS.get(item["platform"], {url_host(item["target_url"])})
         require(host in allowed, "readback_host_mismatch")
     if receipt["state"] in FINAL:
-        expected_state = "scheduled" if item["action"] == "native_schedule" else "published"
+        if receipt["state"] == "updated" and item["platform"] == "youtube":
+            require(item["action"] == "update_content" and receipt["platform_id"] == item["settings"]["resource_id"], "unexpected_platform_state")
+            require(receipt["url"] is None and receipt["platform_time"] is None and receipt["content_matches"]
+                    and receipt["media_matches"] and receipt["settings_readback"] == item["settings"], "readback_incomplete")
+            after = read(evidence).get("selected", {})
+            expected = dict(item["settings"]["before"]["details"]["snippet"])
+            expected.update(title=item["title"], description=item["body"])
+            require(after.get("id") == receipt["platform_id"] and after.get("title") == item["title"]
+                    and after.get("body") == item["body"] and after.get("details", {}).get("snippet") == expected
+                    and after.get("details", {}).get("privacy_status") == item["settings"]["before"]["details"]["privacy_status"],
+                    "settings_mismatch")
+            return
+        if receipt["state"] == "deleted":
+            require(item["action"] == "delete_content" and receipt["platform_id"] == item["settings"]["resource_id"],
+                    "unexpected_platform_state")
+            # 平台未提供刪除時間；只保存觀測時間，不杜撰永久連結或平台時間。
+            require(receipt["url"] is None and receipt["platform_time"] is None
+                    and receipt["content_matches"] and receipt["media_matches"], "deletion_readback_invalid")
+            proof = {"resource_id": item["settings"]["resource_id"], "absent": True,
+                     "complete": True, "connection_verified": True}
+            require(receipt["settings_readback"] == proof and read(evidence).get("selected") == proof,
+                    "deletion_readback_invalid")
+            return
+        expected_state = {"native_schedule": "scheduled", "update_content": "updated"}.get(item["action"], "published")
         require(receipt["state"] == expected_state, "unexpected_platform_state")
         short(receipt["platform_id"], 200)
         require(receipt["url"] is not None and receipt["content_matches"] and receipt["media_matches"], "readback_incomplete")
         require(receipt["settings_readback"] == item["settings"], "settings_mismatch")
         platform_time = timestamp(receipt["platform_time"])
-        if receipt["state"] == "published":
+        if receipt["state"] in {"published", "updated"}:
             require(platform_time <= observed, "publication_in_future")
+            if receipt["state"] == "updated":
+                require(receipt["platform_id"] == item["settings"]["post_id"], "readback_target_mismatch")
+                require(platform_time >= timestamp(item["settings"]["before_updated_time"]), "stale_readback")
         else:
             require(platform_time == timestamp(item["scheduled_at"]) and platform_time > observed, "schedule_mismatch")
 

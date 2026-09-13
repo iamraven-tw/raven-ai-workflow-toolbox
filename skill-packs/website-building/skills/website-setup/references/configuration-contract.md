@@ -16,6 +16,12 @@
 - `contact_channels[].kind = "email"` 時 `target` 必須以 `mailto:` 開頭；其他類型必須是 `https://`。
 - `profile_source` 必須是工作區相對 POSIX 路徑的 Markdown 檔，或 null。
 
+## pages
+
+`pages.required` 沿用名稱但代表已選核心頁面；至少首頁與技術用 404，其他核心頁面可選，無重複且僅接受已支援識別。部落格不預選；`pages.optional` 保留作品集等額外類型。舊六頁設定有效，不自動刪掉既有網站頁面。
+
+技術 verification 更新由 Agent 依真實結果自動預覽、套用及讀回；已核准本機工作不再要求使用者確認雜湊。商業事實及設計方案仍批次確認。
+
 ## design
 
 - `fonts` 只能是 `google`（預設，各主題載入自己的 Google Fonts 中文字型，網站會向 Google 發請求）或 `system`（只用系統字型，不發外部請求）。批次確認時要用一句話說明這個差別。

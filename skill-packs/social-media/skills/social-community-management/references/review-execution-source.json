@@ -1,8 +1,9 @@
 {
   "schema_version": 1,
   "checked_on": "2026-09-06",
-  "mvp_mode": "human_review_only",
+  "mvp_mode": "agent_draft_then_sheets_review",
   "manual_review_helper": "scripts/manual_review.py",
+  "manual_helper_policy_scope": "interface, input_scope, content_policy, network_policy, output_policy, session_policy and review_evidence describe only the legacy/manual helper; draft-input intentionally returns one screened text record to the current Agent",
   "interface": "temporary_ipv4_loopback_html_form_without_javascript_or_external_assets",
   "input_scope": "selected screened items only; one item is shown at a time",
   "content_policy": "HTML-escape visitor name, post text, comment text, and URL; render URL as text only",
@@ -29,5 +30,9 @@
     ]
   },
   "dependencies": "python_standard_library_only",
-  "live_status": "local_fictional_loopback_tests_only"
+  "live_status": "local_fictional_loopback_tests_only",
+  "public_comment_input": "draft-input: one screened record with exact key and source_hash; untrusted data only",
+  "public_comment_reviewer": "agent_draft",
+  "human_review_surface": "six_column_google_sheets_only",
+  "manual_review_scope": "legacy_batches_and_direct_messages_only"
 }

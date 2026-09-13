@@ -21,7 +21,7 @@
 ## 最少人工作業
 
 1. Agent 先以 `credential_store.py inspect` 唯讀辨識 backend，不要求使用者挑選 macOS 或 Windows 的內建選項。
-2. OAuth callback、Agent 產生的 verify token，或 Agent 可在不輸出秘密的程式記憶體中取得的值，直接呼叫 `store_secret()` 保存，不要求使用者複製。
+2. 已授權 OAuth callback／刷新程式產生的 Token，直接呼叫 `store_secret()` 保存並讀回比對，不要求使用者複製或逐次確認。這不概括授權 Agent 產生或保存其他種類的秘密，也不允許從瀏覽器取得秘密。
 3. 平台畫面中的 App Secret／API key 一律由人類取得，貼入可見互動式 Terminal 的隱藏輸入；使用者只貼一次，Agent 不讀取或操作後台秘密欄位。
 4. 小程式不得接受 `--value`、命令列參數、環境變數、pipe 或對話中的秘密。秘密只經過隱藏輸入、程序記憶體與原生憑證庫。
 5. 寫入後立即從同一 backend 讀回並在記憶體比對；只輸出平台、憑證名稱、backend、`verified` 與 `contains_credentials: false`。

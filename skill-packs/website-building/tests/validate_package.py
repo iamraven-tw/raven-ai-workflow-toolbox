@@ -583,7 +583,7 @@ def validate_deploy_skill(skill: Path) -> None:
             raise ValidationError(f"部署技能缺少 {name}")
     text = (skill / "SKILL.md").read_text(encoding="utf-8")
     for phrase in (
-        "wrangler login", "--confirm-deploy", "--confirm-write", "verify --url", "noindex", "命令旗標不是對話核准",
+        "wrangler login", "--confirm-deploy", "--confirm-write", "verify --config", "noindex", "命令旗標不是對話核准",
         "不保存任何 API Token", "不代按 OAuth 同意", "不輸入付款資料", "Add a site", "nameserver", "執行錯誤最小回填", "停止條件", "workers.dev",
     ):
         if phrase not in text:
@@ -700,7 +700,7 @@ def validate_content_skill(skill: Path) -> None:
         if not (skill / name).is_file():
             raise ValidationError(f"文案技能缺少 {name}")
     text = (skill / "SKILL.md").read_text(encoding="utf-8")
-    for phrase in ("user_fact", "ai_suggestion", "placeholder", "批次確認", "不編造", "--confirm-write", "命令旗標不是對話核准", "sync", "website/copy.json", "執行錯誤最小回填", "停止條件", "不建置、不部署", "guide", "必填", "自己改過一遍", "不寫部落格文章", "user-posts.md"):
+    for phrase in ("user_fact", "ai_suggestion", "批次確認", "不編造", "--confirm-write", "命令旗標不是對話核准", "sync", "website/copy.json", "執行錯誤最小回填", "停止邊界", "不部署", "guide", "已選頁面", "user-posts.md"):
         if phrase not in text:
             raise ValidationError(f"文案技能契約缺少：{phrase}")
     if "初始文章" in text or "initial-posts" in text:

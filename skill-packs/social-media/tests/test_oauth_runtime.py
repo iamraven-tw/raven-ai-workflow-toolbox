@@ -256,6 +256,24 @@ class OAuthTests(unittest.TestCase):
         runtime.access(confirmed_read=True, allow_refresh=True)
         self.assertEqual(runtime._bundle()["refresh_token"], "fictional-rotated")
 
+    def test_generated_tokens_save_without_human_input_and_never_enter_files(self):
+        """已核准的交換與刷新直接存原生介面，不再要求人類複製 Token。"""
+        with mock.patch("builtins.input", side_effect=AssertionError("不得再次人工確認")), mock.patch.object(
+                vault.getpass, "getpass", side_effect=AssertionError("不得要求貼上 OAuth Token")):
+            runtime = self.google_ready()
+            self.assertEqual(runtime._bundle()["access_token"], "fictional-access")
+            self.now[0] = 4600
+            self.http.replies = [google_token(access_token="fictional-new-access",
+                                             refresh_token="fictional-new-refresh"), channel()]
+            runtime.access(confirmed_read=True, allow_refresh=True)
+            self.assertEqual(runtime._bundle()["refresh_token"], "fictional-new-refresh")
+            self.assertEqual(runtime.status()["status"], "ready")
+        # 真實原生庫另行驗收；此處查驗檔案與公開狀態不含模擬秘密。
+        for path in self.workspace.rglob("*.json"):
+            for value in ("fictional-new-access", "fictional-new-refresh"):
+                self.assertNotIn(value, path.read_text())
+                self.assertNotIn(value, json.dumps(runtime.status()))
+
     def test_expired_refresh_and_invalid_grant_stop(self):
         runtime = self.runtime()
         self.http.replies = [google_token(refresh_token_expires_in=100), channel()]

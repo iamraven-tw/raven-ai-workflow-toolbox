@@ -137,11 +137,14 @@ def get_entry(copy: dict[str, Any], path: str) -> dict[str, Any] | None:
     return copy.get(page, {}).get(field)
 
 
-def command_guide(copy: dict[str, Any] | None) -> dict[str, Any]:
+def command_guide(copy: dict[str, Any] | None, config: dict[str, Any] | None = None) -> dict[str, Any]:
     """列出每個欄位的用途、範例與目前狀態，供 Agent 引導使用者填寫。"""
 
     rows = []
     for field in load_field_guide():
+        selected = config["pages"]["required"] if config else (copy or {}).get("selected_pages")
+        if selected is not None and field["path"].split(".")[0] not in selected:
+            continue
         entry_value = get_entry(copy, field["path"]) if copy else None
         status = "empty"
         if entry_value and entry_value.get("text"):
@@ -154,7 +157,7 @@ def command_guide(copy: dict[str, Any] | None) -> dict[str, Any]:
         "required_missing": required_missing,
         "ai_examples_needing_review": ai_pending,
         "fields": rows,
-        "advice": "必填欄位請使用者自己寫或改；AI 範例只是起點，定稿前建議親自看過並改成自己的話。可選欄位留空會沿用主題預設。",
+        "advice": "Agent 先完成已選頁面的摘要與文案，標明事實來源；人類批次核對商業事實與方向，不必親自代寫。",
         "contains_credentials": False,
     }
 
@@ -171,6 +174,7 @@ def command_draft(config: dict[str, Any]) -> dict[str, Any]:
         "status": "draft",
         "language": business.get("language", "zh-TW"),
         "facts_snapshot": facts_from_config(config),
+        "selected_pages": config["pages"]["required"],
         "home": {field: entry(None, "placeholder") for field in HOME_FIELDS},
         "about": {"title": entry(None, "placeholder"), "intro": entry(None, "placeholder"), "sections": [], "cta_heading": entry(None, "placeholder")},
         "services": {field: entry(None, "placeholder") for field in SIMPLE_PAGES["services"]},
@@ -252,10 +256,15 @@ def validate_copy(copy: dict[str, Any], config: dict[str, Any] | None) -> list[d
 
     reject_secrets(copy)
     expected = {"schema_version", "status", "language", "facts_snapshot", "home", "about", "services", "contact", "blog", "not_found", "posts", "contains_credentials"}
-    if set(copy) != expected:
+    if set(copy) - {"selected_pages"} != expected:
         raise ContentError(f"copy.json 欄位不符；缺少={sorted(expected - set(copy))}，多出={sorted(set(copy) - expected)}")
     if copy["schema_version"] != 1 or copy["status"] not in ("draft", "final") or copy["contains_credentials"] is not False:
         raise ContentError("copy.json 的版本、狀態或憑證聲明不符")
+    selected = config["pages"]["required"] if config else copy.get("selected_pages", ["home", "about", "services", "contact", "blog", "not_found"])
+    if not isinstance(selected, list) or not {"home", "not_found"}.issubset(selected) or any(p not in {"home", "about", "services", "contact", "blog", "not_found"} for p in selected):
+        raise ContentError("selected_pages 不合法")
+    if config and copy.get("selected_pages", selected) != selected:
+        raise ContentError("文案頁面清單已過期，請依設定重新產生預覽")
     final = copy["status"] == "final"
     facts = list(copy.get("facts_snapshot", [])) + (facts_from_config(config) if config else [])
     facts_text = "\n".join(str(item) for item in facts)
@@ -285,7 +294,7 @@ def validate_copy(copy: dict[str, Any], config: dict[str, Any] | None) -> list[d
             check_entry(block[field], path=f"{page}.{field}", facts_text=facts_text, final=final, findings=findings, key=field)
     if final:
         for field in load_field_guide():
-            if field["required"]:
+            if field["required"] and field["path"].split(".")[0] in selected:
                 current = get_entry(copy, field["path"])
                 if not current or not current.get("text"):
                     findings.append({"path": field["path"], "kind": "required_missing", "detail": f"必填欄位「{field['label']}」定稿時必須有文字"})
@@ -296,7 +305,10 @@ def validate_copy(copy: dict[str, Any], config: dict[str, Any] | None) -> list[d
             raise ContentError(f"posts[{index}] 必須是 {{slug, file, source}}")
         if not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,80}", str(post["slug"])) or post["file"] != f"{post['slug']}.md" or post["source"] not in SOURCES:
             raise ContentError(f"posts[{index}] 的 slug、file 或 source 不合法")
-    return findings
+    # 未選頁面的空欄位不阻擋定稿；有內容的事實與秘密檢查仍保留。
+    return [f for f in findings if not (
+        f["path"].split(".")[0] not in selected and f["kind"] in {"placeholder_source", "empty_text"}
+    )]
 
 
 def parse_post(path: Path) -> dict[str, Any]:
@@ -439,7 +451,9 @@ def command_sync(workspace: Path, project: Path, *, confirmed: bool, remove_samp
         raise ContentError("缺少 --confirm-write；未修改任何檔案")
     copy_path = workspace / COPY_RELATIVE
     copy = read_json(copy_path, label="文案")
-    findings = validate_copy(copy, None) + validate_posts(workspace, copy, None)
+    config_path = workspace / "website/config.json"
+    config = read_json(config_path, label="官網設定") if config_path.exists() else None
+    findings = validate_copy(copy, config) + validate_posts(workspace, copy, config)
     blocking = [f for f in findings if f["kind"] in ("unverified_number", "placeholder_source", "empty_text", "required_missing")]
     if blocking:
         raise ContentError("文案有阻擋項，未同步")
@@ -487,7 +501,7 @@ def main() -> int:
             draft = command_draft(config)
             write_text_atomic(out, json.dumps(draft, ensure_ascii=False, indent=2, sort_keys=True) + "\n")
             guide = command_guide(draft)
-            result: dict[str, Any] = {"result": "drafted", "out": str(out), "required_missing": guide["required_missing"], "fields_to_write": [row["path"] for row in flatten_copy(draft) if row["text"] is None], "next": "用 guide --candidate 列出每欄的用途與範例，引導使用者填寫必填欄位", "contains_credentials": False}
+            result: dict[str, Any] = {"result": "drafted", "out": str(out), "required_missing": guide["required_missing"], "fields_to_write": [row["path"] for row in flatten_copy(draft) if row["text"] is None], "next": "用 guide --candidate 列出每欄的用途與範例，由 Agent 完成已選頁面文案，再與設計一起批次確認", "contains_credentials": False}
         else:
             workspace = validate_workspace_root(args.workspace_root)
             config = read_json(Path(args.config).expanduser(), label="官網設定") if getattr(args, "config", None) else None

@@ -7,19 +7,21 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 
 這是官網打造工作流的第五個技能，也是「從零到上線」的發布步驟；上線後若要表單、電子報、預約或付款入口，再交給 `website-service-integration`。每個外部動作都先預覽、取得明確授權、執行後從平台讀回；指令沒有報錯不等於上線。
 
+完整建站或跨技能任務先讀 [技能接續契約](../website-setup/references/workflow-handoff.md)：沿用同一批次確認，自動完成已核准的本機步驟、技術狀態與下一技能，不重複問是否繼續；外部權限仍依實際範圍判定。
+
 ## 責任
 
 - 檢查 Wrangler 是否可用與登入狀態（`deploy_site.py status`）；未登入時由 Agent 啟動 `npx wrangler login`，人類只在瀏覽器點一次「允許」。
 - 產生部署預覽（`plan`）：Worker 名稱、預期網址、上傳檔案數與容量、費用為零、剩餘人類步驟。一次讓使用者授權。
 - 執行 `deploy --confirm-deploy`，解析輸出中的公開網址；失敗就停下來回報，不重試。
-- 用 `verify --url` 讀回：必要頁面 200、不存在路徑 404、RSS、sitemap、robots、OG。通過才算部署完成。
+- 用 `verify --config <workspace>/website/config.json --url` 讀回：必要頁面 200、不存在路徑 404、RSS、sitemap、robots、OG。通過才算部署完成。
 - 首次部署後用 `set-url` 把 `site.url` 改成實際的 `workers.dev` 網址並重建重部署，讓 canonical 與 OG 指到可用的位置。
-- 依 `references/custom-domain-and-dns.md` 的四條路線處理自訂網域：`domain check` 讀 NS 是否已在 Cloudflare、`domain plan` 預覽、授權後 `domain apply` 寫入 routes、重建、部署、`verify --url https://<網域>`。
+- 依 `references/custom-domain-and-dns.md` 的四條路線處理自訂網域：`domain check` 讀 NS 是否已在 Cloudflare、`domain plan` 預覽、授權後 `domain apply` 寫入 routes、重建、部署、`verify --config <workspace>/website/config.json --url https://<網域>`。
 - 使用者授權正式公開後，`publish --confirm-write` 把 `indexing` 改為 `index`，重建、部署、`verify --expect-indexing index`。
-- 每個階段完成後，依 `website-setup` 的 `manage_workspace.py` 預覽與確認流程更新設定檔的 `verification` 欄位：`wrangler_login`、`workers_dev_deploy`、`custom_domain`、`public_index`。
+- 每個階段完成後，依 `website-setup` 的 `manage_workspace.py` 預覽、套用與讀回流程（既有任務內技術紀錄不再人工確認）更新設定檔的 `verification` 欄位：`wrangler_login`、`workers_dev_deploy`、`custom_domain`、`public_index`。
 - 產出上線報告；需要外部服務時交接給 `website-service-integration`，完成後交給 `website-operations` 建立健康檢查與第一份可驗證備份。
 
-本技能不建立 Cloudflare 帳號、不代按 OAuth 同意、不輸入付款資料、不用瀏覽器自動化操作 Cloudflare 後台、不保存任何 API Token 或帳號識別碼。
+本技能不建立 Cloudflare 帳號、不代按 OAuth 同意、不輸入付款資料、不自行啟用 Computer Use、不保存任何 API Token 或帳號識別碼。
 
 ## 輸入
 
@@ -37,10 +39,10 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 2. `status`。未登入時說明「我會執行 wrangler login，瀏覽器會打開 Cloudflare 授權頁，你只要按允許；沒有帳號的話先在同一頁註冊」，然後執行 `npx wrangler login`，等使用者完成後重跑 `status`。
 3. `plan --stage workers_dev`。把預覽完整列給使用者：Worker 名稱、網址樣式、上傳量、費用為零、這一步會建立公開連結。取得明確授權。
 4. `deploy --confirm-deploy --expect-indexing noindex`。若帳號尚未有 `workers.dev` 子網域，wrangler 會要求先取名；這是使用者的一次性決定，Agent 提出建議名稱讓使用者選，必要時請使用者到 Cloudflare 後台 Workers & Pages 頁設定一次再重跑。
-5. `verify --url <workers.dev 網址>`。有 finding 就修正後重跑；通過後執行 `set-url --url <網址> --confirm-write`，重建、再 `deploy`、再 `verify`。
+5. `verify --config <workspace>/website/config.json --url <workers.dev 網址>`。有 finding 就修正後重跑；通過後執行 `set-url --url <網址> --confirm-write`，重建、再 `deploy`、再 `verify`。
 6. 更新設定檔 `verification.wrangler_login = verified`、`workers_dev_deploy = deployed_readback_verified`（透過 `manage_workspace.py` 預覽與確認）。
 7. 依設定檔 `hosting.custom_domain.wanted` 決定是否進入網域階段；`no` 或 `undecided` 就跳到第 10 步。
-8. 網域階段：`domain check --domain <網域>`。NS 不在 Cloudflare 時，列出人類步驟（買網域、Add a site、改 nameserver），等使用者完成後每隔一段時間重跑 `check`，不要求使用者回報技術細節。NS 已在 Cloudflare 後，`domain plan`，取得授權，`domain apply --confirm-write`，重建、`deploy`、`verify --url https://<網域>`。更新 `verification.custom_domain = verified` 與 `hosting.custom_domain.domain`。
+8. 網域階段：`domain check --domain <網域>`。NS 不在 Cloudflare 時，列出購買／登入步驟，並依授權及可用工具處理 Add a site／nameserver，等使用者完成後每隔一段時間重跑 `check`，不要求使用者回報技術細節。NS 已在 Cloudflare 後，`domain plan`，取得授權，`domain apply --confirm-write`，重建、`deploy`、`verify --config <workspace>/website/config.json --url https://<網域>`。更新 `verification.custom_domain = verified` 與 `hosting.custom_domain.domain`。
 9. 網域路線細節與每條路線的人類步驟見 `references/custom-domain-and-dns.md`。
 10. 正式公開：說明「移除 noindex 後搜尋引擎會開始收錄」，取得授權，`publish --confirm-write`，重建、`deploy --expect-indexing index`、`verify --expect-indexing index`。更新 `verification.public_index = index_verified`。
 11. 依 `references/launch-checklist.md` 產出上線報告並交接。
@@ -60,7 +62,7 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 | `domain apply` 與部署 | 建立 DNS 記錄與憑證、網站以正式網域公開 | 要綁的主機名、DNS 變更、www 處理方式 |
 | `publish` 與部署 | 搜尋引擎可收錄 | 目前網址、robots 變更 |
 
-購買網域、Add a site、改 nameserver、建立 Cloudflare 帳號、OAuth 同意由人類親自完成；Agent 準備好要填的值並在完成後讀回，不代辦也不催促。
+購買網域、本人登入與 OAuth 同意由人類完成。一般後台設定先用已授權 API／CLI／OpenCLI；確認沒有其他方法、只剩 Computer Use 時，提供較快的人工指引或經使用者選擇由 Agent 操作，提醒速度可能較慢。登入、本人驗證、條款與付款仍由本人完成；不為少一次點擊新增秘密保存方式。
 
 ## 寫入範圍
 
@@ -91,7 +93,7 @@ description: "把 website-build 建好的一人公司官網部署到 Cloudflare 
 - 公開網址（`workers.dev` 與自訂網域）、Worker 名稱、部署時間；不含帳號識別碼。
 - 各層狀態：Wrangler 登入、`workers.dev` 部署、自訂網域、公開收錄。只有 `verify` 通過的層級標示完成。
 - 剩下的人類接觸點與下一個唯一建議動作。
-- 上線報告（見 `references/launch-checklist.md`），交接給 `website-operations`；監控排程與第一份備份仍各自預覽並取得授權。
+- 上線報告（見 `references/launch-checklist.md`），交接給 `website-operations`；監控排程須在範圍內明確授權；已包含於本次維運目標的本機備份由 Agent 自動預覽、建立與驗證。
 
 ## 停止條件
 

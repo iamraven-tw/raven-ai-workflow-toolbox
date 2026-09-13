@@ -19,10 +19,6 @@
   "pages": {
     "required": [
       "home",
-      "about",
-      "services",
-      "blog",
-      "contact",
       "not_found"
     ],
     "optional": []

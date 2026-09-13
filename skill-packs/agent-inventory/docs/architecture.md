@@ -45,7 +45,8 @@ Toolbox 的 `docs/dependency-policy.md` 要求第三方專案由 manifest 從正
 
 - `active.toolbox_version`：本套件候選版號。
 - `active.upstream_ref`、`active.upstream_tree`：已驗證的上游版本。
-- `active.upstream_source`：已驗證的 clone 絕對路徑。上游技能執行時實際讀的是 `~/.config/agent-inventory/config.json` 的 `repoRoot`（安裝最後一步寫入），這裡留一份可核對。
+- `active.source_snapshot`：安裝版本的來源快照，僅供回復該歷史版本；不是執行路由。唯一執行來源是設定檔的 `repoRoot`，由安裝／更新／回復一併寫入；其他設定保留。舊狀態 `upstream_source` 只相容讀取，不再產生新的同名來源欄位。
+- `status.runtime_source_status`：核對唯一來源的可用性與版本，缺少或不符時不得宣稱可直接執行。
 - `active.entries`：六個技能各自的種類與內容雜湊。
 - `history`、`future`、`removed`：更新、回復與移除的快照位置。
 

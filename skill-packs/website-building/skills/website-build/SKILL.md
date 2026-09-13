@@ -7,6 +7,8 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 
 這是官網打造工作流的第四個技能。目標是讓 Agent 從設定檔一路做到「本機可預覽、自動檢查通過」的網站專案，人類不需要碰任何指令。
 
+完整建站或跨技能任務先讀 [技能接續契約](../website-setup/references/workflow-handoff.md)：沿用同一批次確認，自動完成已核准的本機步驟、技術狀態與下一技能，不重複問是否繼續；外部權限仍依實際範圍判定。
+
 ## 責任
 
 - 讀取 `website/config.json`；商業資訊未設定時停止並交回 `website-setup`，不重問訪談。
@@ -43,8 +45,8 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 6. `npm ci`。這一步會依 lockfile 從 npm registry 下載固定版本套件；第一次執行前說明容量與來源。失敗時讀錯誤訊息，常見原因見 `references/build-and-check.md`。
 7. `npm run build`。失敗時停在這裡修正，不宣稱後面的步驟完成。
 8. `check_site.py --dist <target>/dist --config <workspace>/website/config.json`。有 finding 就修正後重跑，直到 `passed`。
-9. `npm run preview` 後，用瀏覽器工具在 375、768、1440 三個寬度截取首頁、服務、文章列表、單篇文章、聯絡與 404，檢查版面沒有溢出、導覽可用、手機選單可開合。截圖整理成一份給使用者看，不要求使用者自己打開瀏覽器。
-10. 依 `website-setup` 的預覽與確認流程更新設定檔的 `verification.local_build` 與 `verification.automated_page_checks`。
+9. `npm run preview` 後，用瀏覽器工具在 375、768、1440 三個寬度截取首頁、404 與所有已選頁面；只有啟用部落格且有文章時才包含文章列表／單篇文章，檢查版面沒有溢出、導覽可用、手機選單可開合。截圖整理成一份給使用者看，不要求使用者自己打開瀏覽器。
+10. 依 `website-setup` 的預覽、套用與讀回流程自動更新設定檔的 `verification.local_build` 與 `verification.automated_page_checks`。
 11. 回報並交接。
 
 ## 範本
@@ -53,7 +55,7 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 
 安裝版使用本技能內受雜湊管理的 `assets/template/`；來源版才使用技能包根層 template。缺少資產時停止並回報安裝不完整，不猜測維護者目錄或改用其他專案範本。不要直接修改安裝範本；使用者內容只寫到獨立網站專案。
 
-- 固定頁面：首頁、關於、服務、文章列表、單篇文章、聯絡、404，加上 RSS 與 sitemap。
+- 範例頁面：首頁、關於、服務、文章列表、單篇文章、聯絡、404。實際只建立已選頁面，RSS 隨部落格啟用，sitemap 反映實際輸出。
 - 可選頁面：作品集、案例、價目、常見問題、電子報。只在 `pages.optional` 啟用時才複製進 `src/pages/`。
 - 六個主題在 `src/themes/<id>/`，由 `site.config.mjs` 的 `theme` 決定；換主題只改這個欄位並重建。
 - 收錄狀態固定 `noindex`，由 `website-deploy` 在使用者授權正式公開後改成 `index`。
@@ -65,7 +67,7 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 ## 寫入範圍
 
 - 使用者指定的專案目標目錄：全部由本技能建立與修改。
-- `website/config.json` 與 `.local/website/setup-state.json`：只透過 `website-setup` 的 `manage_workspace.py` 預覽與確認流程更新 `verification` 欄位。
+- `website/config.json` 與 `.local/website/setup-state.json`：只透過 `website-setup` 的 `manage_workspace.py` 預覽、套用與讀回流程（既有任務內技術紀錄不再人工確認）更新 `verification` 欄位。
 
 不得寫入技能目錄、公開 Toolbox、範本目錄或任何外部服務。`node_modules/`、`dist/`、`.astro/` 屬於建置產物，不得提交進 Toolbox。
 
@@ -97,9 +99,9 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 - 商業資訊未設定，或設定檔含秘密欄位。
 - 目標目錄不是空的、是 symlink，或位於技能包內。
 - Node.js 版本不足或 npm 不可用。
-- 使用者未確認計畫。
+- 本次整體方案尚未確認，且沒有涵蓋此目標的既有授權。
 - `npm ci`、`npm run build` 或 `check_site.py` 失敗且一次修正後仍失敗。
-- 使用者要求的動作屬於 `website-deploy`（登入、部署、網域）。
+- 下一步需要登入或尚未授權的部署／網域外部動作；先自動讀取 website-deploy 準備預覽。
 
 停止時保留已建立的專案目錄與錯誤訊息，不刪除使用者可能已修改的檔案。
 
