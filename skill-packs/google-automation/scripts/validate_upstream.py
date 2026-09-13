@@ -9,7 +9,7 @@ import subprocess
 import sys
 import tempfile
 
-from manage_install import read_manifest, verify_learn_gas
+from manage_install import read_manifest, verify_bundle
 
 
 def prepare_tests(source: Path, destination: Path) -> None:
@@ -31,11 +31,13 @@ def prepare_tests(source: Path, destination: Path) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--learn-gas-source', required=True, type=Path)
+    parser.add_argument('--learn-gas-source', type=Path, help='已淘汰參數，新版拒絕外部來源')
     parser.add_argument('--manifest', type=Path, default=Path(__file__).resolve().parents[1] / 'install.manifest.toml')
     args = parser.parse_args()
-    source = args.learn_gas_source.resolve()
-    verify_learn_gas(read_manifest(args.manifest), source)
+    if args.learn_gas_source is not None:
+        parser.error('新版已內建來源，請移除 --learn-gas-source')
+    source = args.manifest.resolve().parent
+    verify_bundle(args.manifest.resolve(), read_manifest(args.manifest))
     env = dict(os.environ, PYTHONUTF8='1', PYTHONDONTWRITEBYTECODE='1')
     with tempfile.TemporaryDirectory(prefix='learn-gas-validation-') as temp:
         candidate = Path(temp) / 'source'
@@ -46,8 +48,8 @@ def main() -> int:
             result = subprocess.run(command, cwd=candidate, env=env)
             if result.returncode:
                 return result.returncode
-    verify_learn_gas(read_manifest(args.manifest), source)
-    print('上游驗證通過；安裝使用原始固定來源，symlink 權限不足時明確列為 skipped。')
+    verify_bundle(args.manifest.resolve(), read_manifest(args.manifest))
+    print('內建教材驗證通過；安裝使用 Toolbox 來源，symlink 權限不足時明確列為 skipped。')
     return 0
 
 

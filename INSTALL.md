@@ -1,6 +1,10 @@
 # Raven AI 一人公司工具包 安裝入口
 
-> **PREVIEW · `0.1.0-preview.1`** — 本版本供早期驗收，尚未正式支援。安裝前請先閱讀 [PREVIEW 發行說明](docs/preview-release.md)，並以各技能包 manifest 的實際狀態為準。
+> 整併版本 `0.1.0-preview.2` 的公開發行狀態與下載請查閱 [GitHub Release](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2)。
+
+原 Learn-GAS 與 My Real Second Brain 的公開核心，今後只在 `raven-ai-workflow-toolbox` 維護；舊儲存庫不再提供後續功能更新。
+
+> **PREVIEW · `0.1.0-preview.2`** — 本版本供早期驗收，尚未正式支援。安裝前請先閱讀 [PREVIEW 發行說明](docs/preview-release.md)，並以各技能包 manifest 的實際狀態為準。
 
 本 repository 由多個可獨立演進的技能包組成。根目錄不提供會一次安裝全部內容的指令；先選擇需要的技能包，再由具備本機操作能力的 AI Agent 閱讀該套件的 `INSTALL.md` 與 `install.manifest.toml`。
 
@@ -39,14 +43,14 @@ Agent 在目標使用範圍完成第一個 Toolbox 技能包的全新安裝，�
 
 ## 取得固定 Preview
 
-從 [v0.1.0-preview.1](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.1) 下載 Source code (zip)，解壓後由 Agent 閱讀本文件；或使用 Git：
+從 [v0.1.0-preview.2](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2) 下載 Source code (zip)，解壓後由 Agent 閱讀本文件；或使用 Git：
 
 ```bash
-git clone --branch v0.1.0-preview.1 --depth 1 https://github.com/iamraven-tw/raven-ai-workflow-toolbox.git
+git clone --branch v0.1.0-preview.2 --depth 1 https://github.com/iamraven-tw/raven-ai-workflow-toolbox.git
 ```
 
 產品已改名為「Raven AI 一人公司工具包」。既有狀態目錄、憑證命名空間、schema ID 與 `product_id = "ai-workflow-toolbox"` 保留相容性，不必搬移或刪除。固定相容性補丁中的舊名稱屬版本化內容，仍按原雜湊驗證。
 
 # Windows 與 macOS 平台分流
 
-Google 工具自動化在兩平台皆使用其 `scripts/validate_upstream.py` 完成固定上游驗證；Windows 權限不足的 symlink 案例明確列為 skipped。AI 剪片在 Windows x64 使用 [Windows 安裝入口](skill-packs/ai-video/docs/windows-install.md)，macOS 14+ Apple Silicon 使用 [既有 macOS 安裝契約](skill-packs/ai-video/INSTALL.md)。不得在 Windows 執行 Homebrew 或 Bash 續行範例。各平台的候選驗證範圍與未完成項目見 [測試計畫](docs/windows-test-plan.md)。
+Google 工具自動化在兩平台皆使用其 `scripts/validate_upstream.py` 完成內建來源驗證；Windows 權限不足的 symlink 案例明確列為 skipped。AI 剪片在 Windows x64 使用 [Windows 安裝入口](skill-packs/ai-video/docs/windows-install.md)，macOS 14+ Apple Silicon 使用 [既有 macOS 安裝契約](skill-packs/ai-video/INSTALL.md)。不得在 Windows 執行 Homebrew 或 Bash 續行範例。各平台的候選驗證範圍與未完成項目見 [測試計畫](docs/windows-test-plan.md)。

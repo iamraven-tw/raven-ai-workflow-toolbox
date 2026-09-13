@@ -5,7 +5,7 @@
 ```mermaid
 flowchart TD
     U[使用者想完成的工作] --> R[google-workflow-router<br/>需求與風險分流]
-    R -->|學習、建立、修改、接管、除錯、固定版面| L[固定 commit 的 Learn-GAS]
+    R -->|學習、建立、修改、接管、除錯、固定版面| L[Toolbox 內建 Apps Script 四技能]
     R -->|外部應用程式直接存取 Workspace| W[Workspace API 與 OAuth 路線]
     R -->|HTTP／Webhook| S[Cloud Run service]
     R -->|長時間批次／排程| J[Cloud Run job]
@@ -23,7 +23,7 @@ flowchart TD
 | 內容 | 唯一來源 |
 |---|---|
 | 跨 Apps Script、Workspace API 與 Cloud Run 的判斷 | `skills/google-workflow-router/` |
-| Apps Script 教學、專案、除錯與 Docs 固定版面 | manifest 固定的 Learn-GAS commit |
+| Apps Script 教學、專案、除錯與 Docs 固定版面 | 本包 `skills/` 內的四個 Apps Script 技能 |
 | 安裝狀態、雜湊與回復記錄 | 使用者指定、位於技能掃描目錄外的本機狀態目錄 |
 | OAuth 憑證、Token、Cookie、Script ID、Cloud Project ID | 只存在於對應工具的安全位置；不得進入 Toolbox 狀態或 Git |
 | 使用者的程式、測試與文件 | 使用者選定的專案目錄 |
@@ -38,7 +38,7 @@ flowchart TD
 - 回復：只從已記錄且雜湊相符的備份還原。
 - 移除：先驗證目前內容，再移到狀態目錄的隔離區；不刪除來源 repository、使用者專案或 Google 資源。
 
-安裝器不下載依賴。Agent 必須先把 Learn-GAS 的固定 commit 取得到新的本機目錄、完成驗證，再把該目錄傳給安裝器。
+安裝器使用本包 `skills/` 與 `bundle.lock.json`，不需要 Git 或 Learn-GAS 下載目錄。來源改動後由維護者重建鎖定檔並完成測試；使用者安裝時只驗證，不重建鎖定檔。
 
 ## 五個完成狀態
 

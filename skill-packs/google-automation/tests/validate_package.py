@@ -24,15 +24,15 @@ MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 FRONTMATTER = re.compile(r"\A---\n(?P<body>.*?)\n---\n", re.DOTALL)
 REAL_GOOGLE_RESOURCE = re.compile(
     r"https://(?:docs\.google\.com/(?:spreadsheets|document|forms)/d/|"
-    r"script\.google\.com/(?:home/projects/|macros/s/))[A-Za-z0-9_-]{12,}"
+    r"script\.google\.com/(?:home/projects/|macros/s/))(?!TEST_DEPLOYMENT_ID(?:/|$))[A-Za-z0-9_-]{12,}"
 )
 PRIVATE_MARKERS = (
-    "/" + "Users/",
     "@" + "gmail.com",
     "newsletter" + "-current",
     "approved" + "_locked",
     "taiwan" + "kaiyuan",
 )
+PRIVATE_HOME = re.compile(r"/Users/(?!<)[A-Za-z0-9_.-]+/")
 EXPECTED_LEARN_REF = "7d50a7bfcfbe41ea9d88c2aef8f11200871433a3"
 EXPECTED_LEARN_TREE = "ef6e45626d59ae18745eb5c7245de0b3f2e48cc9"
 EXPECTED_LICENSE_SHA256 = "39106e322b00c852430a6e6fca5f93b1465b24a6abd8a6d723df99ae9d2eaa15"
@@ -95,8 +95,8 @@ def validate_manifest() -> dict[str, Any]:
         fail("Learn-GAS tree 漂移")
     if integration.get("license_sha256") != EXPECTED_LICENSE_SHA256:
         fail("Learn-GAS LICENSE SHA-256 漂移")
-    if integration.get("vendor_source") is not False or integration.get("auto_update") is not False:
-        fail("Learn-GAS 必須維持外部單一來源且不得自動更新")
+    if integration.get("vendor_source") is not True or integration.get("auto_update") is not False:
+        fail("Apps Script 必須內建且不得自動更新舊來源")
 
     sources = manifest["managed_sources"]
     if set(sources.get("learn_gas_skills", [])) != EXPECTED_SKILLS:
@@ -118,13 +118,13 @@ def validate_manifest() -> dict[str, Any]:
     gates = {gate["id"]: gate["status"] for gate in manifest["readiness_gates"]}
     for gate_id in (
         "manifest_docs_privacy_license",
-        "learn_gas_fixed_source_and_upstream_tests",
+        "bundled_source_and_course_tests",
         "install_repeat_conflict_update_rollback_remove",
     ):
         if gates.get(gate_id) != "complete":
             fail(f"Agent 端門檻尚未完成：{gate_id}")
     if gates.get("agent_discovery") != (
-        "complete_with_antigravity_authenticated_discovery_pending_external_acceptance"
+        "structure_verified_new_release_discovery_pending"
     ):
         fail("三種 Agent 的本機發現與外部驗收邊界不正確")
     if gates.get("external_machine_google_acceptance") != (
@@ -194,8 +194,8 @@ def validate_skill() -> None:
             fail(f"路由技能缺少必要分流：{term}")
 
     for copied_skill in EXPECTED_SKILLS:
-        if (PACKAGE_ROOT / "skills" / copied_skill).exists():
-            fail(f"Toolbox 不得複製 Learn-GAS 技能：{copied_skill}")
+        if not (PACKAGE_ROOT / "skills" / copied_skill / "SKILL.md").is_file():
+            fail(f"Toolbox 缺少內建 Apps Script 技能：{copied_skill}")
 
 
 def validate_fixture() -> None:
@@ -247,14 +247,14 @@ def validate_required_files_and_links() -> None:
         PACKAGE_ROOT / "docs" / "compatibility.md",
         PACKAGE_ROOT / "scripts" / "manage_install.py",
         PACKAGE_ROOT / "tests" / "acceptance-checklist.md",
-        TOOLBOX_ROOT / "docs" / "decisions" / "0002-learn-gas-integration.md",
-        TOOLBOX_ROOT / "LICENSE",
+        PACKAGE_ROOT / "docs" / "single-source.md",
+        PACKAGE_ROOT / "LICENSE",
     )
     for file_path in required:
         if not file_path.is_file():
             fail(f"缺少必要檔案：{file_path}")
 
-    license_text = (TOOLBOX_ROOT / "LICENSE").read_text(encoding="utf-8")
+    license_text = (PACKAGE_ROOT / "LICENSE").read_text(encoding="utf-8")
     if "Apache License" not in license_text or "Version 2.0" not in license_text:
         fail("Toolbox 根授權不是 Apache License 2.0")
 
@@ -264,17 +264,19 @@ def validate_required_files_and_links() -> None:
             TOOLBOX_ROOT / "README.md",
             TOOLBOX_ROOT / "INSTALL.md",
             TOOLBOX_ROOT / "THIRD_PARTY_NOTICES.md",
-            TOOLBOX_ROOT / "docs" / "decisions" / "0002-learn-gas-integration.md",
+            PACKAGE_ROOT / "docs" / "single-source.md",
         ]
     )
     for file_path in sorted(set(markdown_files)):
+        if not file_path.is_file():
+            continue
         content = file_path.read_text(encoding="utf-8")
         for target in MARKDOWN_LINK.findall(content):
             if target.startswith(("http://", "https://", "#", "mailto:")):
                 continue
             relative_target = target.split("#", maxsplit=1)[0].strip("<>")
             if relative_target and not (file_path.parent / relative_target).resolve().exists():
-                fail(f"失效的相對連結 {target!r}：{file_path.relative_to(PACKAGE_ROOT)}")
+                fail(f"失效的相對連結 {target!r}：{file_path}")
 
 
 def validate_privacy() -> None:
@@ -290,11 +292,15 @@ def validate_privacy() -> None:
             TOOLBOX_ROOT / "README.md",
             TOOLBOX_ROOT / "INSTALL.md",
             TOOLBOX_ROOT / "THIRD_PARTY_NOTICES.md",
-            TOOLBOX_ROOT / "docs" / "decisions" / "0002-learn-gas-integration.md",
+            PACKAGE_ROOT / "docs" / "single-source.md",
         ]
     )
     for file_path in files:
+        if not file_path.is_file():
+            continue
         content = file_path.read_text(encoding="utf-8")
+        if PRIVATE_HOME.search(content):
+            fail(f"發現私人家目錄：{file_path}")
         for marker in PRIVATE_MARKERS:
             if marker in content:
                 fail(f"發現不應公開的內容 {marker!r}：{file_path}")
@@ -317,30 +323,18 @@ def validate_completion_boundaries() -> None:
         fail("INSTALL 沒有區分技能發現與 Google 登入")
 
 
-def validate_learn_gas_source(source_root: Path) -> None:
-    """核對使用者傳入的真實固定 Learn-GAS clone。"""
-
-    resolved = source_root.expanduser().resolve()
-    if run_git(resolved, "rev-parse", "HEAD") != EXPECTED_LEARN_REF:
-        fail("實際 Learn-GAS clone 的 commit 不符")
-    if run_git(resolved, "rev-parse", "HEAD^{tree}") != EXPECTED_LEARN_TREE:
-        fail("實際 Learn-GAS clone 的 tree 不符")
-    if run_git(resolved, "status", "--porcelain", "--untracked-files=all"):
-        fail("實際 Learn-GAS clone 不是乾淨狀態")
-    if sha256_file(resolved / "LICENSE") != EXPECTED_LICENSE_SHA256:
-        fail("實際 Learn-GAS LICENSE SHA-256 不符")
-    for skill_name in EXPECTED_SKILLS:
-        if not (resolved / "skills" / skill_name / "SKILL.md").is_file():
-            fail(f"實際 Learn-GAS 缺少技能：{skill_name}")
-    if not (resolved / "skills" / "learner-facing-terminology.md").is_file():
-        fail("實際 Learn-GAS 缺少共用術語檔")
+def validate_bundled_source() -> None:
+    """新來源必須從本包驗證，不連線歷史儲存庫。"""
+    sys.path.insert(0, str(PACKAGE_ROOT / "scripts"))
+    from manage_install import read_manifest, verify_bundle
+    verify_bundle(MANIFEST_PATH, read_manifest(MANIFEST_PATH))
 
 
 def validate_manager_help() -> None:
     """確認五個生命週期命令可由標準 Python 啟動。"""
 
     result = subprocess.run(
-        ["python3", str(PACKAGE_ROOT / "scripts" / "manage_install.py"), "--help"],
+        [sys.executable, str(PACKAGE_ROOT / "scripts" / "manage_install.py"), "--help"],
         check=True,
         capture_output=True,
         text=True,
@@ -357,7 +351,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--learn-gas-source",
         type=Path,
-        help="已驗證的固定 Learn-GAS clone；提供時會核對 commit、tree 與授權",
+        help="已淘汰參數；新版會拒絕外部來源",
     )
     return parser.parse_args()
 
@@ -368,6 +362,7 @@ def main() -> None:
     args = parse_args()
     checks = (
         validate_manifest,
+        validate_bundled_source,
         validate_skill,
         validate_fixture,
         validate_required_files_and_links,
@@ -379,7 +374,7 @@ def main() -> None:
         for check in checks:
             check()
         if args.learn_gas_source:
-            validate_learn_gas_source(args.learn_gas_source)
+            fail("新版已內建來源；請移除 --learn-gas-source")
     except (
         AssertionError,
         KeyError,

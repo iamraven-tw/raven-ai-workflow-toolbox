@@ -1,6 +1,7 @@
 # ADR 0002：Learn-GAS 作為固定版本外部依賴
 
-- 狀態：Accepted for external-acceptance candidate
+- 狀態：Superseded by [ADR 0005](0005-single-repository.md)
+- 以下保存 0.1.0 時期的歷史決策，0.2.0 起不再作為安裝指示。
 - 日期：2026-08-31
 - 範圍：Google 工具自動化 MVP
 

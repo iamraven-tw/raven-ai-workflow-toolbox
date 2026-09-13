@@ -301,7 +301,7 @@ foreach ($pack in $packs) {
 codex debug prompt-input 'Windows skill discovery check'
 ```
 
-有 Learn-GAS clone 時，Google validator 應另加 `--learn-gas-source <固定來源路徑>`，並在該來源執行 `python scripts/validate_skills.py` 與 `python -m unittest discover -s skills/google-apps-script-teaching/scripts -p 'test_*.py' -v`。
+Google 技能包 0.2.0 起使用內建來源：在該包執行 `python scripts/validate_upstream.py`，不再下載 Learn-GAS。上方舊版本驗收紀錄只供歷史查閱，新版本的 Windows 驗收需重新執行。
 
 命令輸出可能包含本機路徑；原始紀錄只保留本機，分享前去識別化。現有 baseline runner 位於本次工作區 `.local/ai-workflow-toolbox/run_baseline.py`，可用 `static` 或 `unit` 群組重跑；先將舊 reports 另存新 run ID，避免覆蓋證據。
 

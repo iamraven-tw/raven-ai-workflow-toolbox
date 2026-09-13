@@ -7,7 +7,7 @@
 ## MVP 能做什麼
 
 1. 先整理目標、資料、使用者、觸發方式、執行時間、流量、權限與驗收方法。
-2. 將學習、修改、除錯、接管既有 Apps Script 與 Google Docs 固定版面需求，分流到固定版本的 Learn-GAS。
+2. 將學習、修改、除錯、接管既有 Apps Script 與 Google Docs 固定版面需求，分流到本包內建的四個 Apps Script 技能。
 3. 判斷何時應直接使用 Workspace API，並選擇 API key、使用者 OAuth 或服務帳戶等身分模式。
 4. 判斷何時 Apps Script 的時間、流量、公開端點或執行生命週期不適合，改走 Cloud Run service、Cloud Run job 或 Cloud Scheduler。
 5. 把本機完成、Google 登入、OAuth 授權、遠端資源／部署與人工驗收分成獨立狀態。
@@ -19,22 +19,15 @@
 - Workspace Marketplace 外掛、Google Chat 應用程式、Admin SDK、網域層級委派、多租戶公開 OAuth 應用程式及其驗證送審。
 - 正式環境的基礎設施即程式碼、監控、SLA、災難復原、合規或資安認證。
 - 自動建立 Google Cloud Project、啟用 API、建立 OAuth client、設定帳務、部署、`clasp push` 或外部登入。
-- 在 Toolbox 內複製 Learn-GAS 程式或維護另一份 Apps Script 教材。
+- 在 Learn-GAS 舊儲存庫另行維護或同步第二份 Apps Script 教材。
 
 完整使用者故事與停止條件見 [`docs/mvp-boundary.md`](docs/mvp-boundary.md)。
 
-## Learn-GAS 整合
+## 單一來源
 
-Learn-GAS 維持獨立公開專案與單一來源。這個技能包固定到：
+從 Google 技能包 0.2.0 起，原 Learn-GAS 四個技能、範例與測試直接在本包維護。所有安裝與更新只需 Toolbox；不再取得 Learn-GAS clone。
 
-- Repository：<https://github.com/iamraven-tw/Learn-GAS>
-- Commit：`7d50a7bfcfbe41ea9d88c2aef8f11200871433a3`
-- Git tree：`ef6e45626d59ae18745eb5c7245de0b3f2e48cc9`
-- 授權：MIT License
-
-Toolbox 只提供跨路線入口、固定依賴、安裝管理與驗收；實際 Apps Script 流程仍由 Learn-GAS 的四個技能執行。更新時先在新 commit 完成上游測試與 Toolbox 回歸測試，通過後才更新 manifest；失敗時保留舊 commit 並回復已記錄的技能入口。
-
-完整決策見 [`../../docs/decisions/0002-learn-gas-integration.md`](../../docs/decisions/0002-learn-gas-integration.md)。
+原始來源與 MIT 聲明保留於 [來源政策](docs/single-source.md) 與 [授權](LICENSE.learn-gas)。課程及功能說明見 [Apps Script 指南](docs/apps-script-guide.md)。舊版遷移方式見 [安裝規格](INSTALL.md)。
 
 ## 使用方式
 

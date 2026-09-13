@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google Apps Script 除錯"
+  short_description: "用執行證據、中文紀錄檔(Log)與回歸測試修正 Apps Script"
+  default_prompt: "使用 $google-apps-script-debugging 幫我診斷 Apps Script。先讀取現有文件、程式與繁體中文紀錄檔(Log)，用簡短白話重述我希望製作的完整業務邏輯，取得我的確認後才開始修改。接著保護 Git 與同步狀態，取得可重現案例，優先用既有紀錄檔(Log)還原實際流程；紀錄檔(Log)不足時只補最小診斷資訊。一次驗證一個假設，完成最小修正、回歸測試及暫時紀錄檔(Log)清理。面向我說明任何可翻譯的英文技術術語時，先用白話解釋用途，再固定使用中文名稱(English)，例如紀錄檔(Log)，不得只使用英文術語或縮寫。只要要求我操作任何網頁，請在同一則指示提供已核對且可點擊的目標連結。Google Docs 固定版面、字體或分頁問題使用 google-docs-layout 的版面基線。需要同步修正版時，面向我稱為推送到Apps Script(clasp push)，第一次先解釋它只把本機已測試程式同步到指定 Apps Script 專案，不等於執行、寄信、觸發或部署，再由專案開發技能取得我的確認。"

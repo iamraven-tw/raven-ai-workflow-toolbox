@@ -1,6 +1,8 @@
 # Raven AI 一人公司工具包
 
-> **PREVIEW · `0.1.0-preview.1`** — 可供早期使用者安裝與驗收，尚未正式支援；`1.0.0` 前可能有破壞性變更。詳見 [PREVIEW 發行說明](docs/preview-release.md)。
+> 整併版本 `0.1.0-preview.2` 的公開發行狀態與下載請查閱 [GitHub Release](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2)。
+
+> **PREVIEW · `0.1.0-preview.2`** — 可供早期使用者安裝與驗收，尚未正式支援；`1.0.0` 前可能有破壞性變更。詳見 [PREVIEW 發行說明](docs/preview-release.md)。
 
 > 六包改造依據已整理為[共用人機分工契約](docs/human-agent-contract.md)：Agent 主導執行；僅剩 Computer Use 時說明速度並讓使用者選擇代做，機密儲存及平台本人驗證則必須由人類操作。各包接線仍待逐項完成，順序見[改造待辦清單](docs/autonomous-workflow-todo.md)。
 
@@ -17,7 +19,7 @@ Raven AI 一人公司工具包是專為一人公司創業者（solopreneur）設
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於 PREVIEW 階段，包含六個技能包。可安裝候選不等於正式支援；各平台登入、模型推論、實機發布與另一臺電腦的驗收狀態，以各技能包 manifest 為準。公開版本見 [GitHub prerelease](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.1)，完整發布驗收見 [Preview 驗收紀錄](docs/release-acceptance.md)。
+> 本專案目前處於 PREVIEW 階段，包含六個技能包。可安裝候選不等於正式支援；各平台登入、模型推論、實機發布與另一臺電腦的驗收狀態，以各技能包 manifest 為準。公開版本見 [GitHub prerelease](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2)，完整發布驗收見 [Preview 驗收紀錄](docs/release-acceptance.md)。
 
 ## 專案要解決的問題
 
@@ -40,7 +42,7 @@ Raven AI 一人公司工具包 要提供一套一人公司可以實際採用的�
 | 技能包 | 目前狀態 | 第一階段目標 |
 |---|---|---|
 | AI 剪片工作流 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 由使用者在另一臺電腦完成乾淨安裝、首次模型下載與實際影片驗收；之後再朝官方核心＋臺灣中文擴充套件演進 |
-| Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 用固定版本 Learn-GAS 保留 Apps Script 路線，先完成需求分流、本機實作與遠端確認關卡，再由使用者做 Google 實機驗收 |
+| Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | 以本包內建技能保留 Apps Script 路線，先完成需求分流、本機實作與遠端確認關卡，再由使用者做 Google 實機驗收 |
 | AI 知識庫 | Agent 端候選版可供外部驗收；本機生命週期與三種桌面／開發用戶端技能發現已通過，尚未正式支援 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
 | 社群媒體管理工作流 | 七個技能為可安裝的本機候選（候選版 0.7.0）；七份流程審查已完成，登入／OAuth、平台讀取與測試發布尚未執行，尚未正式支援 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
 | 官網打造工作流 | 七個技能（設定、文案、風格挑選、建置、部署、服務串接、維運）與起始範本為可安裝的本機候選；尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到上線、自訂網域、常用服務串接、監控與備份 |
@@ -71,11 +73,11 @@ Raven AI 一人公司工具包 要提供一套一人公司可以實際採用的�
 
 ### 2. Google 工具自動化
 
-[Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 已提供 Google Apps Script 教學、專案開發／接管、除錯與 Google Docs 固定版面技能。Toolbox 已決定把它維持為固定 commit 的外部單一來源，不複製四個技能或範例程式；完整來源、Git tree、MIT License 與 LICENSE SHA-256 都記錄在 Google 技能包 manifest。整合決策見 [`docs/decisions/0002-learn-gas-integration.md`](docs/decisions/0002-learn-gas-integration.md)。
+原 Learn-GAS 的 Google Apps Script 教學、專案開發／接管、除錯與 Google Docs 固定版面技能，已移入 Google 技能包。未來與 My Real Second Brain 一樣，只在 raven-ai-workflow-toolbox 更新；兩個舊儲存庫保留歷史與新位置說明。遷移決策見 [ADR 0005](docs/decisions/0005-single-repository.md)，進度與舊版遷移見 [整併紀錄](docs/migrations/single-repository.md)。
 
 Toolbox 新增的 `google-workflow-router` 只處理 Learn-GAS 沒有涵蓋的跨路線判斷：
 
-- **Apps Script：** 學習、修改、除錯、接管既有專案與固定版面，交給固定版本 Learn-GAS。
+- **Apps Script：** 學習、修改、除錯、接管既有專案與固定版面，交給本包內建的四個 Apps Script 技能。
 - **Workspace API／OAuth：** 外部程式直接使用 Sheets、Drive、Gmail 等 API 時，先判斷 API key、使用者 OAuth 或服務帳戶，再完成 scope 最小化與本機測試。
 - **Cloud Run service：** 需要穩定 HTTP／Webhook 入口、較明確的並行、逾時、部署與回復時使用。
 - **Cloud Run job／Cloud Scheduler：** 需要跑到完成的長時間批次或固定排程時使用。
@@ -271,8 +273,8 @@ raven-ai-workflow-toolbox/
 |---|---|---|
 | [video-use](https://github.com/browser-use/video-use) 與既有影片技能 | AI 剪片的工程基礎與實際製作經驗；MVP 使用 [Raven 公開 fork](https://github.com/iamraven-tw/video-use) | v0.1.1 已完成一般化、公開 Release、Toolbox 生命週期與 Codex／Claude Code 驗證；外部電腦驗收待使用者執行 |
 | 維護者的內容製作工作區 | 電子報、影片、Substack 與社群發布的實際案例 | 只抽出通用流程，不公開品牌資產、私人文章、帳號資料或尚未驗證的操作 |
-| [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) | Google Apps Script 的既有公開技能包 | 已固定為外部依賴與 Apps Script 分流入口；不複製原始碼、不追蹤 `main`，更新須建立新候選快照並完整回歸測試 |
-| [My Real Second Brain](https://github.com/iamraven-tw/My-Real-Second-Brain) | AI 知識庫的既有公開核心 | 保留人類理解優先、資料分層、Provider 與私人工作區邊界 |
+| [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) | Google Apps Script 技能的歷史來源 | 四個技能、範例與測試已移入本包；後續只更新 Toolbox，保留原 MIT 授權 |
+| [My Real Second Brain](https://github.com/iamraven-tw/My-Real-Second-Brain) | AI 知識庫的歷史來源 | 公開核心只在 Toolbox 維護；保留人類理解優先、資料分層、Provider 與私人工作區邊界 |
 | 維護者的 Hermes 工作流 | 社群自動化、審核關卡與成效回顧的實際經驗 | 去除帳號、排程、憑證與品牌耦合，重新設計成一般使用者可設定的流程 |
 
 既有來源不會因為出現在這張表中，就自動成為本儲存庫的一部分。任何程式或文件搬移前，都必須確認來源、版本、授權、修改紀錄與可公開範圍。

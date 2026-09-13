@@ -13,6 +13,12 @@
 - 發布、push、部署、刪除、付費操作與遠端帳號變更需要使用者明確授權。
 - 本機驗證、人工驗收與遠端發布狀態分開回報。
 
+## 唯一維護來源
+
+- Learn-GAS 與 My Real Second Brain 的公開核心只在 `raven-ai-workflow-toolbox` 維護。不得回填、同步或另行發布兩個舊儲存庫的功能更新。
+- Google 技能包內建原 Learn-GAS 四個技能與 MIT 聲明；AI 知識庫沿用本專案的完整套件。歷史來源僅供追溯。
+- 遷移與舊版更新規格見 `docs/migrations/single-repository.md`。
+
 ## 共用套件
 
 - 每個 `skill-packs/<name>/` 必須能由使用者單獨下載與安裝，不依賴維護者本機 symlink。

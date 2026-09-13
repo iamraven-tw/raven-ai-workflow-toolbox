@@ -1,5 +1,7 @@
 # 專案協作規則
 
+原 Learn-GAS 與 My Real Second Brain 的公開核心，今後只在 `raven-ai-workflow-toolbox` 維護；舊儲存庫不再提供後續功能更新。
+
 本專案開發 `My Real Second Brain` 開源技能組。所有修改都應維持「第二大腦服務第一大腦」的核心原則。
 
 ## 工作原則

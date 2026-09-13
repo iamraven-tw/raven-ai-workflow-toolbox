@@ -1,5 +1,7 @@
 # My Real Second Brain
 
+原 Learn-GAS 與 My Real Second Brain 的公開核心，今後只在 `raven-ai-workflow-toolbox` 維護；舊儲存庫不再提供後續功能更新。
+
 > 讓第二大腦服務第一大腦，而不是取代第一大腦。
 
 `My Real Second Brain` 是一套由 AI Agent 協助維護的個人知識系統。它把本地端知識、讀書筆記、知識圖譜與大型雲端資料來源接在一起，但最終的閱讀、理解、判斷與選擇，始終由人類負責。

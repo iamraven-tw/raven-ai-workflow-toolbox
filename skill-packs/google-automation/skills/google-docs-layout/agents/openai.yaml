@@ -1,0 +1,4 @@
+interface:
+  display_name: "Google Docs 固定版面"
+  short_description: "用 Apps Script 建立並驗收可列印的 Docs 固定版面"
+  default_prompt: "使用 $google-docs-layout 幫我建立或修正 Google Docs 固定版面。先把參考圖轉成可驗收的位置、字體、方向、分頁與長文字條件，再使用單一無框線表格、集中尺寸設定及分離的方向函式實作。多行儲存格要先對整格文字套用字體，再逐段設定對齊與行距；本機測試後，遠端讀回實際文字樣式，最後請我打開文件目視確認。面向我說明任何可翻譯的英文技術術語時，先用白話解釋用途，再固定使用中文名稱(English)，例如紀錄檔(Log)與函式(function)，不得只使用英文術語或縮寫。只要要求我操作任何網頁，請在同一則指示提供已核對且可點擊的目標連結。Apps Script 環境、Git、clasp 與遠端操作使用專案開發技能；面向我稱為推送到Apps Script(clasp push)，第一次先解釋它只同步本機已測試程式、不等於執行排版或建立文件，再取得我的確認。"

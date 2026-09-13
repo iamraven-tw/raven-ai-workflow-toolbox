@@ -1,18 +1,18 @@
-schema_version = 1
+schema_version = 2
 manifest_type = "google-automation-install"
 project_id = "google-automation"
 display_name = "Google 工具自動化"
 entrypoint = "INSTALL.md"
-checked_on = "2026-08-31"
+checked_on = "2026-09-13"
 status = "ready_for_external_acceptance"
 installable = true
-requires_network = true
+requires_network = false
 support_level = "installable_candidate_not_formally_supported"
 
 [mvp]
 implementation_policy = "reuse_learn_gas_and_add_only_cross_route_gap"
 public_skill = "google-workflow-router"
-apps_script_source_policy = "fixed_external_single_source"
+apps_script_source_policy = "toolbox_bundled_single_source"
 google_cloud_scope = "routing_and_local_preparation_not_remote_provisioning"
 release_policy = "manual_version_snapshots_without_private_workflow_sync"
 out_of_scope = [
@@ -25,20 +25,21 @@ out_of_scope = [
 ]
 
 [integration.learn_gas]
-decision = "fixed_commit_external_dependency_and_handoff"
-decision_record = "../../docs/decisions/0002-learn-gas-integration.md"
+decision = "maintained_in_toolbox_only"
+decision_record = "docs/single-source.md"
 repository = "https://github.com/iamraven-tw/Learn-GAS"
 ref = "7d50a7bfcfbe41ea9d88c2aef8f11200871433a3"
 tree = "ef6e45626d59ae18745eb5c7245de0b3f2e48cc9"
 license = "MIT"
 license_sha256 = "39106e322b00c852430a6e6fca5f93b1465b24a6abd8a6d723df99ae9d2eaa15"
-vendor_source = false
+vendor_source = true
 auto_update = false
 upstream_validation = "python3 scripts/validate_skills.py"
+provenance_only = true
 
 [installation]
 kind = "ai_agent_executed_local_source_registration"
-candidate_version = "0.1.0"
+candidate_version = "0.2.0"
 manager = "scripts/manage_install.py"
 manager_requires_python = ">=3.11"
 manager_network_access = false
@@ -99,21 +100,21 @@ id = "codex"
 workspace_path = "<workspace>/.agents/skills"
 user_path = "$HOME/.agents/skills"
 official_documentation = "https://learn.chatgpt.com/docs/build-skills"
-discovery_status = "locally_verified_with_codex_debug_prompt_input_without_model_request"
+discovery_status = "pending_current_release_discovery"
 
 [[client_targets]]
 id = "claude-code"
 workspace_path = "<workspace>/.claude/skills"
 user_path = "$HOME/.claude/skills"
 official_documentation = "https://code.claude.com/docs/en/slash-commands"
-discovery_status = "locally_verified_with_claude_code_skills_without_model_prompt"
+discovery_status = "pending_current_release_discovery"
 
 [[client_targets]]
 id = "google-antigravity"
 workspace_path = "<workspace>/.agents/skills"
 user_path = "$HOME/.gemini/config/skills"
 official_documentation = "https://antigravity.google/docs/skills"
-discovery_status = "official_paths_and_installed_structure_verified_cli_not_signed_in_external_discovery_pending"
+discovery_status = "pending_current_release_discovery"
 
 [lifecycle]
 repeat_install = "verify_source_and_active_hashes_then_no_op"
@@ -134,18 +135,6 @@ locally_tested = [
   "antigravity-cli-1.1.22-not-signed-in",
 ]
 officially_supported = []
-
-[[dependencies]]
-id = "learn-gas"
-role = "google_apps_script_skill_pack"
-required = true
-source_type = "public_git_repository"
-source = "https://github.com/iamraven-tw/Learn-GAS"
-ref = "7d50a7bfcfbe41ea9d88c2aef8f11200871433a3"
-verification = "git_commit_tree_license_sha256_and_upstream_tests"
-license = "MIT"
-bundle_source = false
-status = "locked_and_locally_verified"
 
 [[dependencies]]
 id = "google-clasp"
@@ -196,7 +185,7 @@ id = "manifest_docs_privacy_license"
 status = "complete"
 
 [[readiness_gates]]
-id = "learn_gas_fixed_source_and_upstream_tests"
+id = "bundled_source_and_course_tests"
 status = "complete"
 
 [[readiness_gates]]
@@ -205,7 +194,7 @@ status = "complete"
 
 [[readiness_gates]]
 id = "agent_discovery"
-status = "complete_with_antigravity_authenticated_discovery_pending_external_acceptance"
+status = "structure_verified_new_release_discovery_pending"
 
 [[readiness_gates]]
 id = "external_machine_google_acceptance"

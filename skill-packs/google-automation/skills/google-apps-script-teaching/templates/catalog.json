@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "templates": [
+    {
+      "id": "beginner/expense-tracker",
+      "displayName": "家庭支出記錄表",
+      "status": "validated",
+      "sourceCommit": "bb09854",
+      "sourceRoot": "beginner/expense-tracker",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/01_ExpenseTracker.gs",
+        "src/Tests.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "beginner/envelope-generator",
+      "displayName": "批次信封版面產生器",
+      "status": "validated",
+      "sourceCommit": "72e260c",
+      "sourceRoot": "beginner/envelope-generator",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/01_Config.gs",
+        "src/02_EnvelopeGenerator.gs",
+        "src/Tests.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "beginner/quiz-generator",
+      "displayName": "教師隨機測驗與成績報表",
+      "status": "validated",
+      "sourceCommit": "f9f9b5b",
+      "sourceRoot": "beginner/quiz-generator",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/01_Config.gs",
+        "src/02_QuizGenerator.gs",
+        "src/03_AnimeQuestionBank.gs",
+        "src/Tests.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "beginner/drive-upload-logger",
+      "displayName": "指定資料夾檔案上傳記錄器",
+      "status": "validated",
+      "sourceCommit": "45dd343",
+      "sourceRoot": "beginner/drive-upload-logger",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/01_Config.gs",
+        "src/02_Setup.gs",
+        "src/03_DriveUploads.gs",
+        "src/04_Triggers.gs",
+        "src/Tests.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "beginner/personalized-batch-mailer",
+      "displayName": "個人化批次郵件寄送器",
+      "status": "validated",
+      "sourceCommit": "7910d19",
+      "sourceRoot": "beginner/personalized-batch-mailer",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/01_Config.gs",
+        "src/02_Setup.gs",
+        "src/03_BatchMailer.gs",
+        "src/Tests.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-01",
+      "displayName": "活動報名與通知系統第 1 課累積快照",
+      "status": "validated",
+      "sourceCommit": "583b904",
+      "sourceRoot": "activity-registration/lesson-01",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-02",
+      "displayName": "活動報名與通知系統第 2 課累積快照",
+      "status": "validated",
+      "sourceCommit": "583b904",
+      "sourceRoot": "activity-registration/lesson-02",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/02_Config.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-03",
+      "displayName": "活動報名與通知系統第 3 課累積快照",
+      "status": "validated",
+      "sourceCommit": "583b904",
+      "sourceRoot": "activity-registration/lesson-03",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/02_Config.gs",
+        "src/03_Forms.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-04",
+      "displayName": "活動報名與通知系統第 4 課累積快照",
+      "status": "validated",
+      "sourceCommit": "583b904",
+      "sourceRoot": "activity-registration/lesson-04",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/02_Config.gs",
+        "src/03_Forms.gs",
+        "src/04_Batch.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-05",
+      "displayName": "活動報名與通知系統第 5 課累積快照",
+      "status": "validated",
+      "sourceCommit": "583b904",
+      "sourceRoot": "activity-registration/lesson-05",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/02_Config.gs",
+        "src/03_Forms.gs",
+        "src/04_Batch.gs",
+        "src/05_Documents.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-06",
+      "displayName": "活動報名與通知系統第 6 課累積快照",
+      "status": "validated",
+      "sourceCommit": "583b904",
+      "sourceRoot": "activity-registration/lesson-06",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/02_Config.gs",
+        "src/03_Forms.gs",
+        "src/04_Batch.gs",
+        "src/05_Documents.gs",
+        "src/06_Gmail.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-07",
+      "displayName": "活動報名與通知系統第 7 課累積快照",
+      "status": "validated",
+      "sourceCommit": "c6bd4ff",
+      "sourceRoot": "activity-registration/lesson-07",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/02_Config.gs",
+        "src/03_Forms.gs",
+        "src/04_Batch.gs",
+        "src/05_Documents.gs",
+        "src/06_Gmail.gs",
+        "src/07_Triggers.gs",
+        "src/appsscript.json"
+      ]
+    },
+    {
+      "id": "activity-registration/lesson-08",
+      "displayName": "活動報名與通知系統第 8 課累積快照",
+      "status": "validated",
+      "sourceCommit": "cc343c8",
+      "sourceRoot": "activity-registration/lesson-08",
+      "files": [
+        ".claspignore",
+        "src/00_Log.gs",
+        "src/00_Menu.gs",
+        "src/01_Sheets.gs",
+        "src/02_Config.gs",
+        "src/03_Forms.gs",
+        "src/04_Batch.gs",
+        "src/05_Documents.gs",
+        "src/06_Gmail.gs",
+        "src/07_Triggers.gs",
+        "src/08_WebApp.gs",
+        "src/appsscript.json"
+      ]
+    }
+  ]
+}

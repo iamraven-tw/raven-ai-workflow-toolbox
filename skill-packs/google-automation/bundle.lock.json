@@ -1,0 +1,29 @@
+{
+  "entries": {
+    "google-apps-script-debugging": {
+      "kind": "directory",
+      "sha256": "78ad9bebf362247fbbece90d38fee4634d474a20005bc7f15f843008b72aa1ea"
+    },
+    "google-apps-script-project-development": {
+      "kind": "directory",
+      "sha256": "8b87cf0522662e29db23fd28dd927e5b8e5fc92ddb80bde47ab87746b6947a3f"
+    },
+    "google-apps-script-teaching": {
+      "kind": "directory",
+      "sha256": "9c5915b6ae063ea287be65c991f9e50a9a1169d76ea75475874bdb8da304fc03"
+    },
+    "google-docs-layout": {
+      "kind": "directory",
+      "sha256": "511477d72380a45d9c4d1f68f2835e94e55d79128e7f33104e52527f4f2cd416"
+    },
+    "google-workflow-router": {
+      "kind": "directory",
+      "sha256": "58c4182734eb142f38380b2b51cca492c769c56536457fce39d32a58fdb2cf7d"
+    },
+    "learner-facing-terminology.md": {
+      "kind": "file",
+      "sha256": "09c7d600eb451b45ef89eed35554ecf4dd2194d55a6f4d623f5cffd2db663314"
+    }
+  },
+  "version": "0.2.0"
+}

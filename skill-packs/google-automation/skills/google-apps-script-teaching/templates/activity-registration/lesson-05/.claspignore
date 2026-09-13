@@ -1,0 +1,12 @@
+# 本機開發檔案不推送到 Apps Script。
+node_modules/**
+tests/**
+docs/**
+README.md
+package.json
+package-lock.json
+.git/**
+.gitignore
+.clasp.json
+
+# src/ 內的 Apps Script 程式與資訊清單保留給遠端專案。

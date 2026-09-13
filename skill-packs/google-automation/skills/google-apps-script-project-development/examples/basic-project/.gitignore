@@ -1,0 +1,15 @@
+# Apps Script 本機對應與 OAuth 憑證
+.clasp.json
+.clasprc.json
+
+# Node.js、建置與測試輸出
+node_modules/
+dist/
+coverage/
+
+# 本機環境與編輯器
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/

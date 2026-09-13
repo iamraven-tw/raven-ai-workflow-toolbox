@@ -24,14 +24,14 @@ description: 判斷 Google 自動化需求應走 Google Apps Script、既有 App
 - 以 Sheets、Docs、Forms、Drive、Gmail 等內建服務完成個人或小型團隊自動化。
 - Google Docs 固定版面、標籤、信封、證書或列印位置。
 
-固定 Learn-GAS 提供四個技能：
+本包內建原 Learn-GAS 的四個技能：
 
 - 未指定目的、建立或接管專案：`google-apps-script-project-development`
 - 明確要逐步學習：`google-apps-script-teaching`
 - 錯誤、權限、同步或結果異常：`google-apps-script-debugging`
 - Google Docs 固定版面：`google-docs-layout`
 
-不得在 Toolbox 重寫這四個流程。若技能未安裝或版本不符，停止並回到本套件 `INSTALL.md` 的固定依賴驗證。
+這四個流程只在 Toolbox 維護。若技能未安裝或版本不符，依本套件 `INSTALL.md` 驗證內建來源後安裝；不得回到舊儲存庫下載。
 
 ## 路線 B：Google Workspace API／OAuth
 

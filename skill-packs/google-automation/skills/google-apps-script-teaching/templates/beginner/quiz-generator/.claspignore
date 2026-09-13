@@ -1,0 +1,11 @@
+# 本機開發檔案不推送到 Apps Script。
+node_modules/**
+tests/**
+README.md
+package.json
+package-lock.json
+.git/**
+.gitignore
+.clasp.json
+
+# src/ 下的 .gs、HTML 與 appsscript.json 保留給 Apps Script。

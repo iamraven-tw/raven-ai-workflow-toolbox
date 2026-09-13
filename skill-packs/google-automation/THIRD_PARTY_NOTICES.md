@@ -8,9 +8,9 @@
 - 固定 Git tree：`ef6e45626d59ae18745eb5c7245de0b3f2e48cc9`
 - LICENSE SHA-256：`39106e322b00c852430a6e6fca5f93b1465b24a6abd8a6d723df99ae9d2eaa15`
 - 授權：MIT License，Copyright (c) 2026 iamraven-tw
-- 整合方式：安裝時從公開 repository 取得固定 commit；Toolbox 不複製或重新散布其原始碼。
+- 整合方式：以上 commit 是一次性移入的歷史基線；原始碼已收進本包並只在 Toolbox 維護。完整 MIT 文字位於 `LICENSE.learn-gas`，四個技能目錄各自附帶 LICENSE。
 
-安裝 Agent 必須驗證 commit、tree、LICENSE 雜湊與上游驗證程式。若任一項不同就停止，不使用未鎖定的 `main` 或 `latest`。Toolbox 自有的 `google-workflow-router` 適用根專案 Apache License 2.0；Learn-GAS 的檔案仍適用其 MIT License。
+安裝 Agent 必須驗證本包 `bundle.lock.json` 與 MIT 授權雜湊。歷史 commit、tree 僅供追溯，不再下載舊來源。Toolbox 自有的 `google-workflow-router` 適用根專案 Apache License 2.0；Learn-GAS 的檔案仍適用其 MIT License。
 
 ## Google clasp
 
@@ -27,4 +27,4 @@
 Google Apps Script、Google Workspace APIs、OAuth、Google Cloud Run 與 Cloud Scheduler 是外部服務，不隨 Toolbox 散布。使用者仍受各服務當時的條款、配額、帳務與組織政策約束；manifest 記錄的官方文件查驗日期不保證未來行為不變。
 # Windows 驗證相容性補充
 
-Toolbox 的 `scripts/validate_upstream.py` 在通過既有固定來源驗證後，只於暫存副本調整 Learn-GAS symlink 測試的權限偵測。未修改上游 runtime、固定 commit、tree、MIT 授權或實際安裝的技能；Windows 1314 以 skipped 記錄，不代表 symlink 防護已驗證。這項測試調整由 Toolbox 維護，其他上游驗證失敗仍會停止。
+Toolbox 的 `scripts/validate_upstream.py` 在通過本包來源雜湊驗證後，只於暫存副本調整 Learn-GAS symlink 測試的權限偵測。保留教學 runtime 與 MIT 授權；歷史 commit、tree 只供追溯；Windows 1314 以 skipped 記錄，不代表 symlink 防護已驗證。這項測試調整由 Toolbox 維護，其他上游驗證失敗仍會停止。

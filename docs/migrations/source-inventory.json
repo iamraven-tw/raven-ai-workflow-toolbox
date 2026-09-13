@@ -1,0 +1,972 @@
+{
+  "learn_gas_commit": "7d50a7bfcfbe41ea9d88c2aef8f11200871433a3",
+  "second_brain_commit": "6a725bcca90464c1606377479150650c2ec0c67e",
+  "learn_gas_files": [
+    {
+      "source": "scripts/validate_skills.py",
+      "target": "skill-packs/google-automation/scripts/validate_skills.py",
+      "source_sha256": "599526ebac7abd5d39dc095c345b942149c222d4abb6042c99dd12676dcec12c"
+    },
+    {
+      "source": "skills/google-apps-script-debugging/SKILL.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-debugging/SKILL.md",
+      "source_sha256": "3b6083222b2161e6f305ff29d30a9339607c91a49ce5790d7a6245598d775999"
+    },
+    {
+      "source": "skills/google-apps-script-debugging/agents/openai.yaml",
+      "target": "skill-packs/google-automation/skills/google-apps-script-debugging/agents/openai.yaml",
+      "source_sha256": "6aff1952cfe47a67d54731de46fc980e7c44107898b9deb5fc43d35426975e4f"
+    },
+    {
+      "source": "skills/google-apps-script-debugging/references/debugging-workflow.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-debugging/references/debugging-workflow.md",
+      "source_sha256": "d4a7d0b838e6d2689c0b5cd29db034199674e1fecbcece11a82ed1f5e04a562d"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/SKILL.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/SKILL.md",
+      "source_sha256": "44cee957293c918c605184679b231c01d808f2a69789420288f8d2946cd5ceda"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/agents/openai.yaml",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/agents/openai.yaml",
+      "source_sha256": "cb0623325f3847918418ffc0111ac4ed3bdb2ce95ee96126e63306d78189dfac"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/.claspignore",
+      "source_sha256": "bcb4e8e48dbb3d03c6101b85a1f25d7addea97249a839416a838f7d5dd33c1b5"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/.gitignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/.gitignore",
+      "source_sha256": "cb6b0444d2b667c435bdec48fa7adf34d5c0499be90bb0ba5f1a2e291f230edd"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/README.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/README.md",
+      "source_sha256": "558b73411591f73ba3432bca0fe0f6595ef55601a3b9520f58299c3e7a8a6977"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/src/00_Log.gs",
+      "source_sha256": "fa04ee10401d11630286b265f2eff8d88d458243f67e1bc43700acb3685575da"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/src/01_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/src/01_Config.gs",
+      "source_sha256": "55dd79fd232ef90ae91640e5baa3a1dddefcb986665a59792da9a724f5cc0ecd"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/src/Main.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/src/Main.gs",
+      "source_sha256": "b400754c5db28fd0f6fcb77e85fa4a800d0e9ca221f4ee0ea6ef3846fc550264"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/src/Tests.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/src/Tests.gs",
+      "source_sha256": "e89ad0a246c00797c293639063df238789596205d7d88124cb4bdc2dc15ff004"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/examples/basic-project/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/examples/basic-project/src/appsscript.json",
+      "source_sha256": "7bae41361c73c9602bdf52f9fcea50a151191adde27ba4b76651849497504ae3"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/agent-first-project-design.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/agent-first-project-design.md",
+      "source_sha256": "17c7d0b538cbdd544808dfa609bfc9c416743cd31eaae5bbc3d33465fd532459"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/basic-application-routing.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/basic-application-routing.md",
+      "source_sha256": "a6973b07b9c1d34ef5337ef1af29977dc4efd46d9ba4ec629cdfabcc725b97a2"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/clasp-workflow.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/clasp-workflow.md",
+      "source_sha256": "76d09f3aa713252ad310cc622da48173ace522f651e476cd2d2a7135a2f30bdf"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/deployment-workflow.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/deployment-workflow.md",
+      "source_sha256": "20f3a1c3720036cbf6959a080b3ef5c3aba4d2271e704a24c51be995b1a7a4d5"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/development-environment.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/development-environment.md",
+      "source_sha256": "fff4c64d78e2b4ea5b07635bdf1204cb245185410a70e8f29314ad241d9dceec"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/project-mode-workflows.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/project-mode-workflows.md",
+      "source_sha256": "e63f8328912714ae8a90da403ff23ae7abf9347fa433bf15111075663a64edea"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/project-quality-standard.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/project-quality-standard.md",
+      "source_sha256": "fe921d35c800d79037d867349381aa1342974afd665f607889a7258a7d84edd9"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/project-workflow.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/project-workflow.md",
+      "source_sha256": "da1606d86439be2f16b2df629f82af164b715dc1817ab720f1d274b220110f95"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/security-and-github.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/security-and-github.md",
+      "source_sha256": "112b59612e710f6e7d2a55b227c5ad98874746b4b80e82e6954fa060d64461c6"
+    },
+    {
+      "source": "skills/google-apps-script-project-development/references/ui-operation-policy.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-project-development/references/ui-operation-policy.md",
+      "source_sha256": "e7ee15ca3fa505eb94535ad1b593fad726dc8e0c8a8851842e846c47940bb9e8"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/SKILL.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/SKILL.md",
+      "source_sha256": "ac3d56b4f3fb6a91da8573c9bac6554a3123a5dc14f3733a692d987ab1e62e12"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/agents/openai.yaml",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/agents/openai.yaml",
+      "source_sha256": "7ded873e2c4ef9ebc6b9b66492fdaed4c00e6ef5de8bf7e849895e9329f7a5d8"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/examples/course-progress-template.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/examples/course-progress-template.md",
+      "source_sha256": "3754ddf6a812e57034bdaa140ebeed5d35c89f3c23672f59be759fd8f22dcd82"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/examples/first-sheet-lesson/Code.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/examples/first-sheet-lesson/Code.gs",
+      "source_sha256": "43e4ec01818edc63f3ea8c29e0242550d0e163a8e342e3642e977d3e357ed12e"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/examples/first-sheet-lesson/README.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/examples/first-sheet-lesson/README.md",
+      "source_sha256": "df2ad17cc9562c0ffb9ab94d3478d45553c8bc8fb2a30b725ea027071970eac2"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/apps-script-ui-zh-tw.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/apps-script-ui-zh-tw.md",
+      "source_sha256": "cbb11fc2c158f04ff66cc13f3eb1aaa8a63cea90838a0f8ea29f254620fe461e"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/beginner-application-path.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/beginner-application-path.md",
+      "source_sha256": "e508d6b5203fde9ad02bb2a98ad1d847f73acfc126cfe4b9ca8437e88de0581b"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/course-execution-protocol.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/course-execution-protocol.md",
+      "source_sha256": "96f75a7221154d48c24337efe18e120750953d42cc4aef76dc23e3c54dadad5f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/learning-path.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/learning-path.md",
+      "source_sha256": "eff9cee1b60a392921ec4b2ba2bcbcbbc60ce01a7d7489fb1e43b6363fb65093"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-01-sheets.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-01-sheets.md",
+      "source_sha256": "59c45d075b4aabc4f8e42ec7a8438e8fa96d86d88be02eb6c86986fe7c223e0a"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-02-properties.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-02-properties.md",
+      "source_sha256": "234b215cc26d9fc9075ee72292e70fb268385a0356e6a3987bd8db000e1d9c82"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-03-forms.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-03-forms.md",
+      "source_sha256": "f72058130ff5e0f0b156092df8a0b784ea056b0cacdd048d690f0ee869c6e1a0"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-04-batch.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-04-batch.md",
+      "source_sha256": "1b222c19c80694475795bc11f051672a1c5fe0964353b190258519b3e4b77df0"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-05-docs-drive.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-05-docs-drive.md",
+      "source_sha256": "ebb8aa3e1e039a9fa2b23158e2fca713c58abdfcb037455874750e39cf0d8e6f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-06-gmail.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-06-gmail.md",
+      "source_sha256": "7e00fa6f6e78d75778255c6de3d492ce3ef61a67f89eac036e4fb9af405b69e3"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-07-triggers.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-07-triggers.md",
+      "source_sha256": "eaa76ce714cca0a769870d17e8c14ded86f5cb6ce6aeb44b514561654e016070"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/lessons/lesson-08-webapp-webhook.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/lessons/lesson-08-webapp-webhook.md",
+      "source_sha256": "52c182612e8628705b10795fe774751df749dd282a192ab850bd3ce7cc354b2a"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/teaching-examples.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/teaching-examples.md",
+      "source_sha256": "5e9cadd5d127ff2e8f7cd0745590af9808cc6fbda12b18a4c6a404af68de9e01"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/references/teaching-workflow.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/references/teaching-workflow.md",
+      "source_sha256": "2324b0e172fee1041b5c2d94fd42101a15d3def28edc0147734148580e442bb8"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/scripts/materialize_template.py",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/scripts/materialize_template.py",
+      "source_sha256": "06d2b6324c590dcd83b33ffac934ed3114fc481ba6d1288cb82f17e0e91fec72"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/scripts/run_lesson08_webhook_tests.py",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/scripts/run_lesson08_webhook_tests.py",
+      "source_sha256": "67a254593e22ba114dda30f27033ad219c8ac6821d7146fca3546092e2505143"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/scripts/test_materialize_template.py",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/scripts/test_materialize_template.py",
+      "source_sha256": "f7e8944ba005455881b62748d314799960719ce570ed0de6602859af2b2bd179"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/scripts/test_run_lesson08_webhook_tests.py",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/scripts/test_run_lesson08_webhook_tests.py",
+      "source_sha256": "12300541b877c44f4872d2d2021549fc2f7277a7f9580ce707ddd6796d6a9d19"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/scripts/test_update_course_progress.py",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/scripts/test_update_course_progress.py",
+      "source_sha256": "fcbace948817d9cf25934efd149de4138bb343afbda09fe14e6141cc6f4abdb7"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/scripts/update_course_progress.py",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/scripts/update_course_progress.py",
+      "source_sha256": "7833f0c3861ab9b710bfd524b12c357b1a789f6ec6169969037984c6df4abc4d"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/README.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/README.md",
+      "source_sha256": "d22067550e0ee57ec5048a267f26a94756d46c1c8503a6b1a61e96521f929899"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/README.md",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/README.md",
+      "source_sha256": "bc3b2c078febfb82f3ce4776618be594f4b52a197aa1ef7a0958111f0a2f1374"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-01/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-01/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/00_Log.gs",
+      "source_sha256": "d8c1a6d166561166601afad5382c8b92d1a7b4009e2d8a4259740c09500dc5cf"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/00_Menu.gs",
+      "source_sha256": "5494c265563b24391962269329bb435a20698d7fe5995a24113ba30b5a9dac5a"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/01_Sheets.gs",
+      "source_sha256": "3e8a5c56a695ae969a1f1b262e3c0da04f86a57a374b27a322aec899ef38c78b"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-01/src/appsscript.json",
+      "source_sha256": "89fea58649f3372fe9125fd2ad936c5c16cb64f1def58d6d9ddcdc0edc243ad7"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-02/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-02/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/00_Log.gs",
+      "source_sha256": "1b37d209aa5061c6e48cb51774311e4c111a7e367811d74a36bec38460a7914f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/00_Menu.gs",
+      "source_sha256": "5494c265563b24391962269329bb435a20698d7fe5995a24113ba30b5a9dac5a"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/01_Sheets.gs",
+      "source_sha256": "2e6fdc2daef2b15e4fb110d76d2a7cb1d7d96e368a72872e08ea171624364b4f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/02_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/02_Config.gs",
+      "source_sha256": "0d6e91ddf0f4a49bd59dedca0d4ae7abc87ea85602d02e2d201ffca02da2b1a8"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-02/src/appsscript.json",
+      "source_sha256": "89fea58649f3372fe9125fd2ad936c5c16cb64f1def58d6d9ddcdc0edc243ad7"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-03/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-03/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/00_Log.gs",
+      "source_sha256": "1b37d209aa5061c6e48cb51774311e4c111a7e367811d74a36bec38460a7914f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/00_Menu.gs",
+      "source_sha256": "5494c265563b24391962269329bb435a20698d7fe5995a24113ba30b5a9dac5a"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/01_Sheets.gs",
+      "source_sha256": "2e6fdc2daef2b15e4fb110d76d2a7cb1d7d96e368a72872e08ea171624364b4f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/02_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/02_Config.gs",
+      "source_sha256": "22e4f509dafc716d35508bb166f416def1f4b17f740f16dde692782d02501cc3"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/03_Forms.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/03_Forms.gs",
+      "source_sha256": "1a111bbfac6c9b52b53a5edc06e06082d12f32f2b0f9956dc2cd8313c252d2a4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-03/src/appsscript.json",
+      "source_sha256": "5d112780680fbd982bac890ceeb01f181bd59ed0d2b57921ba6324940ba6faed"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/00_Log.gs",
+      "source_sha256": "1b37d209aa5061c6e48cb51774311e4c111a7e367811d74a36bec38460a7914f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/00_Menu.gs",
+      "source_sha256": "5494c265563b24391962269329bb435a20698d7fe5995a24113ba30b5a9dac5a"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/01_Sheets.gs",
+      "source_sha256": "2e6fdc2daef2b15e4fb110d76d2a7cb1d7d96e368a72872e08ea171624364b4f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/02_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/02_Config.gs",
+      "source_sha256": "22e4f509dafc716d35508bb166f416def1f4b17f740f16dde692782d02501cc3"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/03_Forms.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/03_Forms.gs",
+      "source_sha256": "1a111bbfac6c9b52b53a5edc06e06082d12f32f2b0f9956dc2cd8313c252d2a4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/04_Batch.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/04_Batch.gs",
+      "source_sha256": "3d8656d72661dd8e198b3cdb276ed8fc42f514f2caeab0b55692e5c3711450b1"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-04/src/appsscript.json",
+      "source_sha256": "5d112780680fbd982bac890ceeb01f181bd59ed0d2b57921ba6324940ba6faed"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/00_Log.gs",
+      "source_sha256": "1b37d209aa5061c6e48cb51774311e4c111a7e367811d74a36bec38460a7914f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/00_Menu.gs",
+      "source_sha256": "b9c80e0c2b26d9b3ca7b9260eb66b560947a7c380ff89bef1c56e8656e6f26ce"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/01_Sheets.gs",
+      "source_sha256": "2e6fdc2daef2b15e4fb110d76d2a7cb1d7d96e368a72872e08ea171624364b4f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/02_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/02_Config.gs",
+      "source_sha256": "66dfb7ff4535f2b0650d8491515a98856e8dbb132c4a9ce3a40327242790ef5d"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/03_Forms.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/03_Forms.gs",
+      "source_sha256": "1a111bbfac6c9b52b53a5edc06e06082d12f32f2b0f9956dc2cd8313c252d2a4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/04_Batch.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/04_Batch.gs",
+      "source_sha256": "3d8656d72661dd8e198b3cdb276ed8fc42f514f2caeab0b55692e5c3711450b1"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/05_Documents.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/05_Documents.gs",
+      "source_sha256": "c3ec364457c651b5b91cd5e5b0a17e0c62de3dc8eba97859d568cd61c1e7d2ea"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-05/src/appsscript.json",
+      "source_sha256": "93b3a362eb9123211a53747e1d409e4587e1911b986b280d6c229c488f8898b3"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/00_Log.gs",
+      "source_sha256": "1b37d209aa5061c6e48cb51774311e4c111a7e367811d74a36bec38460a7914f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/00_Menu.gs",
+      "source_sha256": "cf737922cd07e40ed0fdc25dbf072c153dfc13ff8bf3cd310c38f1a9c962224d"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/01_Sheets.gs",
+      "source_sha256": "2e6fdc2daef2b15e4fb110d76d2a7cb1d7d96e368a72872e08ea171624364b4f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/02_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/02_Config.gs",
+      "source_sha256": "598e99e1c879cca725cbd5008254f47438cf93f1a0d3e9f18dfb67208fc67cea"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/03_Forms.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/03_Forms.gs",
+      "source_sha256": "1a111bbfac6c9b52b53a5edc06e06082d12f32f2b0f9956dc2cd8313c252d2a4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/04_Batch.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/04_Batch.gs",
+      "source_sha256": "3d8656d72661dd8e198b3cdb276ed8fc42f514f2caeab0b55692e5c3711450b1"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/05_Documents.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/05_Documents.gs",
+      "source_sha256": "c3ec364457c651b5b91cd5e5b0a17e0c62de3dc8eba97859d568cd61c1e7d2ea"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/06_Gmail.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/06_Gmail.gs",
+      "source_sha256": "5f713f41c0a792f6476821da1d53db87557da04999104a163c8d8e88269d6f21"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-06/src/appsscript.json",
+      "source_sha256": "d1d655f54059809875d0920427b10b3b10b3ddd7c465c92d5b069ce5429ecb72"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/00_Log.gs",
+      "source_sha256": "1b37d209aa5061c6e48cb51774311e4c111a7e367811d74a36bec38460a7914f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/00_Menu.gs",
+      "source_sha256": "dfc06a41a0042862b35e47e1fff525b90c197a2eaa04333c90808cb947911e73"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/01_Sheets.gs",
+      "source_sha256": "2e6fdc2daef2b15e4fb110d76d2a7cb1d7d96e368a72872e08ea171624364b4f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/02_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/02_Config.gs",
+      "source_sha256": "598e99e1c879cca725cbd5008254f47438cf93f1a0d3e9f18dfb67208fc67cea"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/03_Forms.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/03_Forms.gs",
+      "source_sha256": "1a111bbfac6c9b52b53a5edc06e06082d12f32f2b0f9956dc2cd8313c252d2a4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/04_Batch.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/04_Batch.gs",
+      "source_sha256": "3d8656d72661dd8e198b3cdb276ed8fc42f514f2caeab0b55692e5c3711450b1"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/05_Documents.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/05_Documents.gs",
+      "source_sha256": "c3ec364457c651b5b91cd5e5b0a17e0c62de3dc8eba97859d568cd61c1e7d2ea"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/06_Gmail.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/06_Gmail.gs",
+      "source_sha256": "5f713f41c0a792f6476821da1d53db87557da04999104a163c8d8e88269d6f21"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/07_Triggers.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/07_Triggers.gs",
+      "source_sha256": "09d85fb0f9f5206c5fedb61f9b12201656f4f4e95947b6550302390eac0b41d4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-07/src/appsscript.json",
+      "source_sha256": "23026ab47516a7583f921cbb9abc10b27ec8893da61da31e46ae94cd3f7329c3"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/.claspignore",
+      "source_sha256": "9346d8f1ed8e8d725f77a06aec16358a1dd0890d6ca4be1b477eb4838461fc83"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/00_Log.gs",
+      "source_sha256": "1b37d209aa5061c6e48cb51774311e4c111a7e367811d74a36bec38460a7914f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/00_Menu.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/00_Menu.gs",
+      "source_sha256": "ede8a94aa5ea92200498ecd5865ea22a1942226c240907f268086b7614549711"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/01_Sheets.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/01_Sheets.gs",
+      "source_sha256": "2e6fdc2daef2b15e4fb110d76d2a7cb1d7d96e368a72872e08ea171624364b4f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/02_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/02_Config.gs",
+      "source_sha256": "f19b422103ea3cda88bf99b4bb26bc74085ca98785dd4ef0999eb6ac3f1389af"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/03_Forms.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/03_Forms.gs",
+      "source_sha256": "1a111bbfac6c9b52b53a5edc06e06082d12f32f2b0f9956dc2cd8313c252d2a4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/04_Batch.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/04_Batch.gs",
+      "source_sha256": "3d8656d72661dd8e198b3cdb276ed8fc42f514f2caeab0b55692e5c3711450b1"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/05_Documents.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/05_Documents.gs",
+      "source_sha256": "c3ec364457c651b5b91cd5e5b0a17e0c62de3dc8eba97859d568cd61c1e7d2ea"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/06_Gmail.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/06_Gmail.gs",
+      "source_sha256": "5f713f41c0a792f6476821da1d53db87557da04999104a163c8d8e88269d6f21"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/07_Triggers.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/07_Triggers.gs",
+      "source_sha256": "09d85fb0f9f5206c5fedb61f9b12201656f4f4e95947b6550302390eac0b41d4"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/08_WebApp.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/08_WebApp.gs",
+      "source_sha256": "0d5c9ef366403bf499e91615e2eb4daab09f7d8bcd2509ddfd74b44f2e4ec733"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/activity-registration/lesson-08/src/appsscript.json",
+      "source_sha256": "8a777fef68e2ceaf16e1a263ae4b5d3c9c70066dca447f332d40dac231dac539"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/.claspignore",
+      "source_sha256": "744ec57983109f8c534770262179e73cc31cb35d1e15973cb5c1588a4e188783"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/00_Log.gs",
+      "source_sha256": "3c55b91ca5661c0bbbff70420f482d3011e5d2341a71add6bc42c519800005c2"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/01_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/01_Config.gs",
+      "source_sha256": "ba93612e25727da6fa2186ec5be9f000f422df2bbaf1159fa9864353c0cba663"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/02_Setup.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/02_Setup.gs",
+      "source_sha256": "66eb203f58d00a22caa61726a8b0f226784ef2d538b51866068aa783b8b4d1a0"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/03_DriveUploads.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/03_DriveUploads.gs",
+      "source_sha256": "efac699d683a5cc8a23c36f2bd327db0206ba49480009cbb5a0cdf9ebbb7704d"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/04_Triggers.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/04_Triggers.gs",
+      "source_sha256": "bbf5513414f7363e7d627024b9454a2e77c47c7787b800f9c8bf379f220398c2"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/Tests.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/Tests.gs",
+      "source_sha256": "1f147723ed22212acf578933dd7d68c93def54ea833796a8e9a656d414ab926d"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/drive-upload-logger/src/appsscript.json",
+      "source_sha256": "e6a9cd082a66c945d532ba0aa3b86004dcac7ee19218bad2c2e4f142af1ff5fa"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/envelope-generator/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/envelope-generator/.claspignore",
+      "source_sha256": "744ec57983109f8c534770262179e73cc31cb35d1e15973cb5c1588a4e188783"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/00_Log.gs",
+      "source_sha256": "23967408668e8fa4ef244a925f025f47750bbe0ed4cbaed0167c02ce6941ba2c"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/01_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/01_Config.gs",
+      "source_sha256": "3eae758c1523d3414ea1bb15c77f5e621490c52b87b9f831c24c983868024c72"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/02_EnvelopeGenerator.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/02_EnvelopeGenerator.gs",
+      "source_sha256": "b463af4d911fd4a8025e20154088eea93019b5463695e905d8e77ff2976f9c79"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/Tests.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/Tests.gs",
+      "source_sha256": "88116186bb497b74992810d217b94acb057b801b125de510eaa605a64c359311"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/envelope-generator/src/appsscript.json",
+      "source_sha256": "06bbab2dcee8ef4d7419c0f7a92edf7b98e8356cbb34158adde38cc9edec87ce"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/expense-tracker/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/expense-tracker/.claspignore",
+      "source_sha256": "744ec57983109f8c534770262179e73cc31cb35d1e15973cb5c1588a4e188783"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/00_Log.gs",
+      "source_sha256": "86e7652353bcfbf40fe2cbf5728afd2edfad9a00edb56ffce7d083dc5a1a8e1c"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/01_ExpenseTracker.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/01_ExpenseTracker.gs",
+      "source_sha256": "66ca4f1cbc002feafc9867b42bf576a60a73daabd78dc6e433af1df13abcff94"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/Tests.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/Tests.gs",
+      "source_sha256": "2df32b767f22560e6ff607f6859c4fb55e604e518424e7704dd4538dd9f18b17"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/expense-tracker/src/appsscript.json",
+      "source_sha256": "ff4a49fa2a40e448557383146d87136118854b84af96d24803a5902216158d78"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/.claspignore",
+      "source_sha256": "b2ea9eaa042bf99ddf0244fbf246a36599f23f84475bacc2c8586faf9717e68f"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/00_Log.gs",
+      "source_sha256": "f24c3af2789c6e9681ef052133af12e98cd1a7b3c6545eaeba5a2d1a25922c27"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/01_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/01_Config.gs",
+      "source_sha256": "c61bafdfeccaddbf50c10fc3adf8f87d6d339064c6e91a317f9566302e163262"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/02_Setup.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/02_Setup.gs",
+      "source_sha256": "e351f1ca1b1d5af89a165afcfc6f80dc54b9aefc5d447b7cf0242a18ba05c602"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/03_BatchMailer.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/03_BatchMailer.gs",
+      "source_sha256": "58f53f9c5d83c5c2d0d15d48b5ad8f62bbb58567b2c93a0bf14cf44bf60f84bb"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/Tests.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/Tests.gs",
+      "source_sha256": "a313516ca744c5bb49d7972cbb9a1eef007e70fa56aefa4d327bc0cb539a5ea8"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/personalized-batch-mailer/src/appsscript.json",
+      "source_sha256": "fb9065e58c27719a6e6c3b13c64d4a2e98bd48240fc00ee6ffd8d0f592e36000"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/quiz-generator/.claspignore",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/quiz-generator/.claspignore",
+      "source_sha256": "744ec57983109f8c534770262179e73cc31cb35d1e15973cb5c1588a4e188783"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/00_Log.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/00_Log.gs",
+      "source_sha256": "52f24e758e24d1ba48c52061b80cbdcd4c1805b889fc63b43f41f821275bd8a6"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/01_Config.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/01_Config.gs",
+      "source_sha256": "6326e34f7c4b764075b97bf37cd077d47d62ae285dff37d4acc3ebb148b0f343"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/02_QuizGenerator.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/02_QuizGenerator.gs",
+      "source_sha256": "871e4be24e4145805da9558a73892f9d1214fae1e3e2c4fa06d1b37667884603"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/03_AnimeQuestionBank.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/03_AnimeQuestionBank.gs",
+      "source_sha256": "976b1d7f8b1ec05d2c968194c4f4b9fe36aba747729bef683ca0e0eda3d01c0e"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/Tests.gs",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/Tests.gs",
+      "source_sha256": "ebc3c0f9778de99b80a6b03511f2b15db65ee555d3ac984d0ee79c47b651163e"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/appsscript.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/beginner/quiz-generator/src/appsscript.json",
+      "source_sha256": "ca8a78232eabb8998a16ea9e759beb9a75bad6e753077aa8eb7ebf3569eab2e5"
+    },
+    {
+      "source": "skills/google-apps-script-teaching/templates/catalog.json",
+      "target": "skill-packs/google-automation/skills/google-apps-script-teaching/templates/catalog.json",
+      "source_sha256": "f60859a5f20fe821616dff6ff6ea8d2add8c4897e846ab4987764a4712062736"
+    },
+    {
+      "source": "skills/google-docs-layout/SKILL.md",
+      "target": "skill-packs/google-automation/skills/google-docs-layout/SKILL.md",
+      "source_sha256": "a2bec91a61721a1109cc9ba2350a1865c2db92eb4bfc0128bcf5d4d1000a8f6a"
+    },
+    {
+      "source": "skills/google-docs-layout/agents/openai.yaml",
+      "target": "skill-packs/google-automation/skills/google-docs-layout/agents/openai.yaml",
+      "source_sha256": "d272c5d5047ab5ee09d98a8f0850061f7bf918958f34ea2435b3a40455d8a408"
+    },
+    {
+      "source": "skills/google-docs-layout/references/envelope-layout-baseline.md",
+      "target": "skill-packs/google-automation/skills/google-docs-layout/references/envelope-layout-baseline.md",
+      "source_sha256": "eb487dbbac7942658d556c86c287ff3c8440fb5406529a95c82d471a8881d16d"
+    },
+    {
+      "source": "skills/google-docs-layout/references/fixed-layout-workflow.md",
+      "target": "skill-packs/google-automation/skills/google-docs-layout/references/fixed-layout-workflow.md",
+      "source_sha256": "2492d765a351897876aaa39de268411ab339518ada719376d661eeedbe9fbca3"
+    },
+    {
+      "source": "skills/learner-facing-terminology.md",
+      "target": "skill-packs/google-automation/skills/learner-facing-terminology.md",
+      "source_sha256": "67d71b403c4d5dd6406f3619aaff3446e5c5faffb846ee904534e9284a1642f1"
+    }
+  ],
+  "second_brain_files": [
+    {
+      "source": ".gitignore",
+      "target": "skill-packs/ai-knowledge-base/.gitignore",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "b0fd6b6220f2f280ccbb6cc5d090c5a5edf9f7a4c1c41a4d15454a9dbc4aff52"
+    },
+    {
+      "source": "AGENTS.md",
+      "target": "skill-packs/ai-knowledge-base/AGENTS.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "49805d0abdb35fba68fe398b16af9760ceea1665939bb2eafd8f742ec91566ad"
+    },
+    {
+      "source": "INSTALL.md",
+      "target": "skill-packs/ai-knowledge-base/INSTALL.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "72b913cd86ac70a6fd99c525bfdd8d999c5e0eb6d7bf4b34eaa64c2299af296f"
+    },
+    {
+      "source": "LICENSE",
+      "target": "skill-packs/ai-knowledge-base/LICENSE",
+      "status": "identical",
+      "source_sha256": "daddb3fc0a78c81fe18356b05096ab1abdae9c54404a52d6634e42415381a765"
+    },
+    {
+      "source": "README.md",
+      "target": "skill-packs/ai-knowledge-base/README.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "2188db04d8109998eb0730b08330a055513e0268c32fc3d683d317535f06456b"
+    },
+    {
+      "source": "THIRD_PARTY_NOTICES.md",
+      "target": "skill-packs/ai-knowledge-base/THIRD_PARTY_NOTICES.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "c04ce21ce53d1117d888cd8c40e9d107443ea290a6cf26037ea3191aec3d7ef5"
+    },
+    {
+      "source": "docs/architecture.md",
+      "target": "skill-packs/ai-knowledge-base/docs/architecture.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "e0a87b3efd920434abc907a7ab99b9f014da62751d512e01259b1ca823648ff4"
+    },
+    {
+      "source": "docs/development-workflow.md",
+      "target": "skill-packs/ai-knowledge-base/docs/development-workflow.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "5fa7bf72cdae3598b99906585658d7f94b7b30fb09a854ed67c66f1467a67248"
+    },
+    {
+      "source": "docs/installation.md",
+      "target": "skill-packs/ai-knowledge-base/docs/installation.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "3dd78507077860b36795a58fc554fd793161d98e3f303b64677410e6993cfc75"
+    },
+    {
+      "source": "docs/integrations/graphify.md",
+      "target": "skill-packs/ai-knowledge-base/docs/integrations/graphify.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "95f802a0271afff387ba2b5c745e7f99541bbc2d6e0f9d726efd79114e5a7c1f"
+    },
+    {
+      "source": "docs/integrations/notebooklm-py.md",
+      "target": "skill-packs/ai-knowledge-base/docs/integrations/notebooklm-py.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "2acbdb479161549af2a9d401575896ff5e0b344aad8ca042f36ef02687439f7f"
+    },
+    {
+      "source": "docs/providers.md",
+      "target": "skill-packs/ai-knowledge-base/docs/providers.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "af8043504ccdcd1e73156cb671cb6917a26f91ae27853636b7cebe15f4e3bc88"
+    },
+    {
+      "source": "install.manifest.toml",
+      "target": "skill-packs/ai-knowledge-base/install.manifest.toml",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "3f899b5d581cebbea5487a15d990f8f11a4daee7d64c6200d0231af54262eb59"
+    },
+    {
+      "source": "skills/README.md",
+      "target": "skill-packs/ai-knowledge-base/skills/README.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "13e34be549be6f392184255e4d76bff39a68f98543d5bc2e4f3dbfa1a5b35bb9"
+    },
+    {
+      "source": "skills/book-notes/SKILL.md",
+      "target": "skill-packs/ai-knowledge-base/skills/book-notes/SKILL.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "fba61a91e1acc19fb6333786ffc34662cd6208bf5bc4cd00785b699650958be1"
+    },
+    {
+      "source": "skills/knowledge-source-retrieval/SKILL.md",
+      "target": "skill-packs/ai-knowledge-base/skills/knowledge-source-retrieval/SKILL.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "930a6bb7658c09aa704510a187bffdd4add4c6b77d1321f38d0bea287aac9a23"
+    },
+    {
+      "source": "skills/my-real-second-brain-setup/SKILL.md",
+      "target": "skill-packs/ai-knowledge-base/skills/my-real-second-brain-setup/SKILL.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "42f04da71755c4ec0ca48bc639f72a898f83b2e063cf917117fb9be1436e1515"
+    },
+    {
+      "source": "skills/socratic-dialogue/SKILL.md",
+      "target": "skill-packs/ai-knowledge-base/skills/socratic-dialogue/SKILL.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "d4492d71f497633e3761fab372564e4501927f2c215e43c7fac5584839663ecc"
+    },
+    {
+      "source": "template/AGENTS.md",
+      "target": "skill-packs/ai-knowledge-base/template/AGENTS.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "04bc5347a604c02e769e77e949714459fcac7de1bd5ffe6b4289e34c0331a6aa"
+    },
+    {
+      "source": "template/sources/.graphifyignore",
+      "target": "skill-packs/ai-knowledge-base/template/sources/.graphifyignore",
+      "status": "identical",
+      "source_sha256": "962799fb9b4149cba419caa8751753716a5089f68e989a508c9b883e87511cc4"
+    },
+    {
+      "source": "template/sources/README.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/README.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "38d7dcce1703c73aad7cfef032e7cee729342383a734fb54a1f0e5f950437aff"
+    },
+    {
+      "source": "template/sources/book-notes/README.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/book-notes/README.md",
+      "status": "identical",
+      "source_sha256": "ec93f1e55b2440db1b4274f7b2a8e346e2121661212d8c507807a5c618c386b2"
+    },
+    {
+      "source": "template/sources/graphify-out/README.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/graphify-out/README.md",
+      "status": "identical",
+      "source_sha256": "cb031cd8c765b233d5c98beaa422a5de5d35e8ac6f9403048abdd9400e5da51c"
+    },
+    {
+      "source": "template/sources/references/README.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/references/README.md",
+      "status": "identical",
+      "source_sha256": "156f82863e0eba7e5fa3bf8ff39d10b3b5537ba86f1e1c190bbe997132494650"
+    },
+    {
+      "source": "template/sources/references/notebooks/README.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/references/notebooks/README.md",
+      "status": "identical",
+      "source_sha256": "88335bf34e8fd660c69425d92e3eacd5833dfb39e35fee2219c063e98dd6d0cd"
+    },
+    {
+      "source": "template/sources/references/notebooks/entries/.gitkeep",
+      "target": "skill-packs/ai-knowledge-base/template/sources/references/notebooks/entries/.gitkeep",
+      "status": "identical",
+      "source_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "source": "template/sources/references/notebooks/index.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/references/notebooks/index.md",
+      "status": "identical",
+      "source_sha256": "069af819eeafaa01c33a054645c2f7bb9a4f10b8637141fb6aa205d0136fbbb3"
+    },
+    {
+      "source": "template/sources/wiki/index.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/wiki/index.md",
+      "status": "evolved_in_toolbox",
+      "source_sha256": "8ec4d950edb732c1fb6e548493d88c363d833a09bd8d8fe4d15acf07c3079232"
+    },
+    {
+      "source": "template/sources/wiki/log.md",
+      "target": "skill-packs/ai-knowledge-base/template/sources/wiki/log.md",
+      "status": "identical",
+      "source_sha256": "f63c87bae584af7fbf05b4b7ab904953cfe0707e81516806459f85003f9d5a4b"
+    }
+  ]
+}

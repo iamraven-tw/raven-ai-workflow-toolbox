@@ -1,5 +1,7 @@
 # 相容性與驗證狀態
 
+0.2.0 改為 Toolbox 內建來源；下方用戶端版本與發現紀錄是 0.1.0 歷史結果，不能當作本次新版驗收。本次已執行的驗證見整併紀錄；新版 Windows／其他電腦與各用戶端實際發現需另行執行。
+
 ## 狀態定義
 
 - **結構通過：** 路徑、`SKILL.md`、相鄰參考資料與 manifest 能由本機驗證器正確讀取。
@@ -25,7 +27,7 @@ Codex 與 Antigravity 在同一工作區共用 `.agents/skills`，只安裝一�
 | Python 3.11 以上 | 安裝管理器與測試只使用標準函式庫 | 外部電腦實際版本 |
 | macOS | 本機開發與生命週期測試目標 | 另一臺電腦乾淨安裝 |
 | Windows／Linux | 路徑設計不綁定 macOS，但尚未實機測試 | 複製、檔案權限與三種 Agent 發現 |
-| Learn-GAS | 固定 commit、tree、LICENSE 與上游測試可驗證 | 外部來源重新取得 |
+| Apps Script 內建技能 | bundle.lock.json、MIT 授權與教材測試可驗證 | 公開整併版的乾淨安裝 |
 | Google 帳號／OAuth／Cloud | 本候選版未登入、未授權、未部署 | 最終 Google 實機驗收 |
 
 ## 已完成的本機證據

@@ -3,15 +3,15 @@
 ## A. 來源、授權與公開邊界
 
 - [x] Toolbox 自有路由、安裝器與文件適用 Apache License 2.0。
-- [x] Learn-GAS 保持外部單一來源，固定完整 commit、tree、MIT License 與 LICENSE SHA-256。
-- [x] Toolbox Git tree 沒有 Learn-GAS 四個技能或其範例程式的副本。
+- [x] 原 Learn-GAS 技能由 Toolbox 內建，保留歷史 commit、tree、MIT License 與 LICENSE SHA-256。
+- [x] Toolbox Git tree 包含完整四個 Apps Script 技能、範例、測試與授權。
 - [x] 公開內容沒有帳號、OAuth 憑證、Script ID、Cloud Project ID、真實 Google 資源網址、私人路徑或維護者工作習慣。
 - [x] Markdown 相對連結與必要外部官方連結有效。
 
 ## B. MVP 能力與安裝生命週期
 
 - [x] 路由技能能區分 Apps Script 學習／修改、既有專案接管、Workspace API／OAuth、Cloud Run service、Cloud Run job／Scheduler 及需專門審查的範圍。
-- [x] Learn-GAS 四個技能與共用術語檔由固定外部來源安裝。
+- [x] 四個 Apps Script 技能與共用術語檔由本包鎖定來源安裝。
 - [x] 正常安裝與相同版本重複安裝通過。
 - [x] 未知檔案、目錄、symlink、來源不符與人工修改會停止且保留內容。
 - [x] 更新先保留舊版，再替換受管理入口；回復可還原最近一版。
@@ -23,18 +23,18 @@
 - [x] Learn-GAS 教學工具的全部單元測試通過。
 - [x] Toolbox manifest、技能結構、OpenAI metadata、路由 fixture、隱私、授權與相對連結通過。
 - [x] 安裝生命週期單元測試通過。
-- [x] Codex 依工作區 `.agents/skills` 發現技能，或明確留下本機無模型請求可做的最深驗證結果。
-- [x] Claude Code 依工作區 `.claude/skills` 發現技能，或明確留下本機無模型請求可做的最深驗證結果。
-- [x] Antigravity 依工作區 `.agents/skills` 發現技能；若需已登入環境，保留到 D 節且不得假裝通過。
+- [ ] Codex 依工作區 `.agents/skills` 發現技能，或明確留下本機無模型請求可做的最深驗證結果。 本次新版實際發現待驗。
+- [ ] Claude Code 依工作區 `.claude/skills` 發現技能，或明確留下本機無模型請求可做的最深驗證結果。 本次新版實際發現待驗。
+- [ ] Antigravity 依工作區 `.agents/skills` 發現技能；若需已登入環境，保留到 D 節且不得假裝通過。 本次新版實際發現待驗。
 - [x] 本機程式、Google 登入、OAuth、遠端部署與人工驗收在文件及測試中維持不同狀態。
 
-完成 A～C 才能把 manifest 標示為可安裝的外部驗收候選版；不代表 D 節通過。
+A～C 的本機程式與結構驗證通過，可提供可安裝候選；用戶端實際發現及 D 節仍須獨立驗收。
 
 ## D. 單一最終外部電腦／Google 驗收
 
 以下由使用者在其他工作完成後一次執行：
 
-- [ ] 從未使用維護者本機工作目錄的公開候選快照取得 Toolbox 與 manifest 固定的 Learn-GAS commit。
+- [ ] 從未使用維護者本機工作目錄的公開候選快照取得 Toolbox 整併發行版，單獨驗證內建 Google 技能包。
 - [ ] 選擇一個全新測試工作區，讓 Agent 安裝 `agents_workspace` 與 `claude_workspace`；再重跑一次確認 `noop`。
 - [ ] 重新開啟 Codex、Claude Code 與已登入的 Google Antigravity，確認 `google-workflow-router` 與四個 Learn-GAS 技能都能被發現。
 - [ ] 用虛構資料提出四類需求：Apps Script 學習、既有 Apps Script 接管、Workspace API／OAuth、長時間排程或 Webhook；確認分流與停止點正確。

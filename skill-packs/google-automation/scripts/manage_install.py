@@ -92,7 +92,7 @@ def read_manifest(manifest_path: Path) -> dict[str, Any]:
     except (OSError, tomllib.TOMLDecodeError) as error:
         raise InstallError(f"無法讀取 manifest：{manifest_path}: {error}") from error
 
-    if manifest.get("schema_version") != 1:
+    if manifest.get("schema_version") not in (1, 2):
         raise InstallError("不支援的 manifest schema_version")
     if manifest.get("status") != "ready_for_external_acceptance":
         raise InstallError("manifest 尚未達到 ready_for_external_acceptance")
@@ -197,9 +197,9 @@ def validate_registration(
 def build_desired_entries(
     manifest_path: Path,
     manifest: dict[str, Any],
-    learn_gas_source: Path,
+    learn_gas_source: Path | None = None,
 ) -> tuple[dict[str, DesiredEntry], dict[str, Any]]:
-    """從 Toolbox 與固定 Learn-GAS 來源建立六個受管理入口。"""
+    """從 Toolbox 內建來源建立六個入口；保留舊 manifest 過渡相容性。"""
 
     package_root = manifest_path.parent.resolve()
     source_config = manifest.get("managed_sources", {})
@@ -211,8 +211,19 @@ def build_desired_entries(
     if not isinstance(skill_names, list) or not isinstance(shared_files, list):
         raise InstallError("manifest 缺少 Learn-GAS 受管理來源清單")
 
-    verified_learn_gas = verify_learn_gas(manifest, learn_gas_source)
-    resolved_learn_gas = learn_gas_source.expanduser().resolve()
+    bundled = manifest.get("schema_version") == 2
+    if bundled:
+        if learn_gas_source is not None:
+            raise InstallError("本版已內建 Apps Script 技能，請移除 --learn-gas-source")
+        verify_bundle(manifest_path, manifest)
+        resolved_learn_gas = package_root
+        verified_learn_gas = {}
+    else:
+        # 舊 manifest 僅供過渡相容；新發行版本只使用 Toolbox 內建來源。
+        if learn_gas_source is None:
+            raise InstallError("舊版 manifest 需要原固定來源；請改用新版 Toolbox manifest")
+        verified_learn_gas = verify_learn_gas(manifest, learn_gas_source)
+        resolved_learn_gas = learn_gas_source.expanduser().resolve()
     sources: dict[str, Path] = {
         "google-workflow-router": package_root / router_relative,
     }
@@ -237,8 +248,9 @@ def build_desired_entries(
 
     active = {
         "toolbox_version": manifest.get("installation", {}).get("candidate_version"),
-        "learn_gas_ref": verified_learn_gas["ref"],
-        "learn_gas_tree": verified_learn_gas["tree"],
+        "learn_gas_ref": verified_learn_gas.get("ref"),
+        "learn_gas_tree": verified_learn_gas.get("tree"),
+        "source_policy": "toolbox_bundled" if bundled else "legacy_external",
         "entries": {
             name: {"kind": entry.kind, "sha256": entry.sha256}
             for name, entry in sorted(desired.items())
@@ -247,6 +259,35 @@ def build_desired_entries(
     if not isinstance(active["toolbox_version"], str) or not active["toolbox_version"]:
         raise InstallError("manifest 缺少 candidate_version")
     return desired, active
+
+
+def verify_bundle(manifest_path: Path, manifest: dict[str, Any]) -> None:
+    """驗證發行包全部技能雜湊與 MIT 授權，不需要 Git 或外部來源。"""
+    root = manifest_path.parent.resolve()
+    if manifest.get("mvp", {}).get("apps_script_source_policy") != "toolbox_bundled_single_source":
+        raise InstallError("新版 manifest 必須使用 Toolbox 單一來源")
+    try:
+        lock = json.loads((root / "bundle.lock.json").read_text(encoding="utf-8"))
+        if lock.get("version") != manifest["installation"]["candidate_version"]:
+            raise InstallError("套件版本與 bundle.lock.json 不符")
+        expected = manifest["installation"]["managed_entries"]
+        if set(lock["entries"]) != set(expected):
+            raise InstallError("內建來源鎖定清單不完整")
+        if {path.name for path in (root / "skills").iterdir()} != set(expected):
+            raise InstallError("技能來源包含未列入鎖定檔的項目")
+        for raw_name in expected:
+            name = validate_simple_name(raw_name, label="內建來源")
+            kind, digest = hash_entry(root / "skills" / name)
+            if lock["entries"][name] != {"kind": kind, "sha256": digest}:
+                raise InstallError(f"內建來源雜湊不符：{name}")
+        license_hash = manifest["integration"]["learn_gas"]["license_sha256"]
+        if sha256_file(root / "LICENSE.learn-gas") != license_hash:
+            raise InstallError("Learn-GAS 歷史 MIT 授權雜湊不符")
+        for name in manifest["managed_sources"]["learn_gas_skills"]:
+            if sha256_file(root / "skills" / name / "LICENSE") != license_hash:
+                raise InstallError(f"安裝技能缺少完整 MIT 授權：{name}")
+    except (OSError, KeyError, ValueError, TypeError) as error:
+        raise InstallError(f"內建來源驗證失敗：{error}") from error
 
 
 def state_file_path(state_root: Path, registration: str, client_root: Path) -> Path:
@@ -734,7 +775,7 @@ def add_source_arguments(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument("--manifest", type=Path, required=True, help="本套件 manifest")
     parser.add_argument(
-        "--learn-gas-source", type=Path, required=True, help="已驗證的固定 Learn-GAS clone"
+        "--learn-gas-source", type=Path, help="僅限舊版 manifest；新版已內建來源，不使用此參數"
     )
 
 

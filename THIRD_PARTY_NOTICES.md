@@ -12,7 +12,7 @@ AI 剪片以 [Browser Use 的 Video-Use](https://github.com/browser-use/video-us
 
 ## Google 工具自動化
 
-Google 工具自動化使用 [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 的固定公開 commit，提供 Google Apps Script 教學、專案開發／接管、除錯與 Google Docs 固定版面。Learn-GAS 採 MIT License，原始碼不複製進 Toolbox；安裝時核對完整 commit、Git tree、LICENSE SHA-256 與上游測試。完整資訊見 [`skill-packs/google-automation/THIRD_PARTY_NOTICES.md`](skill-packs/google-automation/THIRD_PARTY_NOTICES.md)。
+Google 工具自動化內建源自 [Learn-GAS](https://github.com/iamraven-tw/Learn-GAS) 的四個技能，提供 Google Apps Script 教學、專案開發／接管、除錯與 Google Docs 固定版面。Learn-GAS 原始碼已移入 Google 技能包並只在 Toolbox 維護，保留 MIT License；歷史 commit、tree 與來源雜湊僅供追溯，安裝改核對本包鎖定檔。完整資訊見 [`skill-packs/google-automation/THIRD_PARTY_NOTICES.md`](skill-packs/google-automation/THIRD_PARTY_NOTICES.md)。
 
 ## 官網、社群與盤點
 
