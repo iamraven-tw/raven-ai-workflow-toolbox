@@ -1,0 +1,13 @@
+interface:
+  display_name: "WordPress MCP 工作流"
+  short_description: "從 ChatGPT 連接並操作 WordPress.com 網站"
+  default_prompt: "使用 $wordpress-mcp-workflow 告訴我如何從 ChatGPT 桌面版連接 WordPress.com，並驗證網站讀寫功能。"
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "wpcom"
+      description: "WordPress.com 官方 MCP 伺服器"
+      transport: "streamable_http"
+      url: "https://public-api.wordpress.com/wpcom/v2/mcp/v1"
+policy:
+  allow_implicit_invocation: true

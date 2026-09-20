@@ -6,6 +6,8 @@
 
 > **PREVIEW · `0.1.0-preview.2`** — 本版本供早期驗收，尚未正式支援。安裝前請先閱讀 [PREVIEW 發行說明](docs/preview-release.md)，並以各技能包 manifest 的實際狀態為準。
 
+> `main` 分支另含「WordPress MCP 工作流」候選包；它尚未納入 `v0.1.0-preview.2` 固定下載版本。
+
 本 repository 由多個可獨立演進的技能包組成。根目錄不提供會一次安裝全部內容的指令；先選擇需要的技能包，再由具備本機操作能力的 AI Agent 閱讀該套件的 `INSTALL.md` 與 `install.manifest.toml`。
 
 ## 目前狀態
@@ -17,6 +19,7 @@
 | Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | [`skill-packs/google-automation/INSTALL.md`](skill-packs/google-automation/INSTALL.md) |
 | 社群媒體管理工作流 | 七個技能為可安裝的本機候選（候選版 0.7.0）；七份流程審查已完成，登入／OAuth、平台讀取與測試發布尚未執行，尚未正式支援 | [`skill-packs/social-media/INSTALL.md`](skill-packs/social-media/INSTALL.md) |
 | 官網打造工作流 | 七個技能（設定、文案、風格挑選、建置、部署、服務串接、維運）與起始範本為可安裝的本機候選；尚未正式支援 | [`skill-packs/website-building/INSTALL.md`](skill-packs/website-building/INSTALL.md) |
+| WordPress MCP 工作流 | 三個技能為可安裝的外部驗收候選；公開內容與本機生命週期已驗證，使用者帳號 OAuth 與正式站操作仍須個別驗收 | [`skill-packs/wordpress-workflow/INSTALL.md`](skill-packs/wordpress-workflow/INSTALL.md) |
 | AI Agent 規則與技能盤點 | 上游 v0.2.1 已鎖定並以乾淨 clone 核對雜湊，本套件為可安裝的本機候選；技能發現、實際盤點與另一臺電腦驗收尚未執行，尚未正式支援 | [`skill-packs/agent-inventory/INSTALL.md`](skill-packs/agent-inventory/INSTALL.md) |
 
 ## 第一次安裝後的盤點邀請

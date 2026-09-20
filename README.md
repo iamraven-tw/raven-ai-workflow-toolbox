@@ -4,6 +4,8 @@
 
 > **PREVIEW · `0.1.0-preview.2`** — 可供早期使用者安裝與驗收，尚未正式支援；`1.0.0` 前可能有破壞性變更。詳見 [PREVIEW 發行說明](docs/preview-release.md)。
 
+> `main` 分支已新增第七個「WordPress MCP 工作流」外部驗收候選；它尚未包含在 `v0.1.0-preview.2` 標籤內。
+
 > 六包改造依據已整理為[共用人機分工契約](docs/human-agent-contract.md)：Agent 主導執行；僅剩 Computer Use 時說明速度並讓使用者選擇代做，機密儲存及平台本人驗證則必須由人類操作。各包接線仍待逐項完成，順序見[改造待辦清單](docs/autonomous-workflow-todo.md)。
 
 > 提供給一人公司創業者的 AI 工作流工具包，協助一個人完成內容、營運、知識管理、社群經營與官網建置。
@@ -19,7 +21,7 @@ Raven AI 一人公司工具包是專為一人公司創業者（solopreneur）設
 不同用戶端能使用的工具、技能安裝位置與權限模型並不完全相同。本專案會盡量共用同一份工作流程核心，再為各用戶端提供個別的安裝入口與相容層，不會假設一份設定可以直接套用到所有環境。
 
 > [!IMPORTANT]
-> 本專案目前處於 PREVIEW 階段，包含六個技能包。可安裝候選不等於正式支援；各平台登入、模型推論、實機發布與另一臺電腦的驗收狀態，以各技能包 manifest 為準。公開版本見 [GitHub prerelease](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2)，完整發布驗收見 [Preview 驗收紀錄](docs/release-acceptance.md)。
+> 本專案目前處於 PREVIEW 階段；`main` 分支包含七個技能包，既有 `v0.1.0-preview.2` 標籤包含六個。可安裝候選不等於正式支援；各平台登入、模型推論、實機發布與另一臺電腦的驗收狀態，以各技能包 manifest 為準。公開版本見 [GitHub prerelease](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2)，完整發布驗收見 [Preview 驗收紀錄](docs/release-acceptance.md)。
 
 ## 專案要解決的問題
 
@@ -27,17 +29,18 @@ Raven AI 一人公司工具包是專為一人公司創業者（solopreneur）設
 
 AI 工具可以協助處理其中一部分工作，但只有工具還不夠。使用者仍然需要知道應該從哪裡開始、要提供什麼資料、哪些步驟可以交給 AI、哪些決定必須自己做，以及如何判斷結果真的能投入使用。
 
-Raven AI 一人公司工具包 要提供一套一人公司可以實際採用的創業工具包，協助使用者完成五項核心能力：
+Raven AI 一人公司工具包 要提供一套一人公司可以實際採用的創業工具包，協助使用者完成六項核心能力：
 
 1. 把原始素材製作成可以發布的影片。
 2. 使用 Google 工具建立日常營運自動化。
 3. 建立能支援學習、研究、寫作與決策的 AI 知識庫。
 4. 建立並執行自己的社群媒體管理方法。
 5. 建立、上線並持續維護自己的官方網站。
+6. 透過 WordPress.com MCP 安全連線、調整既有網站並發布內容。
 
 本專案不是只提供零散提示詞，也不是要用 AI 取代創業者的判斷。每套技能都要從實際經營需求出發，引導使用者完成規劃、準備、執行、確認與成果驗收。
 
-## 五大工作流與盤點技能包
+## 六大工作流與盤點技能包
 
 | 技能包 | 目前狀態 | 第一階段目標 |
 |---|---|---|
@@ -46,6 +49,7 @@ Raven AI 一人公司工具包 要提供一套一人公司可以實際採用的�
 | AI 知識庫 | Agent 端候選版可供外部驗收；本機生命週期與三種桌面／開發用戶端技能發現已通過，尚未正式支援 | 建立以人類理解與一人公司長期設定為核心的知識擷取、整理、檢索、引用、討論與知識圖譜流程 |
 | 社群媒體管理工作流 | 七個技能為可安裝的本機候選（候選版 0.7.0）；七份流程審查已完成，登入／OAuth、平台讀取與測試發布尚未執行，尚未正式支援 | 引導使用者先建立社群策略，再完成跨平台內容、審核、發布、驗證與成效回顧 |
 | 官網打造工作流 | 七個技能（設定、文案、風格挑選、建置、部署、服務串接、維運）與起始範本為可安裝的本機候選；尚未正式支援 | 交給 AI Agent 全程執行，人類只做訪談、確認、登入與授權；以 Astro 靜態站點與 Cloudflare 免費方案，從商業目標走到上線、自訂網域、常用服務串接、監控與備份 |
+| WordPress MCP 工作流 | 三個技能為可安裝的外部驗收候選；公開內容與本機生命週期已驗證，學員帳號 OAuth 與正式站操作仍須個別驗收 | 讓使用者以自己的 WordPress.com 帳號完成 OAuth，透過官方 MCP 執行網站辨識、內容發布、佈景主題客製與寫入後驗證 |
 | AI Agent 規則與技能盤點 | 上游 v0.2.1 已鎖定並以乾淨 clone 核對雜湊，本套件為可安裝的本機候選；技能發現、實際盤點與另一臺電腦驗收尚未執行，尚未正式支援 | 讓 Agent 盤點本機所有 AI coding agent 的規則與技能，寫成中文摘要並用本機網站呈現，協助使用者看懂並整理自己的工作流設定 |
 
 ### 1. AI 剪片工作流
@@ -169,6 +173,12 @@ flowchart LR
 
 這套技能包的設計前提是交給 AI Agent 全程執行：人類只回答一次商業訪談、批次確認預設方案、完成 Cloudflare 與外部服務的登入和分階段授權，其餘由 Agent 完成。技術路線固定為 Astro 靜態站點加 Cloudflare Workers 靜態資產免費方案，預設先上線到 `workers.dev`，自訂網域是授權後的第二步。風格提供六個完整主題，各參考一個公開示範頁的版面手法與動畫類型自行實作；服務串接以原生 HTTPS POST 與 hosted links 支援聯絡表單、電子報、預約與付款，不保存憑證、不自動扣款；維運提供公開健康檢查、可驗證本機備份、隔離復原與安全更新流程。目前七個技能與起始範本都已完成本機候選；完整決策、人類接觸點清單與七個技能的順序見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)，套件位於 [`skill-packs/website-building/`](skill-packs/website-building/README.md)。
 
+### 6. WordPress MCP 工作流
+
+這套技能包處理既有 WordPress.com 網站的 Agent 連線與操作，不取代「官網打造工作流」的 Astro／Cloudflare 建站路線。三個技能分別負責 MCP 與 OAuth、佈景主題客製，以及已完成文章的草稿／排程／發布／更新。OAuth 必須由每位使用者在自己的瀏覽器中完成；技能不保存信箱、Token、Cookie 或客戶網站資料。
+
+安裝只複製本機技能，不會連線或修改 WordPress。實際操作時必須重新取得網站清單與 MCP 工具結構，先區分本機安裝、OAuth、網站辨識、唯讀操作、遠端寫入、公開可達與瀏覽器視覺驗收。完整套件位於 [`skill-packs/wordpress-workflow/`](skill-packs/wordpress-workflow/README.md)。
+
 ## 共用設計原則
 
 ### 一個人也能長期維護
@@ -242,7 +252,8 @@ raven-ai-workflow-toolbox/
 │   ├── ai-video/
 │   ├── google-automation/
 │   ├── social-media/
-│   └── website-building/
+│   ├── website-building/
+│   └── wordpress-workflow/
 ├── clients/
 │   ├── chatgpt-codex/
 │   ├── claude/
@@ -334,6 +345,8 @@ AI 剪片已建立 [`skill-packs/ai-video/`](skill-packs/ai-video/README.md) 的
 社群媒體管理提供七個技能的 [`INSTALL.md`](skill-packs/social-media/INSTALL.md) 與本機候選 manifest（候選版 0.7.0）。靜態結構、虛構生命週期與 Codex 本機技能發現已通過；登入／OAuth、平台讀取、測試發布、其他用戶端、另一臺電腦與正式公開支援都尚未通過。官網打造目前提供七個技能與 Astro 起始範本的 [`INSTALL.md`](skill-packs/website-building/INSTALL.md) 與本機候選 manifest；靜態結構、虛構生命週期、Windows Codex 七技能發現、六主題及四種服務入口的 Node 建置已通過；真實 Wrangler 登入、部署、網域、外部服務端到端與公開維運仍未驗收。設計決策見 [`docs/decisions/0003-website-building-workflow.md`](docs/decisions/0003-website-building-workflow.md)。
 
 AI Agent 規則與技能盤點提供 [`INSTALL.md`](skill-packs/agent-inventory/INSTALL.md) 與本機候選 manifest。它不含自有技能，只用固定 tag `v0.2.1` 安裝上游 [iamraven-tw/agent-inventory](https://github.com/iamraven-tw/agent-inventory)（MIT）的六個技能，安裝器不連網、不掃描、不修改任何既有規則或技能。靜態結構、虛構資料生命週期與乾淨 clone 的雜湊核對及實際安裝已在維護者機器通過；技能發現、實際盤點與另一臺電腦驗收都尚未執行。整合決策見 [`docs/decisions/0004-agent-inventory-integration.md`](docs/decisions/0004-agent-inventory-integration.md)。
+
+WordPress MCP 工作流提供三個技能的 [`INSTALL.md`](skill-packs/wordpress-workflow/INSTALL.md) 與候選 manifest（候選版 0.1.0）。技能格式、去識別化與隔離生命週期已通過；學員自己的 OAuth、WordPress.com 方案能力、MCP 工具清單與正式網站操作仍須逐一驗收，因此尚未正式支援，也尚未納入 `v0.1.0-preview.2` 標籤。
 
 ## 貢獻
 

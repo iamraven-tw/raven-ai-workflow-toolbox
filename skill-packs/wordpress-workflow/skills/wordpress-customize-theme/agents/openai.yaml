@@ -1,0 +1,7 @@
+interface:
+  display_name: "WordPress 主題設計"
+  short_description: "主動推薦範例並修改 WordPress 主題與全站視覺"
+  default_prompt: "使用 $wordpress-customize-theme 分析我的網站、提供三個真實範例，並套用最適合的視覺方向。"
+
+policy:
+  allow_implicit_invocation: true

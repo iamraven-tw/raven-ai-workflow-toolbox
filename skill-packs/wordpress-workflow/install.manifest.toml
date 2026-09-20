@@ -1,0 +1,106 @@
+schema_version = 1
+manifest_type = "wordpress-workflow-install"
+project_id = "wordpress-workflow"
+display_name = "WordPress MCP 工作流"
+entrypoint = "INSTALL.md"
+checked_on = "2026-09-20"
+status = "local_candidate_full_pack"
+installable = true
+requires_network = false
+support_level = "full_pack_installable_candidate_not_formally_supported"
+license_spdx = "Apache-2.0"
+
+[runtime]
+local_installer_requires_network = false
+wordpress_connection_requires_network = true
+oauth_must_be_completed_by_user = true
+secrets_must_not_be_stored_in_package = true
+remote_mutations_follow_user_scope = true
+
+[installation]
+candidate_version = "0.1.0"
+manager = "scripts/manage_install.py"
+manager_requires_python = ">=3.11"
+manager_network_access = false
+state_schema_version = 1
+conflict_policy = "stop_without_overwrite"
+managed_entries = ["wordpress-mcp-workflow", "wordpress-customize-theme", "wordpress-publish-article"]
+
+[acceptance]
+local_structure = "passed"
+isolated_install_lifecycle = "passed"
+source_wordpress_mcp_read_write = "previously_verified_on_maintainer_site_not_transferred_to_student_accounts"
+student_account_oauth = "not_performed"
+student_live_site_write = "not_performed"
+formal_support = "not_declared"
+
+[registrations.agents_workspace]
+clients = ["codex", "google-antigravity-desktop", "google-antigravity-cli"]
+scope = "workspace"
+path = "<workspace>/.agents/skills"
+
+[registrations.claude_workspace]
+clients = ["claude-code"]
+scope = "workspace"
+path = "<workspace>/.claude/skills"
+
+[registrations.codex_user]
+clients = ["codex"]
+scope = "user"
+path = "$HOME/.agents/skills"
+
+[registrations.claude_user]
+clients = ["claude-code"]
+scope = "user"
+path = "$HOME/.claude/skills"
+
+[registrations.antigravity_desktop_user]
+clients = ["google-antigravity-desktop"]
+scope = "user"
+path = "$HOME/.gemini/config/skills"
+
+[registrations.antigravity_cli_user]
+clients = ["google-antigravity-cli"]
+scope = "user"
+path = "$HOME/.gemini/antigravity-cli/skills"
+
+[[skills]]
+id = "wordpress-mcp-workflow"
+source_path = "skills/wordpress-mcp-workflow"
+required = true
+install_order = 10
+status = "local_candidate_live_account_acceptance_pending"
+
+[[skills]]
+id = "wordpress-customize-theme"
+source_path = "skills/wordpress-customize-theme"
+required = true
+install_order = 20
+status = "local_candidate_live_account_acceptance_pending"
+
+[[skills]]
+id = "wordpress-publish-article"
+source_path = "skills/wordpress-publish-article"
+required = true
+install_order = 30
+status = "local_candidate_live_account_acceptance_pending"
+
+[[readiness_gates]]
+id = "public_deidentification"
+status = "complete_local"
+
+[[readiness_gates]]
+id = "skill_format"
+status = "complete_local"
+
+[[readiness_gates]]
+id = "isolated_install_lifecycle"
+status = "complete_local"
+
+[[readiness_gates]]
+id = "fresh_user_oauth_and_site_identity"
+status = "external_acceptance_pending"
+
+[[readiness_gates]]
+id = "fresh_user_live_read_write_and_visual_verification"
+status = "external_acceptance_pending"

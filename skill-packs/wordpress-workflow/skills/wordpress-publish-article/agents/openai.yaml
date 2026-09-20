@@ -1,0 +1,7 @@
+interface:
+  display_name: "WordPress 文章發布"
+  short_description: "整理、發布或更新已完成的 WordPress 文章"
+  default_prompt: "使用 $wordpress-publish-article 整理我已完成的文章，先確認要儲存為草稿、排程或正式發布，再寫入 WordPress。"
+
+policy:
+  allow_implicit_invocation: true
