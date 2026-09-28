@@ -9,7 +9,8 @@ from pathlib import Path
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 DESTINATIONS = {"youtube", "instagram", "facebook", "threads", "substack"}
-RESEARCH_PLATFORMS = DESTINATIONS | {"x"}
+# Reddit、TikTok 與 X 僅能作為研究來源，不進入發布目的地。
+RESEARCH_PLATFORMS = DESTINATIONS | {"x", "reddit", "tiktok"}
 
 
 class InvalidRecord(ValueError):
