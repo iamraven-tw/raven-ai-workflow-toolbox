@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""驗證產品層級的 PREVIEW 發行標示維持一致。"""
+"""驗證公開來源版本的 PREVIEW 發行紀錄維持一致。"""
 
 from __future__ import annotations
 
@@ -13,13 +13,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PreviewReleaseTest(unittest.TestCase):
-    """避免文件、版本與發行通道在更新時彼此漂移。"""
+    """避免歷史發行紀錄、版本與發行通道在更新時彼此漂移。"""
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.release = tomllib.loads((ROOT / "release.toml").read_text(encoding="utf-8"))
-        cls.readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        cls.install = (ROOT / "INSTALL.md").read_text(encoding="utf-8")
         cls.notes = (ROOT / "docs" / "preview-release.md").read_text(encoding="utf-8")
 
     def test_release_metadata_is_preview_prerelease(self) -> None:
@@ -33,17 +31,16 @@ class PreviewReleaseTest(unittest.TestCase):
         self.assertEqual(self.release["repository"], "https://github.com/iamraven-tw/raven-ai-workflow-toolbox")
         self.assertFalse(self.release["scope"]["production_ready"])
 
-    def test_user_entrypoints_show_the_same_version(self) -> None:
-        version = self.release["version"]
-        for document in (self.readme, self.install, self.notes):
-            self.assertIn("PREVIEW", document)
-            self.assertIn(version, document)
+    def test_source_release_notes_show_the_same_version(self) -> None:
+        """來源版本資訊留在發行紀錄，不要求使用者入口展示舊版號。"""
+        self.assertIn("PREVIEW", self.notes)
+        self.assertIn(self.release["version"], self.notes)
 
-    def test_preview_does_not_claim_stable_support(self) -> None:
-        combined = "\n".join((self.readme, self.install, self.notes))
-        self.assertIn("尚未正式支援", combined)
-        self.assertIn("可能有破壞性變更", combined)
-        self.assertIsNone(re.search(r"(?:正式|穩定)版已(?:完成|發布)", combined))
+    def test_source_preview_does_not_claim_stable_support(self) -> None:
+        """歷史 Preview 說明仍須保留當時的支援邊界。"""
+        self.assertIn("不代表所有技能包已完成實機驗證", self.notes)
+        self.assertIn("可能有破壞性變更", self.notes)
+        self.assertIsNone(re.search(r"(?:正式|穩定)版已(?:完成|發布)", self.notes))
 
 
 if __name__ == "__main__":

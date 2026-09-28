@@ -1,26 +1,20 @@
-# Raven AI 一人公司工具包 安裝入口
+# Raven AI 一人公司工具包｜安裝入口
 
-> 整併版本 `0.1.0-preview.2` 的公開發行狀態與下載請查閱 [GitHub Release](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2)。
+這份文件提供給協助安裝的 AI Agent。請先問使用者想安裝哪些技能包，再讀取對應套件的安裝說明；不需要一次安裝全部。
 
-原 Learn-GAS 與 My Real Second Brain 的公開核心，今後只在 `raven-ai-workflow-toolbox` 維護；舊儲存庫不再提供後續功能更新。
+如果你無法直接讀取 GitHub 儲存庫，請讓使用者先下載 ZIP 並解壓，再從本機檔案繼續。登入與外部服務授權由使用者本人完成。
 
-> **PREVIEW · `0.1.0-preview.2`** — 本版本供早期驗收，尚未正式支援。安裝前請先閱讀 [PREVIEW 發行說明](docs/preview-release.md)，並以各技能包 manifest 的實際狀態為準。
+| 技能包 | 安裝說明 |
+|---|---|
+| AI 剪片 | [skill-packs/ai-video/INSTALL.md](skill-packs/ai-video/INSTALL.md) |
+| Google 工具自動化 | [skill-packs/google-automation/INSTALL.md](skill-packs/google-automation/INSTALL.md) |
+| AI 知識庫 | [skill-packs/ai-knowledge-base/INSTALL.md](skill-packs/ai-knowledge-base/INSTALL.md) |
+| 社群媒體管理 | [skill-packs/social-media/INSTALL.md](skill-packs/social-media/INSTALL.md) |
+| 官網打造 | [skill-packs/website-building/INSTALL.md](skill-packs/website-building/INSTALL.md) |
+| WordPress MCP 工作流 | [skill-packs/wordpress-workflow/INSTALL.md](skill-packs/wordpress-workflow/INSTALL.md) |
+| AI Agent 規則與技能盤點 | [skill-packs/agent-inventory/INSTALL.md](skill-packs/agent-inventory/INSTALL.md) |
 
-> `main` 分支另含「WordPress MCP 工作流」候選包；它尚未納入 `v0.1.0-preview.2` 固定下載版本。
-
-本 repository 由多個可獨立演進的技能包組成。根目錄不提供會一次安裝全部內容的指令；先選擇需要的技能包，再由具備本機操作能力的 AI Agent 閱讀該套件的 `INSTALL.md` 與 `install.manifest.toml`。
-
-## 目前狀態
-
-| 技能包 | 狀態 | 安裝入口 |
-|---|---|---|
-| AI 知識庫 | Agent 端候選版可供外部驗收；尚未正式支援 | [`skill-packs/ai-knowledge-base/INSTALL.md`](skill-packs/ai-knowledge-base/INSTALL.md) |
-| AI 剪片工作流 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | [`skill-packs/ai-video/INSTALL.md`](skill-packs/ai-video/INSTALL.md) |
-| Google 工具自動化 | Agent 端 MVP 已完成，可安裝為外部驗收候選版；尚未正式支援 | [`skill-packs/google-automation/INSTALL.md`](skill-packs/google-automation/INSTALL.md) |
-| 社群媒體管理工作流 | 七個技能為可安裝的本機候選（候選版 0.7.0）；七份流程審查已完成，登入／OAuth、平台讀取與測試發布尚未執行，尚未正式支援 | [`skill-packs/social-media/INSTALL.md`](skill-packs/social-media/INSTALL.md) |
-| 官網打造工作流 | 七個技能（設定、文案、風格挑選、建置、部署、服務串接、維運）與起始範本為可安裝的本機候選；尚未正式支援 | [`skill-packs/website-building/INSTALL.md`](skill-packs/website-building/INSTALL.md) |
-| WordPress MCP 工作流 | 三個技能為可安裝的外部驗收候選；公開內容與本機生命週期已驗證，使用者帳號 OAuth 與正式站操作仍須個別驗收 | [`skill-packs/wordpress-workflow/INSTALL.md`](skill-packs/wordpress-workflow/INSTALL.md) |
-| AI Agent 規則與技能盤點 | 上游 v0.2.1 已鎖定並以乾淨 clone 核對雜湊，本套件為可安裝的本機候選；技能發現、實際盤點與另一臺電腦驗收尚未執行，尚未正式支援 | [`skill-packs/agent-inventory/INSTALL.md`](skill-packs/agent-inventory/INSTALL.md) |
+每個技能包獨立安裝。執行前，依該套件的 `INSTALL.md` 與 `install.manifest.toml` 檢查作業系統、安裝條件、第三方依賴與實際支援範圍；不要從根目錄推定所有功能都已完成實機驗收。
 
 ## 第一次安裝後的盤點邀請
 
@@ -44,16 +38,6 @@ Agent 在目標使用範圍完成第一個 Toolbox 技能包的全新安裝，�
 
 第三方來源與 fork 的選擇方式見 [`docs/dependency-policy.md`](docs/dependency-policy.md)。自行撰寫的公開核心採 [Apache License 2.0](LICENSE)，第三方內容保留各自授權。
 
-## 取得固定 Preview
+## 平台差異
 
-從 [v0.1.0-preview.2](https://github.com/iamraven-tw/raven-ai-workflow-toolbox/releases/tag/v0.1.0-preview.2) 下載 Source code (zip)，解壓後由 Agent 閱讀本文件；或使用 Git：
-
-```bash
-git clone --branch v0.1.0-preview.2 --depth 1 https://github.com/iamraven-tw/raven-ai-workflow-toolbox.git
-```
-
-產品已改名為「Raven AI 一人公司工具包」。既有狀態目錄、憑證命名空間、schema ID 與 `product_id = "ai-workflow-toolbox"` 保留相容性，不必搬移或刪除。固定相容性補丁中的舊名稱屬版本化內容，仍按原雜湊驗證。
-
-# Windows 與 macOS 平台分流
-
-Google 工具自動化在兩平台皆使用其 `scripts/validate_upstream.py` 完成內建來源驗證；Windows 權限不足的 symlink 案例明確列為 skipped。AI 剪片在 Windows x64 使用 [Windows 安裝入口](skill-packs/ai-video/docs/windows-install.md)，macOS 14+ Apple Silicon 使用 [既有 macOS 安裝契約](skill-packs/ai-video/INSTALL.md)。不得在 Windows 執行 Homebrew 或 Bash 續行範例。各平台的候選驗證範圍與未完成項目見 [測試計畫](docs/windows-test-plan.md)。
+不同作業系統與 AI Agent 的安裝位置可能不同。請以各技能包的安裝說明為準，先檢查使用者目前的環境，再選擇對應步驟。AI 剪片的 [Windows 說明](skill-packs/ai-video/docs/windows-install.md)與 [macOS 說明](skill-packs/ai-video/INSTALL.md)分開提供。
