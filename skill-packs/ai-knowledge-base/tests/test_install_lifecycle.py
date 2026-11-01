@@ -122,6 +122,19 @@ path = "<workspace>/.agents/skills"
         write_text(package / "install.manifest.toml", manifest)
         return package
 
+    def make_real_template_package(self) -> Path:
+        """以虛構技能包為基礎，換上技能包實際的 template/，驗證真實工作區範本。"""
+
+        package = self.root / "package-real-template"
+        shutil.copytree(self.package_v1, package)
+        shutil.rmtree(package / "template")
+        shutil.copytree(
+            PACKAGE_ROOT / "template",
+            package / "template",
+            ignore=shutil.ignore_patterns("__pycache__", ".venv", "lancedb"),
+        )
+        return package
+
     def manager(
         self,
         command: str,
@@ -482,6 +495,54 @@ path = "<workspace>/.agents/skills"
         state_text = states[0].read_text(encoding="utf-8")
         self.assertNotIn(custom_agents.strip(), state_text)
         self.assertIn('"contains_credentials": false', state_text)
+
+    def test_real_template_creates_inbox_external_and_rag(self) -> None:
+        """真實範本會建立收件匣、外部原文與 RAG 腳本，Graphify 與 Git 忽略規則正確，且不再有 Notebook 路由。"""
+
+        package = self.make_real_template_package()
+        workspace = self.root / "rag-workspace"
+        self.assert_success(self.workspace_manager("init-workspace", workspace, package=package))
+        sources = workspace / "sources"
+        self.assertTrue((sources / "inbox" / ".gitkeep").is_file())
+        self.assertEqual([path.name for path in (sources / "inbox").iterdir()], [".gitkeep"])
+        self.assertTrue((sources / "external" / "README.md").is_file())
+        for script in ("common.py", "ingest.py", "query.py"):
+            self.assertTrue((sources / "rag" / "scripts" / script).is_file())
+        self.assertFalse((sources / "references" / "notebooks").exists())
+        ignore_lines = (sources / ".graphifyignore").read_text(encoding="utf-8").splitlines()
+        for line in ("inbox/", "external/", "rag/", "wiki/*", "!wiki/ext_*.md"):
+            self.assertIn(line, ignore_lines)
+        self.assertNotIn("wiki/", ignore_lines)
+        gitignore_lines = (sources / ".gitignore").read_text(encoding="utf-8").splitlines()
+        self.assertIn("rag/.venv/", gitignore_lines)
+        self.assertIn("rag/lancedb/", gitignore_lines)
+
+    def test_legacy_notebooklm_workspace_upgrade_preserves_old_data(self) -> None:
+        """舊版工作區升級只補缺少項目：保留 Notebook 路由與舊 .graphifyignore，補上收件匣與 RAG 腳本。"""
+
+        workspace = self.root / "legacy-workspace"
+        legacy_index = "# Notebook 路由索引\n\n虛構的舊版紀錄\n"
+        legacy_ignore = "graphify-out/\nwiki/\nreferences/notebooks/\n"
+        write_text(workspace / "sources" / "references" / "notebooks" / "index.md", legacy_index)
+        write_text(workspace / "sources" / ".graphifyignore", legacy_ignore)
+
+        package = self.make_real_template_package()
+        preview = self.assert_success(
+            self.workspace_manager("workspace-status", workspace, package=package)
+        )
+        self.assertIn("sources/.graphifyignore", preview["preserved_existing"])
+        self.assertIn("sources/inbox/.gitkeep", preview["create_files"])
+        self.assertIn("sources/rag/scripts/ingest.py", preview["create_files"])
+
+        self.assert_success(self.workspace_manager("init-workspace", workspace, package=package))
+        sources = workspace / "sources"
+        self.assertEqual(
+            (sources / "references" / "notebooks" / "index.md").read_text(encoding="utf-8"),
+            legacy_index,
+        )
+        self.assertEqual((sources / ".graphifyignore").read_text(encoding="utf-8"), legacy_ignore)
+        self.assertTrue((sources / "external").is_dir())
+        self.assertTrue((sources / "rag" / "scripts" / "query.py").is_file())
 
     def test_workspace_type_conflict_stops_before_changes(self) -> None:
         """目錄與檔案類型衝突時，初始化在寫入前停止。"""

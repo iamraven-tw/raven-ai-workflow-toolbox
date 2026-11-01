@@ -1,24 +1,26 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "opencli",
   "upstream_url": "https://github.com/jackwener/opencli",
   "download_url": "https://github.com/jackwener/opencli.git",
-  "tag": "v1.8.8",
-  "commit": "8271afc67e8504bda94c147f446ee29775d08274",
-  "tree": "cca13cab1fca24de4d7a2d0b222639ab7c287bd6",
-  "version": "1.8.8",
   "license_spdx": "Apache-2.0",
-  "license_sha256": "0210b8b66cf00358242cb921ba2be3a46dfe0190159b1b952388a3880ce1ff54",
-  "lockfile_sha256": "45e6e72b22edfe744663bed6b9d7391cec7b1003920963d6128b01d6a6f8f634",
-  "install_method": "pinned_github_source_local_build",
+  "tier": "C",
+  "version_policy": "latest",
+  "release_selection": "latest_published_github_release_excluding_prerelease_and_draft",
+  "install_method": "clone_latest_release_tag_then_local_npm_build",
   "node_policy": "22.x >=22.13.0 or 24.x",
+  "readback_required": [
+    "tag",
+    "commit",
+    "tree",
+    "LICENSE 為 Apache-2.0",
+    "package-lock.json 存在"
+  ],
   "extension": {
-    "version": "1.0.24",
-    "url": "https://github.com/jackwener/OpenCLI/releases/download/v1.8.8/opencli-extension-v1.0.24.zip",
-    "size_bytes": 45776,
-    "sha256": "bad9163f32a66224404e302f52f35391672341d2bd0bf30c8bbaae3c6e6e246c",
-    "digest_evidence": "github_release_metadata_not_locally_downloaded",
-    "permissions": [
+    "release_asset_pattern": "opencli-extension-v*.zip",
+    "same_release_as_cli": true,
+    "verify": "size_and_sha256_against_github_release_digest_then_manifest_json_permission_review",
+    "permissions_expected_as_of_tested_release": [
       "debugger",
       "tabs",
       "cookies",
@@ -28,10 +30,26 @@
       "tabGroups",
       "downloads"
     ],
-    "host_permissions": [
+    "host_permissions_expected": [
       "<all_urls>"
-    ]
+    ],
+    "on_new_permission": "stop_and_show_user_before_loading"
   },
-  "checked_on": "2026-09-05",
+  "tested_release": {
+    "checked_on": "2026-09-05",
+    "version": "1.8.8",
+    "tag": "v1.8.8",
+    "commit": "8271afc67e8504bda94c147f446ee29775d08274",
+    "tree": "cca13cab1fca24de4d7a2d0b222639ab7c287bd6",
+    "license_sha256": "0210b8b66cf00358242cb921ba2be3a46dfe0190159b1b952388a3880ce1ff54",
+    "lockfile_sha256": "45e6e72b22edfe744663bed6b9d7391cec7b1003920963d6128b01d6a6f8f634",
+    "extension": {
+      "version": "1.0.24",
+      "url": "https://github.com/jackwener/OpenCLI/releases/download/v1.8.8/opencli-extension-v1.0.24.zip",
+      "size_bytes": 45776,
+      "sha256": "bad9163f32a66224404e302f52f35391672341d2bd0bf30c8bbaae3c6e6e246c"
+    }
+  },
+  "policy_note": "依 ADR 0006（2026-10-06）：OpenCLI 整組為 C 級外部來源，告知後取最新 Release；tested_release 只是維護者最後測試的版本紀錄，不是安裝目標。",
   "live_installation": "not_performed"
 }

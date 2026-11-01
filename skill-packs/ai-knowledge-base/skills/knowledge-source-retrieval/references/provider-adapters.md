@@ -1,41 +1,53 @@
 # 預設 Provider Adapter
 
-只有工作區實際使用 Graphify 或 `notebooklm-py` 時才讀本文件。若工作區設定其他 Provider，應依 `SKILL.md` 的能力契約執行，不要套用這裡的工具名稱與欄位。
+只有工作區實際使用 Graphify 或本地 RAG 時才讀本文件。若工作區設定其他 Provider，應依 `SKILL.md` 的能力契約執行，不要套用這裡的工具名稱與欄位。
 
-## Notebook／notebooklm-py
+## 本地 RAG（Ollama + qwen3-embedding:4b + LanceDB）
 
-### 真相來源
+本地 RAG 取代已停用的 NotebookLM；不再把資料送進 NotebookLM，也不再建立或同步 Notebook 集合。
 
-- `sources/references/notebooks/` 是本機路由索引與最近一次成功同步的快照。
-- Notebook 遠端來源清單是遠端真相；本機索引不能證明遠端目前完全相同。
-- 自動化一律使用完整 Notebook ID，不依賴 `notebooklm use` 的全域目前選擇。
+### 位置與真相來源
 
-### 驗證與查詢
+| 路徑 | 內容 |
+|---|---|
+| `sources/inbox/` | 唯一的收件匣；處理完應為空 |
+| `sources/external/` | 長篇外部原文的原檔，是引用的真相來源 |
+| `sources/wiki/ext_*.md` | 每份原文的摘要頁（`rag: true`、`source:` 指向原檔） |
+| `sources/rag/scripts/` | `ingest.py`、`query.py`、`common.py` |
+| `sources/rag/.venv/` | Agent 建立的 Python 環境（lancedb、pyarrow、jieba、pypdf、requests），可重建 |
+| `sources/rag/lancedb/` | 原文切段後的向量與全文索引，可由 `external/` 重建 |
 
-1. 執行 `notebooklm auth check --test --json`。
-2. 同時確認 `status=ok` 與 `checks.token_fetch=true`。
-3. 使用 `notebooklm ask "問題" -n <notebook_id> --json`。
-4. 需要限制來源時，明確加入 `-s <source_id>`。
-5. 保存 `references[].source_id`、`citation_number` 與 `cited_text`，再用來源清單對回標題與網址。
+索引只是檢索工具；回答引用以 `external/` 原檔內容為準。所有指令都在工作區根目錄以 `sources/rag/.venv/bin/python` 執行，不使用系統 Python 或其他環境。
 
-登入失效時停止遠端查詢，讓使用者本人重新登入；不得讀取或輸出登入狀態內容。
+### 何時查詢
 
-### 登錄與同步
+1. 先看 Wiki（含 `ext_*.md`）與 Graphify。
+2. 只有使用者要原文、原話、出處、精確數字或引用，或 Wiki 不夠詳細時，才查本地 RAG。
 
-- 以 `notebooklm source list -n <notebook_id> --json` 取得遠端來源。
-- 每個 entry 至少記錄 Notebook 標題、完整 ID、網址、主題、用途、同步狀態、最後驗證時間、複查時間與來源清單。
-- 來源清單至少記錄來源 ID、標題、類型、URL、遠端狀態、加入時間與最後看到時間。
-- 遠端已移除來源改標 `removed_remote`，不要直接刪除本機歷史。
+### 查詢
 
-### 加入來源
+1. 在工作區根目錄執行 `sources/rag/.venv/bin/python sources/rag/scripts/query.py "問題" -k 5`。
+2. 參數只有 `-k <筆數>`（預設 5）、`--mode hybrid|vector|fts`（預設 hybrid）與 `--root <sources 目錄>`（預設為腳本往上兩層）。`hybrid` 是向量加 jieba 中文斷詞全文檢索，以倒數排名合併。只想找特定詞彙時可用 `--mode fts`；只想找相近意思時可用 `--mode vector`。
+3. 不要自己在問題前加 `Instruct:` 前綴；Qwen3 查詢前綴已由 `query.py` 處理。
+4. 輸出是 JSON 陣列，每筆有 `source`（如 `external/定價研究.pdf`）、`section`（段落標題，沒有標題時是「（開頭）」；PDF 是「第 N 頁」，頁內有標題時是「第 N 頁｜標題」）、`chunk`、`score` 與 `text`。
+5. 回答一律標出 `source` 與 `section`；PDF 的 `section` 已含頁碼。需要更完整上下文時，回到 `external/` 原檔定向閱讀。
+6. `query.py` 印出 `{"error": "no_index"}` 代表尚無外部原文，回報「本地 RAG 目前沒有資料」；`embed_failed` 依下方失敗處理檢查 Ollama；`fts_unavailable` 表示全文索引需要重新匯入重建。
 
-1. 確認目的 Notebook。
-2. 執行 `notebooklm source add <來源> -n <notebook_id> --json`。
-3. 取得 `source.id` 後，再用來源清單或經使用者同意的等待操作確認遠端狀態。
-4. 遠端確認完成後才更新本機 entry。
-5. 只有本流程建立的傳輸暫存副本可在完成後清理；使用者原始檔案不得刪除。
+### 匯入
 
-`notebooklm-py` 使用非官方介面。介面變更或回傳異常時，保留本機索引與原始資料，將狀態標成 `error` 或 `unverified`，不得宣稱成功。
+1. 使用者檔案原本在其他位置時，複製到 `sources/inbox/`，原檔不動。
+2. 執行 `sources/rag/.venv/bin/python sources/rag/scripts/ingest.py`。
+3. 依 JSON 報告處理：`external` 的每份補寫 `ext_*.md` 三到五行摘要與關鍵詞（`reindexed: true` 是內容相同的重建，摘要頁已存在，不重寫）；`wiki_pending` 依既有規則歸檔後刪除收件匣副本；`unsupported`（不支援的格式與子資料夾）與 `errors` 留在收件匣並回報。只接受 `.md`、`.markdown`、`.txt`、`.pdf`、`.html`、`.htm`，文字檔須為 UTF-8。
+4. 參數只有 `--min-chars <字數>`（預設 6000）、`--all-external` 與 `--root <sources 目錄>`。預設門檻：PDF 或 6000 字以上進 `external/`，切成約 700 字的片段（前後重疊 120 字）。使用者明確要求時才用 `--all-external` 或 `--min-chars`。
+5. 資源：匯入或查詢時 Ollama 約佔 3.1 GB 記憶體，閒置約 2 分鐘後自動卸載。大量匯入前先告訴使用者大概需要的時間；技能包附有 `docs/integrations/local-rag.md` 時，需要數字可引用其中的「參考紀錄：維護者單機實測」，並說明那只是單一電腦的參考值；沒有該文件時只說明會依檔案大小而定，不編造數字。
+
+### 失敗處理
+
+- 連線錯誤：Ollama 沒有在執行，執行 `brew services start ollama` 後重跑。
+- 找不到模型：說明容量後重新 `ollama pull qwen3-embedding:4b`。
+- `ModuleNotFoundError`：`.venv` 不完整，重新安裝五個套件。
+- 失敗時保留收件匣與既有索引，不宣稱匯入成功。
+- 舊版留下的 Notebook 紀錄（例如 `sources/references/notebooks/`）若仍存在，只保留為歷史紀錄，不新增、不同步。
 
 ## Graphify
 
@@ -46,6 +58,12 @@
 - `sources/graphify-out/SOURCES_OVERVIEW.md`：來源概況與路由輔助。
 
 實際檔名可能隨 Provider 版本改變；先使用目前已安裝的 Graphify 技能檢查能力與輸出，不把這些檔名當成所有知識結構 Provider 的永久介面。
+
+### 分析範圍
+
+- Graphify 分析 Wiki 與外部原文摘要頁 `wiki/ext_*.md`，讓外部原文透過摘要與關鍵詞連進知識圖譜；圖譜不含原文本身，需要原文時改查本地 RAG。
+- `sources/.graphifyignore` 以 `wiki/*` 加 `!wiki/ext_*.md` 實作：一般 Wiki 頁面不重複進圖譜，摘要頁進圖譜；並排除 `inbox/`、`external/`、`rag/`。
+- 修改 `.graphifyignore` 前先向使用者預覽新規則並取得同意。
 
 ### 查詢與交付
 

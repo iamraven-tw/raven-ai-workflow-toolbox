@@ -25,24 +25,22 @@ EXPECTED_REGISTRATIONS = {
     "antigravity_desktop_user": "$HOME/.gemini/config/skills",
     "antigravity_cli_user": "$HOME/.gemini/antigravity-cli/skills",
 }
+# 有外部套件 pin 的 Provider；本地 RAG 是自有腳本加上 C 級元件，另外檢查
 EXPECTED_PROVIDERS = {
     "graphify": {
-        "package_spec": "graphifyy==0.9.35",
-        "version": "0.9.35",
+        "package_spec": "graphifyy",
+        "version": "latest",
+        "tested_version": "0.9.35",
         "upstream_tag": "v0.9.35",
         "upstream_commit": "9f25a3aaa1050913c2d8a1b9f0b0f0ed18296abd",
         "license_spdx": "Apache-2.0",
-        "latest_observed": "0.9.53",
-    },
-    "notebook": {
-        "package_spec": "notebooklm-py[browser]==0.8.0",
-        "version": "0.8.0",
-        "upstream_tag": "v0.8.0",
-        "upstream_commit": "8fb61cb125be9f59dfe163561e355922967c604a",
-        "license_spdx": "MIT",
-        "latest_observed": "0.8.1",
+        "latest_observed": "0.9.99",
     },
 }
+EXPECTED_PROVIDER_IDS = {"graphify", "local_rag"}
+EXPECTED_RAG_COMPONENTS = {"ollama", "qwen3-embedding-4b", "rag-python-packages"}
+EXPECTED_RAG_PACKAGES = ["lancedb", "pyarrow", "jieba", "pypdf", "requests"]
+RAG_SCRIPTS = ("common.py", "ingest.py", "query.py")
 PRIVATE_PATTERNS = (
     "/" + "Users/",
     "/" + "home/",
@@ -171,8 +169,8 @@ def validate_manifest_contract(manifest: dict) -> None:
         raise ValidationError("工作區模板必須只補缺少內容並在類型衝突時停止")
 
     providers = {item.get("id"): item for item in manifest.get("providers", [])}
-    if set(providers) != set(EXPECTED_PROVIDERS):
-        raise ValidationError("Provider 集合必須恰好是 graphify 與 notebook")
+    if set(providers) != EXPECTED_PROVIDER_IDS:
+        raise ValidationError("Provider 集合必須恰好是 graphify 與 local_rag；NotebookLM 已不再是預設 Provider")
     for provider_id, expected in EXPECTED_PROVIDERS.items():
         provider = providers[provider_id]
         for key, value in expected.items():
@@ -192,16 +190,16 @@ def validate_manifest_contract(manifest: dict) -> None:
         ):
             if not str(provider.get(url_key, "")).startswith("https://"):
                 raise ValidationError(f"Provider 缺少 HTTPS 官方來源：{provider_id}.{url_key}")
+        if provider.get("version_decision") != "install_latest_per_adr_0006_tested_version_recorded_for_reference":
+            raise ValidationError(f"Provider 版本決策必須是 ADR 0006 的 latest 政策：{provider_id}")
+        if provider.get("tier") != "C" or provider.get("version_policy") != "latest" or provider.get("external_source_notice") != "standard":
+            raise ValidationError(f"Provider 必須標示 C 級、latest 與標準外部來源提醒：{provider_id}")
+    for provider_id, provider in providers.items():
         if provider.get("replaceable") is not True:
             raise ValidationError(f"Provider 必須保持可替換：{provider_id}")
         if "candidate" not in str(provider.get("support_status", "")):
             raise ValidationError(f"Provider 不得被標成正式支援：{provider_id}")
-        if provider.get("version_decision") != "retain_pin_pending_isolated_compatibility_test":
-            raise ValidationError(f"Provider 固定版本決策缺少外部相容性關卡：{provider_id}")
-    if providers["notebook"].get("requires_user_login") is not True:
-        raise ValidationError("Notebook Provider 必須保留使用者本人登入關卡")
-    if providers["notebook"].get("unofficial_api") is not True:
-        raise ValidationError("Notebook Provider 必須揭露非官方介面風險")
+    validate_local_rag(manifest, providers["local_rag"])
 
     mutation_steps = {
         "confirm_changes",
@@ -209,7 +207,7 @@ def validate_manifest_contract(manifest: dict) -> None:
         "initialize_workspace",
         "install_provider_packages",
         "install_provider_skills",
-        "user_login",
+        "install_local_rag",
     }
     install_steps = manifest.get("install_steps", [])
     orders = [item.get("order") for item in install_steps]
@@ -228,11 +226,121 @@ def validate_manifest_contract(manifest: dict) -> None:
         "verify_workspace",
         "verify_provider_versions",
         "verify_provider_skills",
-        "verify_notebook_access",
+        "verify_local_rag",
         "write_local_state",
     }
     if not required_verification.issubset(verification_ids):
         raise ValidationError("manifest 缺少分層驗證或非敏感狀態步驟")
+
+
+def validate_local_rag(manifest: dict, rag: dict) -> None:
+    """確認本地 RAG 的路徑、元件分級、資源揭露與舊 NotebookLM 升級契約。"""
+
+    if rag.get("role") != "grounded_retrieval" or rag.get("replaces") != ["notebook"]:
+        raise ValidationError("local_rag 必須是取代 notebook 的有根據檢索 Provider")
+    if rag.get("requires_user_login") is not False or rag.get("uploads_user_content") is not False:
+        raise ValidationError("local_rag 不得要求登入或上傳使用者內容")
+    if rag.get("user_types_commands") is not False or rag.get("performed_by") != "agent":
+        raise ValidationError("local_rag 必須由 Agent 完成設定，使用者不需輸入指令")
+    if rag.get("embedding_model") != "qwen3-embedding:4b":
+        raise ValidationError("local_rag 向量模型必須是 qwen3-embedding:4b")
+    if rag.get("external_min_chars") != 6000 or rag.get("chunk_chars") != 700:
+        raise ValidationError("local_rag 分流門檻必須是 6000 字、切段約 700 字")
+    expected_paths = {
+        "venv_path": "sources/rag/.venv",
+        "index_path": "sources/rag/lancedb",
+        "inbox_path": "sources/inbox",
+        "external_path": "sources/external",
+        "workspace_scripts_path": "sources/rag/scripts",
+    }
+    for key, value in expected_paths.items():
+        if rag.get(key) != value:
+            raise ValidationError(f"local_rag 路徑不符：{key}")
+    required = manifest["workspace"]["required_directories"]
+    for directory in ("sources/inbox", "sources/external", "sources/rag/scripts"):
+        if directory not in required:
+            raise ValidationError(f"工作區必要目錄缺少：{directory}")
+    if any("notebooks" in directory for directory in required):
+        raise ValidationError("新工作區範本不得再要求 Notebook 路由目錄")
+
+    scripts = ROOT / str(rag.get("scripts_template_path", ""))
+    for name in RAG_SCRIPTS:
+        script = scripts / name
+        if not script.is_file():
+            raise ValidationError(f"缺少本地 RAG 腳本：{script}")
+        try:  # 至少確認語法正確；行為由 tests/test_local_rag.py 的確定性測試驗證
+            compile(script.read_text(encoding="utf-8"), str(script), "exec")
+        except SyntaxError as error:
+            raise ValidationError(f"本地 RAG 腳本語法錯誤：{script}：{error}") from error
+    common = (scripts / "common.py").read_text(encoding="utf-8")
+    if "parents[2]" not in common or "Instruct:" not in common:
+        raise ValidationError("common.py 必須以 sources/ 為根目錄並保留 Qwen3 查詢前綴")
+    supported = re.search(r"SUPPORTED_SUFFIXES = \{([^}]*)\}", common)
+    if not supported or set(re.findall(r'"(\.[a-z]+)"', supported.group(1))) != {".md", ".markdown", ".txt", ".pdf", ".html", ".htm"}:
+        raise ValidationError("common.py 必須以白名單限制匯入格式：md、markdown、txt、pdf、html、htm")
+    if 'errors="replace"' in common:
+        raise ValidationError("common.py 不得以 errors=\"replace\" 讀檔，亂碼會被當成內容建立索引")
+    if not (Path(__file__).resolve().parent / "test_local_rag.py").is_file():
+        raise ValidationError("缺少本地 RAG 行為測試 tests/test_local_rag.py")
+    if scripts.relative_to(ROOT / manifest["workspace"]["template_path"]).as_posix() != "sources/rag/scripts":
+        raise ValidationError("本地 RAG 腳本必須位於範本的 sources/rag/scripts/")
+
+    components = {item.get("id"): item for item in rag.get("components", [])}
+    if set(components) != EXPECTED_RAG_COMPONENTS:
+        raise ValidationError(f"local_rag 元件集合不符：{sorted(components)}")
+    for component_id, component in components.items():
+        if component.get("tier") != "C" or component.get("version_policy") != "latest" or component.get("external_source_notice") != "standard":
+            raise ValidationError(f"local_rag 元件必須標示 C 級、latest 與標準外部來源提醒：{component_id}")
+        if not str(component.get("source", "")).startswith("https://"):
+            raise ValidationError(f"local_rag 元件缺少 HTTPS 來源：{component_id}")
+    if "brew services start ollama" not in components["ollama"].get("install_commands", []):
+        raise ValidationError("Ollama 必須以 brew services 設定開機自動啟動")
+    if components["rag-python-packages"].get("packages") != EXPECTED_RAG_PACKAGES:
+        raise ValidationError("本地 RAG Python 套件清單不符")
+
+    upgrade = manifest.get("upgrade_from_notebooklm", {})
+    if upgrade.get("notebooklm_remote_data") != "keep_untouched":
+        raise ValidationError("升級流程不得刪除使用者的 NotebookLM 資料")
+    if upgrade.get("notebooklm_py_package") != "may_stay_installed_no_forced_uninstall":
+        raise ValidationError("升級流程不得強制移除 notebooklm-py")
+    # 舊版 .graphifyignore 的 wiki/ 必須被「取代」，只附加新行會讓 ext_*.md 仍被排除
+    if upgrade.get("graphifyignore") != "preview_replace_wiki_line_and_append_missing_then_confirm":
+        raise ValidationError("升級時 .graphifyignore 必須預覽後以 wiki/* 與 !wiki/ext_*.md 取代舊的 wiki/")
+    if upgrade.get("graphifyignore_replace") != {"from": "wiki/", "to": ["wiki/*", "!wiki/ext_*.md"]}:
+        raise ValidationError("graphifyignore_replace 必須把 wiki/ 換成 wiki/* 與 !wiki/ext_*.md")
+    if upgrade.get("graphifyignore_append_missing") != ["inbox/", "external/", "rag/"]:
+        raise ValidationError("graphifyignore_append_missing 必須是 inbox/、external/、rag/")
+    upgrade_docs = {
+        "INSTALL.md": ROOT / "INSTALL.md",
+        "docs/installation.md": ROOT / "docs" / "installation.md",
+        "docs/integrations/graphify.md": ROOT / "docs" / "integrations" / "graphify.md",
+        "my-real-second-brain-setup": ROOT / "skills" / "my-real-second-brain-setup" / "SKILL.md",
+    }
+    for label, path in upgrade_docs.items():
+        text = path.read_text(encoding="utf-8")
+        if "`wiki/*`" not in text or "`!wiki/ext_*.md`" not in text or "取代" not in text:
+            raise ValidationError(f"{label} 必須說明升級時以 wiki/* 與 !wiki/ext_*.md 取代舊的 wiki/")
+        if "append_missing_lines" in text:
+            raise ValidationError(f"{label} 不得只要求附加缺少的 .graphifyignore 規則")
+    if "measured_reference" in rag:
+        raise ValidationError("維護者實測數字不得放在 manifest 產品欄位；改放 local-rag.md 的參考紀錄")
+    if "參考紀錄：維護者單機實測" not in (ROOT / "docs" / "integrations" / "local-rag.md").read_text(encoding="utf-8"):
+        raise ValidationError("local-rag.md 缺少標示清楚的維護者實測參考紀錄")
+
+    template_root = ROOT / manifest["workspace"]["template_path"] / "sources"
+    ignore_lines = (template_root / ".graphifyignore").read_text(encoding="utf-8").splitlines()
+    for line in ("inbox/", "external/", "rag/", "wiki/*", "!wiki/ext_*.md"):
+        if line not in ignore_lines:
+            raise ValidationError(f".graphifyignore 缺少規則：{line}")
+    if "wiki/" in ignore_lines:
+        raise ValidationError(".graphifyignore 不得整個排除 wiki/，否則 ext_*.md 摘要頁不會進圖譜")
+    gitignore_lines = (template_root / ".gitignore").read_text(encoding="utf-8").splitlines()
+    for line in ("rag/.venv/", "rag/lancedb/"):
+        if line not in gitignore_lines:
+            raise ValidationError(f"工作區 .gitignore 缺少：{line}")
+    inbox_files = [path.name for path in (template_root / "inbox").iterdir()]
+    if inbox_files != [".gitkeep"]:
+        raise ValidationError("範本 inbox/ 只能有 .gitkeep，其他檔案會被當成待匯入資料")
 
 
 def validate_workspace_template(manifest: dict) -> None:
@@ -375,7 +483,7 @@ def main() -> int:
         return 1
 
     print(
-        "驗證通過：manifest 生命週期與固定版本、五個技能、用戶端登錄、"
+        "驗證通過：manifest 生命週期與固定版本、本地 RAG 契約、五個技能、用戶端登錄、"
         "工作區範本、Markdown、相對連結、隱私邊界與 symlink 檢查均正常。"
     )
     return 0

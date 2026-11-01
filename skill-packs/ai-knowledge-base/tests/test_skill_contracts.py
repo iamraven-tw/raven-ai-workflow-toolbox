@@ -111,6 +111,49 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("social-media-strategy-and-insights.md", retrieval)
         self.assertIn("不能在沒有使用者討論、補充與確認時", retrieval)
 
+    def test_retrieval_uses_rag_only_for_original_text(self) -> None:
+        """Wiki 與 Graphify 優先；只有要原文、出處、數字或 Wiki 不足時才查 RAG，且必須標出檔案與段落。"""
+
+        retrieval = self.skills["knowledge-source-retrieval"]
+        self.assertIn("Wiki 與 Graphify 優先", retrieval)
+        self.assertIn("使用者要原文、原話、出處、精確數字或引用", retrieval)
+        self.assertIn("沒有足夠細節回答", retrieval)
+        self.assertIn("一律標出檔案與段落標題", retrieval)
+        self.assertIn("已由 `query.py` 處理", retrieval)
+        self.assertNotIn("notebooklm ask", retrieval)
+        adapters = (
+            ROOT / "skills/knowledge-source-retrieval/references/provider-adapters.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("不要自己在問題前加 `Instruct:` 前綴", adapters)
+        self.assertIn("回答一律標出 `source` 與 `section`", adapters)
+        self.assertNotIn("notebooklm auth", adapters)
+
+    def test_inbox_flow_copies_and_empties(self) -> None:
+        """單一收件匣：複製不搬移原檔、長文進 external 與摘要頁、其他交給既有規則、最後清空。"""
+
+        retrieval = self.skills["knowledge-source-retrieval"]
+        self.assertIn("只有一個收件匣：`sources/inbox/`", retrieval)
+        self.assertIn("絕不搬移、改名或刪除使用者的原檔", retrieval)
+        self.assertIn("PDF 或 6000 字以上的長文", retrieval)
+        self.assertIn("三到五行摘要與關鍵詞", retrieval)
+        self.assertIn("`wiki_pending`", retrieval)
+        self.assertIn("收件匣應該是空的", retrieval)
+        self.assertIn("交給 `/book-notes`", retrieval)
+
+    def test_setup_handles_notebooklm_upgrade_without_deleting(self) -> None:
+        """升級時告知不再使用 NotebookLM、不刪資料、不強制移除，並由 Agent 完成本地 RAG 設定。"""
+
+        setup = self.skills["my-real-second-brain-setup"]
+        self.assertIn("## 從 NotebookLM 版本升級", setup)
+        self.assertIn("**不會被刪除**", setup)
+        self.assertIn("不強制移除", setup)
+        self.assertIn("brew services start ollama", setup)
+        self.assertIn("qwen3-embedding:4b", setup)
+        self.assertIn("sources/rag/.venv", setup)
+        self.assertIn("不需要自己輸入指令", setup)
+        self.assertIn("取得同意後才修改", setup)
+        self.assertNotIn("Notebook 登入", setup)
+
     def test_socratic_dialogue_hands_off_without_auto_write(self) -> None:
         """對話先檢索、一次一題，最後仍不等於寫入授權。"""
 
@@ -126,7 +169,8 @@ class SkillContractTests(unittest.TestCase):
         rules = self.template_rules
         self.assertIn("已有明確任務時不阻擋工作", rules)
         self.assertIn("一般討論不得自動寫入", rules)
-        self.assertIn("Graphify 與 Notebook 是預設但可替換", rules)
+        self.assertIn("Graphify 與本地 RAG 是預設但可替換", rules)
+        self.assertIn("絕不搬移或刪除原檔", rules)
         for forbidden in ("git push", "public-candidate", "release snapshot"):
             self.assertNotIn(forbidden, rules.lower())
 

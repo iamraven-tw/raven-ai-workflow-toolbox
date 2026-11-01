@@ -3,7 +3,7 @@ manifest_type = "my-real-second-brain-install"
 project_id = "my-real-second-brain"
 display_name = "My Real Second Brain"
 entrypoint = "INSTALL.md"
-checked_on = "2026-08-31"
+checked_on = "2026-10-31"
 requires_network = true
 status = "ready_for_external_acceptance"
 installable = true
@@ -14,6 +14,8 @@ self_skill_scope = "user"
 provider_skill_scope = "project"
 skill_target = "agents"
 package_manager = "uv"
+provider_version_policy = "latest_after_standard_external_source_notice"
+provider_tested_versions_are_reference_only = true
 conflict_policy = "stop_and_ask"
 
 [workspace]
@@ -24,13 +26,16 @@ copy_policy = "merge_missing_preserve_existing_stop_on_type_conflict"
 required_directories = [
   "sources/strategy",
   "sources/book-notes",
-  "sources/references/notebooks/entries",
+  "sources/references",
+  "sources/inbox",
+  "sources/external",
+  "sources/rag/scripts",
   "sources/wiki",
   "sources/graphify-out",
 ]
 
 [installation]
-candidate_version = "0.1.0"
+candidate_version = "0.2.0"
 manager = "scripts/manage_install.py"
 state_schema_version = 1
 managed_entries = [
@@ -110,8 +115,9 @@ install_order = 34
 id = "graphify"
 role = "knowledge_structure"
 package = "graphifyy"
-version = "0.9.35"
-package_spec = "graphifyy==0.9.35"
+version = "latest"
+tested_version = "0.9.35"
+package_spec = "graphifyy"
 source = "https://pypi.org/project/graphifyy/"
 source_version = "https://pypi.org/project/graphifyy/0.9.35/"
 upstream = "https://github.com/Graphify-Labs/graphify"
@@ -121,14 +127,18 @@ upstream_commit = "9f25a3aaa1050913c2d8a1b9f0b0f0ed18296abd"
 license_spdx = "Apache-2.0"
 license_url = "https://github.com/Graphify-Labs/graphify/blob/v0.9.35/LICENSE"
 wheel_sha256 = "97f5aa68a2779fe0bf14ce0419c3bfa42afeca2f4dc0c3db93b922c191f6967f"
+tier = "C"
+version_policy = "latest"
+tier_reason = "PyPI 套件與間接依賴無法封存；不是工具包的一部分，告知後安裝最新版"
+external_source_notice = "standard"
 sdist_sha256 = "a972d4b0ae73b0bbca1b5a56f0053b2a57a99f9b6f5f8437205c8a0d1f1d5f12"
-latest_observed = "0.9.53"
-latest_source_version = "https://pypi.org/project/graphifyy/0.9.53/"
-latest_release = "https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.53"
-latest_checked_on = "2026-08-31"
-version_decision = "retain_pin_pending_isolated_compatibility_test"
+latest_observed = "0.9.99"
+latest_source_version = "https://pypi.org/project/graphifyy/0.9.99/"
+latest_release = "https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.99"
+latest_checked_on = "2026-10-31"
+version_decision = "install_latest_per_adr_0006_tested_version_recorded_for_reference"
 support_status = "optional_pinned_candidate_requires_external_acceptance"
-install_method = "uv_tool"
+install_method = "uv_tool_install_latest"
 install_order = 40
 skill_install_order = 50
 skill_install_scope = "project"
@@ -140,47 +150,111 @@ verify_commands = ["graphify --version"]
 replaceable = true
 
 [[providers]]
-id = "notebook"
+id = "local_rag"
 role = "grounded_retrieval"
-package = "notebooklm-py"
-version = "0.8.0"
-extras = ["browser"]
-package_spec = "notebooklm-py[browser]==0.8.0"
-source = "https://pypi.org/project/notebooklm-py/"
-source_version = "https://pypi.org/project/notebooklm-py/0.8.0/"
-upstream = "https://github.com/teng-lin/notebooklm-py"
-upstream_release = "https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.0"
-upstream_tag = "v0.8.0"
-upstream_commit = "8fb61cb125be9f59dfe163561e355922967c604a"
-license_spdx = "MIT"
-license_url = "https://github.com/teng-lin/notebooklm-py/blob/v0.8.0/LICENSE"
-wheel_sha256 = "2e3947e023494e4f561c3a86155058cfb541c5ae79da2aaeb13817f5e67bc9f1"
-sdist_sha256 = "897a3b14ef9046080f377959de6c863c544ca21f106458f21243650d3d9a3579"
-latest_observed = "0.8.1"
-latest_source_version = "https://pypi.org/project/notebooklm-py/0.8.1/"
-latest_release = "https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.1"
-latest_checked_on = "2026-08-31"
-version_decision = "retain_pin_pending_isolated_compatibility_test"
-support_status = "optional_pinned_candidate_requires_external_acceptance"
-install_method = "uv_tool"
+replaces = ["notebook"]
+implementation = "first_party_scripts"
+scripts_template_path = "template/sources/rag/scripts"
+workspace_scripts_path = "sources/rag/scripts"
+venv_path = "sources/rag/.venv"
+index_path = "sources/rag/lancedb"
+inbox_path = "sources/inbox"
+external_path = "sources/external"
+wiki_stub_pattern = "sources/wiki/ext_*.md"
+ingest_command = "sources/rag/.venv/bin/python sources/rag/scripts/ingest.py"
+query_command = "sources/rag/.venv/bin/python sources/rag/scripts/query.py \"<問題>\" -k 5"
+external_min_chars = 6000
+chunk_chars = 700
+chunk_overlap_chars = 120
+default_query_mode = "hybrid"
+embedding_model = "qwen3-embedding:4b"
+query_prefix_handled_by = "query.py"
+keep_alive = "2m"
+target_platform = "macos"
+other_platforms = "not_yet_verified_report_and_ask"
+recommended_ram_gb = 16
+measured_ram_active_gb = 3.1
+measured_ram_idle_mb = 40
+measured_reference_note = "docs/integrations/local-rag.md 的「參考紀錄：維護者單機實測」；只供參考，不是效能保證"
+requires_user_login = false
+uploads_user_content = false
+performed_by = "agent"
+user_types_commands = false
+support_status = "optional_candidate_requires_external_acceptance"
 install_order = 41
-skill_install_order = 51
-skill_install_scope = "project"
-skill_install_templates = [
-  "notebooklm skill install --scope project --target agents",
-  "notebooklm skill install --scope project --target claude",
+verify_commands = [
+  "ollama --version",
+  "ollama list",
+  "sources/rag/.venv/bin/python -c \"import lancedb, pyarrow, jieba, pypdf, requests\"",
 ]
-local_verify_commands = ["notebooklm --version", "notebooklm skill status --scope project --target all"]
-remote_verify_commands = ["notebooklm auth check --test --json", "notebooklm list --json"]
-requires_user_login = true
 replaceable = true
-unofficial_api = true
+
+[[providers.components]]
+id = "ollama"
+kind = "runtime"
+package = "ollama"
+install_method = "homebrew_formula"
+install_commands = ["brew install ollama", "brew services start ollama"]
+autostart = "brew_services"
+source = "https://formulae.brew.sh/formula/ollama"
+upstream = "https://github.com/ollama/ollama"
+license_spdx = "MIT"
+license_url = "https://github.com/ollama/ollama/blob/main/LICENSE"
+tier = "C"
+version_policy = "latest"
+tier_reason = "平台相依的本機服務，由 Homebrew 安裝與更新；不是工具包的一部分"
+external_source_notice = "standard"
+
+[[providers.components]]
+id = "qwen3-embedding-4b"
+kind = "model_weights"
+model = "qwen3-embedding:4b"
+install_commands = ["ollama pull qwen3-embedding:4b"]
+approx_download_gb = 2.5
+source = "https://ollama.com/library/qwen3-embedding"
+upstream = "https://huggingface.co/Qwen/Qwen3-Embedding-4B"
+license_spdx = "Apache-2.0"
+license_url = "https://huggingface.co/Qwen/Qwen3-Embedding-4B/blob/main/LICENSE"
+tier = "C"
+version_policy = "latest"
+tier_reason = "模型權重體積大且由 Ollama 模型庫提供，不得提交進技能包"
+external_source_notice = "standard"
+cost = "free"
+
+[[providers.components]]
+id = "rag-python-packages"
+kind = "python_packages"
+packages = ["lancedb", "pyarrow", "jieba", "pypdf", "requests"]
+licenses = ["Apache-2.0", "Apache-2.0", "MIT", "BSD-3-Clause", "Apache-2.0"]
+install_method = "uv_venv_in_workspace"
+install_commands = [
+  "uv venv sources/rag/.venv --python 3.12",
+  "uv pip install --python sources/rag/.venv/bin/python lancedb pyarrow jieba pypdf requests",
+]
+approx_disk_mb = 500
+source = "https://pypi.org/"
+tier = "C"
+version_policy = "latest"
+tier_reason = "PyPI 套件與平台相依的二進位檔無法封存；安裝在工作區的獨立 Python 環境，不碰系統 Python"
+external_source_notice = "standard"
+
+[upgrade_from_notebooklm]
+applies_to = "已安裝 0.1.x 並曾使用 NotebookLM／notebooklm-py 的使用者"
+notebooklm_remote_data = "keep_untouched"
+notebooklm_py_package = "may_stay_installed_no_forced_uninstall"
+notebooklm_project_skills = "may_stay_no_forced_uninstall"
+legacy_local_index = "sources/references/notebooks/ 保留為歷史紀錄，不再同步"
+optional_source_download = "使用者同意後，協助把 NotebookLM 的原始來源下載或匯出到 sources/inbox/，再走一般收件匣流程"
+graphifyignore = "preview_replace_wiki_line_and_append_missing_then_confirm"
+graphifyignore_replace = { from = "wiki/", to = ["wiki/*", "!wiki/ext_*.md"] }
+graphifyignore_append_missing = ["inbox/", "external/", "rag/"]
+graphifyignore_note = "舊的 wiki/ 這一行必須刪除並換成 wiki/* 與 !wiki/ext_*.md；只附加新行而保留 wiki/ 時，gitignore 規則會讓 ext_*.md 仍被排除"
 
 [[install_steps]]
 order = 10
 id = "read_instructions"
 action = "read"
-inputs = ["AGENTS.md", "INSTALL.md", "install.manifest.toml", "docs/installation.md", "docs/providers.md"]
+inputs = ["AGENTS.md", "INSTALL.md", "install.manifest.toml", "docs/installation.md", "docs/providers.md", "docs/integrations/local-rag.md"]
 requires_confirmation = false
 
 [[install_steps]]
@@ -228,10 +302,11 @@ requires_confirmation = true
 
 [[install_steps]]
 order = 60
-id = "user_login"
-action = "interactive_login"
-provider = "notebook"
-performed_by = "user"
+id = "install_local_rag"
+action = "install_local_rag"
+provider = "local_rag"
+performed_by = "agent"
+steps = ["homebrew_ollama", "brew_services_autostart", "pull_embedding_model", "create_workspace_venv", "install_python_packages"]
 requires_confirmation = true
 
 [[install_steps]]
@@ -262,8 +337,8 @@ checks = ["provider_skills_exist_in_selected_project_scope"]
 
 [[verification_steps]]
 order = 40
-id = "verify_notebook_access"
-checks = ["auth_status_ok", "token_fetch_true", "notebook_list_returns_json"]
+id = "verify_local_rag"
+checks = ["ollama_service_running", "embedding_model_listed", "venv_imports_ok", "inbox_and_external_exist", "sample_ingest_and_query_ok_in_temporary_root"]
 
 [[verification_steps]]
 order = 50

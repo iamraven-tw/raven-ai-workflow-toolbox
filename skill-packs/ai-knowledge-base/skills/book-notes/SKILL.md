@@ -100,8 +100,8 @@ tags: []
 
 ## 與知識檢索的關係
 
-- 讀書筆記是使用者已經消化的一手心得來源，預設優先度高於尚未閱讀的 Notebook 資料。
+- 讀書筆記是使用者已經消化的一手心得來源，預設優先度高於尚未閱讀的外部原文（`sources/external/`）。
 - 回答時仍要區分作者主張、使用者心得與 AI 討論延伸。
-- 作者文章、PDF、TXT 或其他次級資料交給 `knowledge-source-retrieval` 使用原始位置、`sources/references/` 或合適的外部檢索位置。
-- 一般一本書預設不使用 Notebook；只有資料集龐大、跨大量文件，或反覆載入明顯浪費 Token 時才考慮 Notebook。
+- 作者文章、PDF、TXT 或其他次級資料交給 `knowledge-source-retrieval`：使用者要求納入知識庫時，複製到 `sources/inbox/` 再分流，長篇原文進本地 RAG，一般篇幅放 `sources/references/`。
+- 收件匣分流後若有自己的讀書心得（`wiki_pending`），依本技能追加到對應書籍的筆記。
 - 新增或完成一份重要讀書筆記後，只標記知識結構可能需要更新；是否立即執行由資料量與當次任務決定，不為每一小段口述強制重建。

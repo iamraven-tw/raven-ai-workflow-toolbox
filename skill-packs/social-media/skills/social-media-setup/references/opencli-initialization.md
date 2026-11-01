@@ -12,9 +12,9 @@ OpenCLI 是作者維護的開源瀏覽器工具，不是 Meta／Google／X 的�
 
 Agent 先做不觸碰瀏覽器帳號的工具版本／路徑檢查，再向使用者說明：
 
-> 我會從 OpenCLI 作者的 GitHub 開源專案 https://github.com/jackwener/opencli 下載已固定版本的程式與瀏覽器擴充功能，供後續技能在各自授權範圍使用你指定的 Chrome；社群初始化的後台與擴充設定仍由你依文字指引操作。它不是社群平台的官方 API；擴充功能有所有網站、分頁、Cookie 與除錯等廣泛存取權限。我會列出版本、保存位置、依賴下載與可能變動，且不因此登入帳號、發布、回覆或排程。你可以拒絕或延後這項安裝。
+> 以下元件來自外部專案，不是 Raven AI 工具包的一部分：OpenCLI（作者 jackwener 的開源專案，Apache-2.0）的最新正式版原始碼與同版本的 Chrome 擴充功能，約 50 KB 擴充檔加上建置用的 npm 相依。下載後我會先核對 Release 的檔案指紋與擴充權限，再安裝。要繼續嗎？
 
-實際提醒必須補上來源契約的版本、完整 commit、GitHub 下載 URL、Apache-2.0 授權、目的地、所需 Git／Node.js／npm／Chrome，以及容量與費用：擴充壓縮檔 45,776 bytes；原始碼與 npm 依賴容量尚未實測，不虛構精確值；沒有此流程要求的付費訂閱，但會下載資料並占用磁碟，平台 API 費用另計。只向 npm registry 取得鎖檔指定的相依套件，不把它們描述成全由 GitHub 下載。
+實際提醒必須補上即時查到的 Release 版本號、GitHub 來源、Apache-2.0 授權、目的地、所需 Git／Node.js／npm／Chrome，以及已知容量；原始碼與 npm 依賴容量未實測時照實說「未實測」。依 ADR 0006，OpenCLI 整組是 C 級 `latest` 外部來源；來源契約的 `tested_release` 只是維護者最後測試的版本，不是安裝目標。
 
 取得這份本機安裝預覽的一次確認後，由 Agent 下載、核對、解壓縮、安裝依賴、建置及檢查。若使用者已明確核准相同版本、範圍與目的地，仍在下載前提醒，但不逐條命令重問。只有「初始化」且還沒看過這些影響時，不能用告知取代確認；使用者沉默不算同意。這份核准不等於同意登入、平台 OAuth 或遠端寫入。
 
@@ -22,8 +22,8 @@ Agent 先做不觸碰瀏覽器帳號的工具版本／路徑檢查，再向使�
 
 1. **唯讀盤點。** 找到明確的私人專案與工具位置，檢查 Git、Node.js、npm、Chrome、既有 OpenCLI 可執行檔與版本；已有可用版本就優先沿用，記錄與固定候選的差異，不默默升降級。只查工具檔案，不列印環境變數、Cookie 或登入資料。來源建置候選採 Node.js 22.x 且至少 22.13.0，或 24.x：上游說明的最低版本與鎖檔依賴不完全一致，不能只看 `package.json` 的最低值。缺少前置工具時，另列其官方來源、版本與安裝影響，補足核准前不擅自安裝。
 2. **預覽位置與影響。** 新下載預設放在私人專案 `.local/tools/opencli/<version>/source` 與同版本 `extension`，不放入技能掃描目錄、公開 Toolbox 或內容資料目錄，確認 Git 忽略這些產物；忽略設定變更也列入預覽。若當地明確指定擴充功能標準位置，沿用當地規則，不把維護者的路徑寫死。既有非空目錄、符號連結或共享 OpenCLI 狀態有衝突就停止，不整理、覆蓋或刪除。先列出 npm cache、OpenCLI 使用者層級狀態、Chrome 擴充資料及本機 daemon 的影響，不聲稱所有寫入都只在專案內。
-3. **從 GitHub 取得固定來源。** 確认同一份預覽已核准後，以 HTTPS 在新的來源目錄執行 `git clone --depth 1 --single-branch --branch <tag> <download_url> <source-dir>`，所有佔位符由來源契約及核准目標解析。讀回 `git rev-parse HEAD`、`git rev-parse HEAD^{tree}` 與遠端 URL，分別比對完整 commit、tree 與作者來源；再核對 `LICENSE` 與 `package-lock.json` 的 SHA-256。失敗就停止，不能改用最新版本或先執行建置。保留原 LICENSE 及存在時的 NOTICE，不修改上游程式。
-4. **下載擴充功能。** 由 Agent 取得契約的 GitHub Release 資產，先核對 SHA-256 與大小，再檢查 ZIP 路徑不會跳出新目錄、沒有絕對路徑或符號連結，才解壓縮。找到 `manifest.json`、核對版本、權限、`<all_urls>` 與 background 指向檔案存在；與預覽不同就停止重新確認。來源契約的資產雜湊來自 GitHub Release metadata，本機下載時仍必須真正計算比對。
+3. **從 GitHub 取得最新正式 Release。** 確認同一份預覽已核准後，先查最新正式 Release 的 tag（`gh release view --repo jackwener/opencli --json tagName` 或 GitHub API `releases/latest`；排除 prerelease 與 draft），以 HTTPS 在新的來源目錄執行 `git clone --depth 1 --single-branch --branch <latest-tag> <download_url> <source-dir>`。讀回 `git rev-parse HEAD`、`HEAD^{tree}` 與遠端 URL 記進狀態；核對 `LICENSE` 內容為 Apache-2.0、`package-lock.json` 存在。失敗就停止，不改用 `main` 分支或先執行建置。保留原 LICENSE 及存在時的 NOTICE，不修改上游程式。若與來源契約 `tested_release` 不同版本，照實記錄差異，不因此停止。
+4. **下載同一 Release 的擴充功能。** 從第 3 步選定的同一個 Release 取得符合 `opencli-extension-v*.zip` 的資產；先以 GitHub Release 公布的 digest 與大小核對下載檔，再檢查 ZIP 路徑不會跳出新目錄、沒有絕對路徑或符號連結，才解壓縮。找到 `manifest.json`，比對權限與 `host_permissions`：若出現來源契約 `permissions_expected_as_of_tested_release` 以外的新權限，停止並把新權限逐條顯示給使用者，取得同意後才載入。
 5. **本機建置 CLI。** 在已核對的 source 目錄使用 npm 鎖檔：`npm ci --ignore-scripts --no-audit --no-fund`，再明確執行 `npm run build`。這會下載依賴並執行已核對專案的建置程式，不是零風險操作。跳過自動安裝腳本，避免上游 postinstall／全域安裝改動其他工具；不執行 `npm link`、`npm install -g`、`npx skills add` 或額外 adapter 安裝。建置若因被略過的相依腳本失敗，停下查明原因，只預覽必要的特定補救，不全面開啟腳本、換版或重裝。以 `node <source-dir>/dist/src/main.js --version` 讀回版本；後續以這個確定入口取代不明的全域 `opencli`。
 6. **啟用 Browser Bridge。** Agent 提供 `chrome://extensions`、已準備好的確切擴充目錄，以及啟用開發人員模式、載入解壓縮目錄、檢查權限的文字步驟，由人類自行操作。不使用尚未安裝的 OpenCLI 安裝自己；Computer Use 僅限主技能例外，不繞過企業政策。啟用本身不要求社群登入。
 7. **分層驗證。** 完整 CLI 啟動可能建立／改寫使用者層級 `.opencli` 的模組連結、讀取既有自訂 adapter／plugin，並啟動 daemon；這些不屬於純唯讀檔案檢查。執行前確認它們已列入核准範圍，遇到其他來源的衝突停下，不載入來源不明的自訂程式。依固定版 `--help` 與 Browser Bridge 文件，執行 `doctor`、辨識連線中的 Chrome；多個 profile 不能猜。用專供驗證的新分頁讀取不需登入的中性公開頁，核對標題與網址。只有版本輸出或 doctor 成功，不能標示五平台可搜尋；社群登入、各平台搜尋／讀回均為另外驗收。

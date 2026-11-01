@@ -44,7 +44,8 @@
 
 ## 第三方依賴與 fork
 
-- 第三方專案預設由安裝 manifest 從正式來源取得固定版本，不直接複製進本 repository，也不追蹤 `latest` 或未鎖定的 `main`。
+- 第三方專案預設由安裝 manifest 從正式來源取得固定版本，不直接複製進本 repository，也不追蹤 `latest` 或未鎖定的 `main`；唯一例外是下一點的 C 級外部來源。
+- C 級外部來源（不屬於工具包本身、無法封存的獨立工具與資料）依 ADR 0006 可追蹤 `latest`：目前為社群媒體的 OpenCLI（CLI 與同一 Release 的擴充功能；`opencli-source.json` schema v2 記錄 `tested_release`）與 tzdata（不釘版本），AI 知識庫的 graphifyy 與本地 RAG 元件（Ollama、qwen3-embedding:4b、lancedb、pyarrow、jieba、pypdf、requests），以及根目錄環境準備的 uv。manifest 必須標示 `tier = "C"`、`version_policy = "latest"` 與最後測試版本；安裝前宣讀標準外部來源提醒，安裝後驗證失敗就停止，不自動改裝舊版。新增或移除這類元件時，同步更新 `docs/dependency-policy.md` 與 `docs/decisions/0006-external-source-version-policy.md`。
 - 官方版本符合需求時使用官方來源；能以獨立擴充完成時保留官方核心；只有必要功能必須修改核心時才使用公開、可追溯的 fork。
 - fork 必須記錄上游網址、基準版本、實際下載來源、固定 ref、授權、修改理由、更新與回復方式；不得把 fork 描述為官方版本。
 - 模型權重、快取、虛擬環境與使用者素材不屬於技能包原始碼，不得提交；下載前必須說明來源、容量、授權、硬體需求與可能費用。

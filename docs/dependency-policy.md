@@ -19,6 +19,24 @@ Raven AI 一人公司工具包 會整合多個外部開源專案、套件、模�
 
 Learn-GAS 與 My Real Second Brain 的公開核心已改為 Toolbox 單一維護來源，依 ADR 0005 保留歷史來源與原授權；不再將這兩個舊儲存庫列為下載依賴。其他第三方與 fork 繼續遵守固定版本政策。
 
+## C 級外部來源：`latest` 例外（ADR 0006）
+
+依 [ADR 0006](decisions/0006-external-source-version-policy.md)，下列無法封存、也不屬於工具包本身的獨立工具與資料，改採 C 級 `version_policy = "latest"`：安裝當下最新正式版，manifest 記錄 `tier = "C"`、`version_policy` 與維護者最後測試的版本（`tested_version` 或 `tested_release`）供參考。安裝後執行技能包既有的驗證指令，失敗時回報並停止，不自動改裝舊版。
+
+- 社群媒體：OpenCLI（CLI 原始碼與同一 Release 的 Chrome 擴充功能）、tzdata。
+- AI 知識庫：graphifyy、本地 RAG 元件（Ollama、qwen3-embedding:4b、lancedb、pyarrow、jieba、pypdf、requests）。
+- 根目錄環境準備：uv。
+
+其他依賴仍遵守本文件的固定版本政策。
+
+### 標準外部來源提醒
+
+Agent 安裝 C 級元件前，向使用者說明以下內容並取得同意；清單依實際元件填寫，用白話、不嚇人：
+
+> 以下元件來自外部專案，不是 Raven AI 工具包的一部分：〔元件、容量〕。下載後我會先核對檔案是否與工具包記錄的版本一致，再安裝。要繼續嗎？
+
+安裝、核對與驗證由 Agent 代為執行；同一次安裝中的多個外部元件合併成一次提醒；使用者追問時，Agent 再說明來源網址、版本與核對方式。
+
 ## Manifest 必填資訊
 
 每項必要依賴至少記錄：
@@ -26,7 +44,7 @@ Learn-GAS 與 My Real Second Brain 的公開核心已改為 Toolbox 單一維護
 - ID、用途與是否必要。
 - 類型：官方、擴充套件、fork、vendored、模型或外部服務。
 - 使用者實際下載網址與原始上游網址。
-- 固定 tag、版本或完整 commit；不得只寫 `latest` 或未鎖定的 `main`。
+- 固定 tag、版本或完整 commit；不得只寫 `latest` 或未鎖定的 `main`（上方 C 級 `latest` 例外改記 `tier`、`version_policy` 與測試版本）。
 - 可行時記錄 checksum 或其他完整性驗證方式。
 - 授權、必要 NOTICE、修改與再散布要求。
 - 安裝方式、支援環境、容量、硬體、登入、權限與費用。

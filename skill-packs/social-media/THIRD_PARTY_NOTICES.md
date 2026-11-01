@@ -28,9 +28,9 @@
 ## OpenCLI
 
 - 原始作者來源：[jackwener/opencli](https://github.com/jackwener/opencli)，不是 fork，也不是社群平台官方 API。
-- 版本與完整性以 [固定來源契約](skills/social-media-setup/references/opencli-source.json) 為唯一依據：CLI v1.8.8、該版本 Release 的擴充功能 v1.0.24，含完整 commit／tree、LICENSE／鎖檔雜湊及 GitHub 宣告的資產 SHA-256。
+- 版本政策：依 ADR 0006 為 C 級 `latest`，安裝時取 jackwener/opencli 最新正式 GitHub Release 的原始碼與同一 Release 的擴充功能。[來源契約](skills/social-media-setup/references/opencli-source.json) 記錄選擇規則、擴充權限基準，以及維護者最後測試的 `tested_release`（CLI v1.8.8、擴充 1.0.24，含 commit／tree／LICENSE／鎖檔／資產雜湊）。
 - 上游 [LICENSE](https://github.com/jackwener/opencli/blob/8271afc67e8504bda94c147f446ee29775d08274/LICENSE) 為 Apache-2.0；保留授權與存在時的 NOTICE、著作權聲明。npm 相依套件保留各自授權，不宣稱全為 Apache-2.0。
-- 不複製上游程式碼到公開 Toolbox。實際來源從 GitHub 取得固定 ref，再透過上游鎖檔取得 npm 相依套件；不執行未固定的 npm 全域安裝或第三方鏡像下載。
+- 不複製上游程式碼到公開 Toolbox，也不封存擴充功能；兩者都在安裝時由 Agent 宣讀標準外部來源提醒後取得，再依上游鎖檔取得 npm 相依。不執行未固定的 npm 全域安裝或第三方鏡像下載。
 - 安裝目標、支援環境、容量、權限、費用、驗證、更新／回復／移除與可替代方案見 [初始化流程](skills/social-media-setup/references/opencli-initialization.md)。目前僅查證公開來源與契約，尚未實測下載、建置、擴充啟用或 Bridge 連線。
 
 ## HTML＋CSS、免費 SVG 與本機渲染
