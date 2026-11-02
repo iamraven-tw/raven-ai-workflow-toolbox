@@ -1,0 +1,4 @@
+# 本地 RAG 的 Python 環境與向量索引可隨時重建，不納入版本控制
+rag/.venv/
+rag/lancedb/
+**/__pycache__/

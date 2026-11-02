@@ -1,6 +1,11 @@
 graphify-out/
-wiki/
-references/notebooks/
+# Wiki 一般頁面不重複進圖譜，但外部原文的摘要頁 ext_*.md 要進圖譜，讓 Graphify 知道有哪些原文可查
+wiki/*
+!wiki/ext_*.md
+# 原始檔、待處理檔與 RAG 程式／索引不進圖譜（原文已由本地 RAG 檢索）
+inbox/
+external/
+rag/
 .DS_Store
 **/.DS_Store
 **/*.tmp

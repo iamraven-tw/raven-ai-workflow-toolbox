@@ -491,16 +491,17 @@ def validate_opencli_dependency(manifest: dict) -> None:
         raise ValidationError("僅允許已定義的 OpenCLI、既有 Pillow 與固定 tzdata 依賴")
     timezone_data = next(d for d in dependencies if d["id"] == "tzdata")
     if any(timezone_data.get(k) != v for k, v in {
-        "version": "2026.3", "bundled": False, "managed_by_skill_installer": False,
-        "license_spdx": "Apache-2.0", "download_bytes": 348168,
-        "sha256": "dc096730c87af6cab1b171c9d532be840741ff5d459015e7f6947bd7d7e54931",
+        "version": "latest", "version_policy": "latest", "tested_version": "2026.3",
+        "tier": "C", "external_source_notice": "standard",
+        "bundled": False, "managed_by_skill_installer": False,
+        "license_spdx": "Apache-2.0",
         "installation_stage": "isolated_python_runtime_after_notice_and_authorization",
     }.items()):
-        raise ValidationError("tzdata 必須固定版本與雜湊，不能由技能安裝器靜默下載")
+        raise ValidationError("tzdata 必須標示為 C 級、latest 並保留測試版本紀錄，不能由技能安裝器靜默下載")
     requirements = (ROOT / timezone_data["requirements"]).read_text(encoding="utf-8")
-    if ("tzdata==" + timezone_data["version"] + " --hash=sha256:" + timezone_data["sha256"]
-            not in requirements or not (ROOT / timezone_data["procedure"]).is_file()):
-        raise ValidationError("tzdata 鎖定 requirements 與操作文件不一致")
+    if (not re.search(r"^tzdata\s*$", requirements, flags=re.M)
+            or "==" in requirements or not (ROOT / timezone_data["procedure"]).is_file()):
+        raise ValidationError("tzdata requirements 必須未釘版本（latest），且操作文件存在")
     dependency = next(d for d in dependencies if d["id"] == "opencli")
     image_runtime = next(d for d in dependencies if d["id"] == "pillow")
     if any(image_runtime.get(k) != v for k, v in {
@@ -517,7 +518,7 @@ def validate_opencli_dependency(manifest: dict) -> None:
         "installation_stage": "agent_runtime_after_notice_and_approval",
         "bundled": False, "managed_by_skill_installer": False,
         "installable": True,
-        "status": "pinned_source_candidate_live_installation_not_performed",
+        "status": "latest_release_policy_live_installation_not_performed",
         "source_contract": "skills/social-media-setup/references/opencli-source.json",
         "procedure": "skills/social-media-setup/references/opencli-initialization.md",
     }
@@ -731,25 +732,32 @@ def validate_review_source(path: Path) -> None:
 
 
 def validate_opencli_source(source: dict) -> None:
-    """固定作者來源、版本與完整性格式；不連線或宣稱資產已下載。"""
+    """OpenCLI 為 C 級 latest 外部來源：固定作者來源、最新 Release 選擇規則、擴充配對與測試版本紀錄。"""
     if source.get("upstream_url") != "https://github.com/jackwener/opencli" or source.get("download_url") != "https://github.com/jackwener/opencli.git":
         raise ValidationError("OpenCLI 必須取自作者 GitHub")
-    if not re.fullmatch(r"\d+\.\d+\.\d+", source.get("version", "")) or source.get("tag") != "v" + source["version"]:
-        raise ValidationError("OpenCLI 不得採浮動版本")
-    for name in ("commit", "tree"):
-        if not re.fullmatch(r"[0-9a-f]{40}", source.get(name, "")):
-            raise ValidationError("OpenCLI 缺少完整 Git 來源識別")
-    for name in ("license_sha256", "lockfile_sha256"):
-        if not re.fullmatch(r"[0-9a-f]{64}", source.get(name, "")):
-            raise ValidationError("OpenCLI 缺少來源完整性資料")
+    if source.get("schema_version") != 2 or source.get("tier") != "C" or source.get("version_policy") != "latest":
+        raise ValidationError("OpenCLI 來源契約必須標示 C 級 latest（ADR 0006）")
+    if source.get("release_selection") != "latest_published_github_release_excluding_prerelease_and_draft":
+        raise ValidationError("OpenCLI 必須選擇最新正式 Release 並排除 prerelease")
     extension = source.get("extension", {})
-    expected_url = f'https://github.com/jackwener/OpenCLI/releases/download/{source["tag"]}/opencli-extension-v{extension.get("version")}.zip'
-    if extension.get("url") != expected_url or not re.fullmatch(r"[0-9a-f]{64}", extension.get("sha256", "")):
-        raise ValidationError("擴充功能必須是同一固定 Release 的可驗證資產")
-    if type(extension.get("size_bytes")) is not int or extension["size_bytes"] <= 0:
-        raise ValidationError("擴充功能缺少容量資訊")
-    if not {"cookies", "debugger", "tabs"}.issubset(extension.get("permissions", [])) or extension.get("host_permissions") != ["<all_urls>"]:
+    if extension.get("release_asset_pattern") != "opencli-extension-v*.zip" or extension.get("same_release_as_cli") is not True:
+        raise ValidationError("擴充功能必須取自與 CLI 同一個 Release")
+    if not {"cookies", "debugger", "tabs"}.issubset(extension.get("permissions_expected_as_of_tested_release", [])) or extension.get("host_permissions_expected") != ["<all_urls>"]:
         raise ValidationError("來源契約不得隱藏目前已查證的廣泛擴充權限")
+    if "stop" not in str(extension.get("on_new_permission", "")):
+        raise ValidationError("擴充功能出現新權限時必須停止並告知")
+    tested = source.get("tested_release", {})
+    if not re.fullmatch(r"\d+\.\d+\.\d+", tested.get("version", "")) or tested.get("tag") != "v" + tested["version"]:
+        raise ValidationError("tested_release 缺少完整版本紀錄")
+    for name in ("commit", "tree"):
+        if not re.fullmatch(r"[0-9a-f]{40}", tested.get(name, "")):
+            raise ValidationError("tested_release 缺少完整 Git 識別")
+    for name in ("license_sha256", "lockfile_sha256"):
+        if not re.fullmatch(r"[0-9a-f]{64}", tested.get(name, "")):
+            raise ValidationError("tested_release 缺少完整性資料")
+    tested_ext = tested.get("extension", {})
+    if not re.fullmatch(r"[0-9a-f]{64}", tested_ext.get("sha256", "")) or type(tested_ext.get("size_bytes")) is not int:
+        raise ValidationError("tested_release 的擴充功能缺少雜湊或容量")
     if source.get("license_spdx") != "Apache-2.0" or source.get("live_installation") != "not_performed":
         raise ValidationError("授權或實機驗收狀態不符")
 

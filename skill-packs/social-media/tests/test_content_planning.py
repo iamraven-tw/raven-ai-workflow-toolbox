@@ -126,11 +126,20 @@ class PlanningTests(unittest.TestCase):
                 CHECK.validate(record)
 
     def test_x_is_research_only_and_calendar_is_not_remote_schedule(self):
-        for changes in ({"platform": "x"}, {"status": "scheduled"}):
+        for changes in ({"platform": "x"}, {"platform": "reddit"}, {"platform": "tiktok"}, {"status": "scheduled"}):
             record = approved_record()
             record["calendar"][0].update(changes)
             with self.assertRaises(CHECK.InvalidRecord):
                 CHECK.validate(record)
+
+    def test_reddit_and_tiktok_are_valid_research_sources(self):
+        record = research_record()
+        for platform in ("reddit", "tiktok"):
+            record["research"]["platforms"].append(platform)
+            record["research"]["coverage"].append({"platform": platform, "queries": ["虛構換盆 問題"],
+                                                    "method": "public_search", "status": "checked",
+                                                    "note": "只跑指定的小輪查詢"})
+        self.assertTrue(CHECK.validate(record)["valid"])
 
     def test_unknown_or_old_publication_is_a_warning_not_recent_evidence(self):
         record = research_record()

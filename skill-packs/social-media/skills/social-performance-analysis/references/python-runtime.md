@@ -9,9 +9,9 @@ Windows 通常沒有系統 IANA 資料；缺少時回報 timezone_data_missing �
 先用實際執行 helper 的 Python 檢查 UTC、Asia/Taipei 及設定指定的時區。
 能讀既有系統資料庫就不必安裝；不能讀時，Agent 先告知下列固定來源，再於本次已授權範圍內安裝。
 
-- 來源：[Python 官方 tzdata 2026.3](https://pypi.org/project/tzdata/2026.3/)，wheel 348168 bytes，Apache-2.0；IANA 資料依上游說明為公共領域。保留 wheel 內授權聲明。
-- CPU 即可，不需 GPU、模型、帳號或管理員權限，無使用費；下載需要網路。
-- 版本與 wheel SHA-256 在技能的 requirements.txt 固定；完整來源記錄在套件 install.manifest.toml。不下載浮動最新版或原始碼建置。
+- 來源：[Python 官方 tzdata](https://pypi.org/project/tzdata/)，Apache-2.0，安裝 PyPI 當下最新版（維護者最後測試 2026.3，wheel 348168 bytes）；IANA 資料依上游說明為公共領域。保留 wheel 內授權聲明。
+- CPU 即可，不需 GPU、模型、帳號或管理員權限，無使用費；下載需要網路。PyPI 是工具包無法封存的外部來源（C 級，`latest`）；下載前 Agent 依 `docs/dependency-policy.md` 宣讀標準外部來源提醒並取得同意。
+- requirements.txt 不釘版本，由 pip／uv 依 PyPI 自身校驗安裝最新 wheel；維護者最後測試的版本與雜湊記錄在套件 install.manifest.toml 供參考。不下載浮動最新版或原始碼建置。
 - 只在使用者選定的隔離 Python venv 安裝，不變更全域 Python、不覆寫既有可用環境。技能檔案安裝器本身仍完全離線。
 
 以套件根為目前目錄，以下 PowerShell 範例由 Agent 執行；venv 位置需放在不提交的私人目錄：

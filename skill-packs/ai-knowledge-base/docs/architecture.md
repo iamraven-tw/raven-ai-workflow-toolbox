@@ -4,13 +4,14 @@
 
 `My Real Second Brain` 不以最大資料量為目標，而是區分「第一大腦產生的心得」「外部次級資料」「結構化整理」與「可重建衍生輸出」。
 
-## 五種資料角色
+## 資料角色
 
 | 角色 | 內容 | 預設位置 |
 |---|---|---|
 | 策略與已確認洞察 | 使用者確認的一人公司方向、社群策略、限制、優先事項、長期洞察與重要變更 | `sources/strategy/` |
 | 第一大腦心得 | 使用者直接說出、親自閱讀、思考或與 AI 討論後形成的內容 | `sources/book-notes/` |
-| 次級資料 | 作者文章、PDF、TXT、軟體文件、報告與大型外部資料索引 | `sources/references/` |
+| 次級資料 | 一般篇幅的作者文章、軟體文件與網路來源紀錄 | `sources/references/` |
+| 外部原文 | PDF 或 6000 字以上的長篇原文，由本地 RAG 建立索引 | `sources/external/`、`sources/rag/` |
 | 結構化知識 | Agent 依心得與來源整理、可持續維護的扁平 Wiki | `sources/wiki/` |
 | 衍生輸出 | 知識結構 Provider 產生的圖譜、報告與視覺化 | `sources/graphify-out/` |
 
@@ -20,10 +21,11 @@
 flowchart TD
     S["使用者確認長期方向或洞察"] --> T["strategy/ 保存設定、洞察與變更"]
     A["使用者直接說出想法"] --> B["book-notes/ 保存接近原話內容"]
-    C["PDF、TXT、文章或文件"] --> D{"是否龐大到不適合反覆載入？"}
-    D -- "否" --> E["保留原始位置或 references/"]
-    D -- "是" --> F["Notebook 或其他外部檢索 Provider"]
-    F --> G["references/notebooks/ 本機路由"]
+    C["使用者要納入的 PDF、TXT、文章或文件"] --> X["複製到 inbox/<br/>原檔不動"]
+    X --> D{"PDF 或 6000 字以上？"}
+    D -- "否" --> E["Agent 整理進 wiki/、book-notes/ 或 references/"]
+    D -- "是" --> F["external/ 原文 + 本地 RAG 索引"]
+    F --> G["wiki/ext_*.md 摘要頁"]
     B --> H["wiki/ 結構化整理"]
     T --> H
     E --> H
@@ -51,9 +53,10 @@ flowchart TD
 - 第一大腦心得具有最高的個人知識價值，但可驗證事實仍須比較來源品質、版本與時間。
 - 策略設定與已確認洞察提供決策脈絡，但不能取代最新市場證據或使用者當下的明確說法。
 - 次級資料用來支持或挑戰心得，不能靜默改寫使用者立場。
-- Wiki、Graphify 與 Notebook 是導航、整理與檢索工具，不因結構化程度而自動取得較高權威。
+- Wiki、Graphify 與本地 RAG 是導航、整理與檢索工具，不因結構化程度而自動取得較高權威。
 - Graphify 的 `EXTRACTED`、`INFERRED`、`AMBIGUOUS` 標記必須保留。
-- Notebook 回答必須保留來源引用，不能只保存 AI 生成的結論。
+- 本地 RAG 結果必須標出檔案與段落標題，不能只保存 AI 生成的結論。
+- 查詢先看 Wiki 與 Graphify；只有需要原文、出處、精確數字或引用，或 Wiki 不夠詳細時，才查本地 RAG。
 
 ## 知識詰問
 
@@ -81,6 +84,6 @@ flowchart TD
 
 ## 外部工具邊界
 
-核心技能依賴 Provider 能力契約，不把 Graphify、Notebook 或特定網路搜尋服務視為永久介面。完整維護規格位於 `docs/providers.md`；可安裝的檢索技能本身也包含最小能力契約，因此安裝到其他工作區後不依賴本 repository 的相對路徑。
+核心技能依賴 Provider 能力契約，不把 Graphify、本地 RAG 或特定網路搜尋服務視為永久介面。完整維護規格位於 `docs/providers.md`；可安裝的檢索技能本身也包含最小能力契約，因此安裝到其他工作區後不依賴本 repository 的相對路徑。
 
-替換 Provider 時，讀書筆記、次級資料、Wiki、Notebook 路由與引用 schema 應保持不變；若能力不等價，adapter 必須明確回報。
+替換 Provider 時，讀書筆記、次級資料、Wiki、外部原文摘要頁與引用 schema 應保持不變；若能力不等價，adapter 必須明確回報。

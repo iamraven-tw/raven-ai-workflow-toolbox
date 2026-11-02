@@ -8,7 +8,8 @@
 - 作者／維護者：Graphify Labs、Safi Shamsi 與貢獻者
 - 本專案中的用途：本地知識圖譜、跨文件關聯、群聚分析、查詢與互動式 HTML 視覺化
 - 整合方式：可替換的預設後端；使用者同意後才由 AI Agent 依 `install.manifest.toml` 安裝固定版本；上游通用技能不複製到本倉庫
-- 候選固定版本：`graphifyy==0.9.35`；[PyPI 版本頁](https://pypi.org/project/graphifyy/0.9.35/)；[上游發行頁](https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.35)
+- 安裝方式：C 級外部來源（ADR 0006），告知後以 `uv tool install graphifyy` 安裝 PyPI 當下最新版
+- 維護者最後測試版本：`graphifyy==0.9.35`；[PyPI 版本頁](https://pypi.org/project/graphifyy/0.9.35/)；[上游發行頁](https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.35)
 - 授權：目前產品主體採 Apache License 2.0；NOTICE 說明部分重新授權前的內容仍保留 MIT 條款
 - 固定版本 NOTICE：https://github.com/Graphify-Labs/graphify/blob/v0.9.35/NOTICE
 - 固定版本 LICENSE：https://github.com/Graphify-Labs/graphify/blob/v0.9.35/LICENSE
@@ -16,19 +17,25 @@
 
 若未來把 Graphify 程式碼或衍生內容納入本倉庫，必須保留適用的 LICENSE、NOTICE、著作權與修改聲明。
 
-## notebooklm-py
+## 本地 RAG 外部元件
 
-- 專案：https://github.com/teng-lin/notebooklm-py
-- 作者／維護者：Teng Lin 與貢獻者
-- 本專案中的用途：建立及管理 Notebook、加入來源、查詢資料與取得引用
-- 整合方式：可替換的預設後端；使用者同意後才由 AI Agent 依 `install.manifest.toml` 安裝固定版本；上游通用技能不複製到本倉庫
-- 候選固定版本：`notebooklm-py[browser]==0.8.0`；[PyPI 版本頁](https://pypi.org/project/notebooklm-py/0.8.0/)；[上游發行頁](https://github.com/teng-lin/notebooklm-py/releases/tag/v0.8.0)
-- 授權：MIT License
-- 固定版本 LICENSE：https://github.com/teng-lin/notebooklm-py/blob/v0.8.0/LICENSE
+本地 RAG 的匯入與查詢腳本（`template/sources/rag/scripts/`）是本專案自有程式，採 Apache License 2.0。下列外部元件都是 C 級外部來源（ADR 0006）：不封存進本倉庫，Agent 宣讀標準外部來源提醒並取得同意後，安裝當下最新版。
 
-`notebooklm-py` 是非官方社群專案，使用可能隨時變動的未公開 Google 介面。本專案不代表 Google，也不保證外部介面持續相容。
+| 元件 | 用途 | 來源 | 授權 |
+|---|---|---|---|
+| Ollama | 在本機執行向量模型；以 Homebrew 安裝、`brew services` 開機自動啟動 | https://github.com/ollama/ollama 、https://formulae.brew.sh/formula/ollama | MIT |
+| Qwen3-Embedding-4B（Ollama 名稱 `qwen3-embedding:4b`） | 把文字轉成向量；約 2.5 GB 模型權重，不得提交 | https://huggingface.co/Qwen/Qwen3-Embedding-4B 、https://ollama.com/library/qwen3-embedding | Apache-2.0 |
+| LanceDB（`lancedb`） | 本機向量與全文索引 | https://github.com/lancedb/lancedb | Apache-2.0 |
+| Apache Arrow（`pyarrow`） | LanceDB 的資料格式 | https://github.com/apache/arrow | Apache-2.0 |
+| jieba | 中文斷詞，讓全文檢索能找中文詞彙 | https://github.com/fxsjy/jieba | MIT |
+| pypdf | 讀取 PDF 文字 | https://github.com/py-pdf/pypdf | BSD-3-Clause |
+| Requests（`requests`） | 呼叫本機 Ollama API | https://github.com/psf/requests | Apache-2.0 |
 
-若未來把 `notebooklm-py` 程式碼或其實質部分納入本倉庫，必須保留原始著作權與 MIT 授權聲明。
+Python 套件安裝在使用者工作區的 `sources/rag/.venv/`，不碰系統 Python。安裝後所有處理都在本機進行，不上傳使用者內容。
+
+## notebooklm-py（已停用）
+
+2026-10-31 起本專案不再安裝或使用 [notebooklm-py](https://github.com/teng-lin/notebooklm-py)（MIT License，非官方社群專案）。先前已安裝的使用者可以保留，本專案不強制移除，也不刪除使用者的 NotebookLM 資料。
 
 ## LLM Wiki
 

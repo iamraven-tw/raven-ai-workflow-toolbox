@@ -14,20 +14,23 @@ __pycache__/
 
 # 由上游工具在專案範圍產生的技能
 /.agents/skills/graphify/
-/.agents/skills/notebooklm/
 /.claude/skills/graphify/
-/.claude/skills/notebooklm/
 
 # Graphify 可重建輸出
 **/graphify-out/*
 !**/graphify-out/README.md
 
-# Notebook 登入資料與本機私人索引
+# 本地 RAG 的 Python 環境與向量索引（可重建）
+**/rag/.venv/
+**/rag/lancedb/
+
+# 舊版 NotebookLM 可能留下的登入資料與私人索引，保留忽略以免誤提交
+/.agents/skills/notebooklm/
+/.claude/skills/notebooklm/
 .notebooklm/
 **/storage_state.json
 **/browser_profile/
-**/references/notebooks/entries/*
-!**/references/notebooks/entries/.gitkeep
+**/references/notebooks/
 
 # 使用者實際知識內容
 /sources/

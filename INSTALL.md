@@ -27,6 +27,17 @@ Agent 在目標使用範圍完成第一個 Toolbox 技能包的全新安裝，�
 - 使用者拒絕或選擇稍後處理時立即停止，不影響已完成的技能包，也不在同一安裝流程中重複詢問。
 - `status`、相同版本重跑、修復、更新、回復與移除不屬於第一次安裝，不觸發這項邀請。
 
+## 環境準備：uv 與 Python
+
+多數使用者的電腦沒有 Python，而各技能包的安裝管理器是 Python 腳本。Agent 在安裝任何技能包前先做這一步：
+
+1. 檢查 `uv --version`。有就跳到第 3 步。
+2. 沒有 uv 時，先宣讀 [`docs/dependency-policy.md`](docs/dependency-policy.md) 的標準外部來源提醒（uv 是 Astral 的開源工具，Apache-2.0 OR MIT，單一執行檔約 15 MB），取得同意後依[官方安裝方式](https://docs.astral.sh/uv/getting-started/installation/)安裝當下最新版：macOS 可用 Homebrew `brew install uv` 或官方安裝指令；Windows 用官方 PowerShell 安裝指令。不修改使用者的 shell 設定檔以外的東西，安裝完以 `uv --version` 讀回。
+3. 之後各技能包文件中的 `python3 <腳本> ...`，一律可改為 `uv run --no-project --python 3.12 <腳本> ...`。uv 第一次執行時會下載一份獨立的 Python 3.12 放在它自己的目錄，不碰使用者系統的 Python；這次下載同樣屬於第 2 步已提醒過的外部來源。
+4. 使用者電腦本來就有 Python 3.11 以上時，也可以直接用 `python3`；兩種方式結果相同。
+
+AI 剪片技能包例外：它的 Video-Use 引擎自帶對 uv 與 Python 版本的要求，依該技能包的 INSTALL.md 處理。
+
 ## 共通規則
 
 1. 安裝前先唯讀檢查作業系統、硬體、既有工具、目標位置與衝突。

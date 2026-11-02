@@ -8,7 +8,7 @@
 - 從 manifest 固定網址下載 uv 0.12.7、Astral CPython 3.12.14 build 20260825、Gyan FFmpeg 9.0.1 essentials（含 libass）。三個壓縮檔合計約 150 MB，Python 套件／解壓／快取另需數 GB。
 - OpenCC 1.4.2 使用官方 CPython 3.12 Windows wheel；ASR 與 CKIP 分開以 Windows 專用 lock、`--require-hashes --strict` 安裝。Windows ASR 使用 CPU，速度須在實際素材驗收。
 - 不需要管理員、symlink、Homebrew、全域 PATH 改動或雲端登入。技能以完整目錄副本註冊，runtime 放在技能掃描目錄外。
-- 不下載 Qwen 或 CKIP 模型。模型 revision、首次下載及正式字幕的人工验收要求維持原契約。
+- 不下載 Qwen 或 CKIP 模型。模型 revision、首次下載及正式字幕的人工驗收要求維持原契約。
 
 ## 安裝
 

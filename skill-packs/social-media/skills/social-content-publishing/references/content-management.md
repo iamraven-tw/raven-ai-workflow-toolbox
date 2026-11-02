@@ -42,7 +42,7 @@ Agent 執行 preview → 對話確認 → begin → execute-api。共用 CLI 的
 ## 刪除與修改驗證
 
 - 刪除必須先取得確切受理證據：Facebook success=true；Instagram／Threads 另需 deleted_id 相符；YouTube HTTP 204。Threads 刪除依當前文件使用 graph.threads.com；既有讀取仍走已支援的 graph.threads.net，傳輸白名單分別限制方法及路徑。
-- 隨後重新驗證連線並獨立 GET：YouTube 指定 ID 回空 items；Meta 在自有 feed／media／threads 列表中完整列舉後確認不存在。最多五頁，只用 after 游標呼叫固定端點，不跟隨 next 網址；超限、漏頁、循環、權限错误或讀取失敗只能 pending／unknown，不能把 404 當成功。
+- 隨後重新驗證連線並獨立 GET：YouTube 指定 ID 回空 items；Meta 在自有 feed／media／threads 列表中完整列舉後確認不存在。最多五頁，只用 after 游標呼叫固定端點，不跟隨 next 網址；超限、漏頁、循環、權限錯誤或讀取失敗只能 pending／unknown，不能把 404 當成功。
 - 同時有刪除 checkpoint 與完整查無證據才記 deleted。刪除沒有平台時間與可用永久連結，receipt 的 platform_time／url 保持 null，只記真實 observed_at。
 - YouTube 修改獨立讀回新標題、說明、保留的 snippet 欄位及未變的可見性才記 updated；不將舊 publishedAt 當更新時間。Facebook 仍依實際 updated_time 讀回。
 - pending／unknown 只允許唯讀查明，不能重送；已知受理且查無證據不足時，可以沿用 record-observation 補受控管理介面證據，但必須符合相同目標及證據格式，不捏造已刪除。

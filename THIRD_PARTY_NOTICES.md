@@ -4,7 +4,7 @@
 
 ## AI 知識庫
 
-AI 知識庫目前整合 Graphify 與 `notebooklm-py`，並記錄其他概念來源。完整資訊見 [`skill-packs/ai-knowledge-base/THIRD_PARTY_NOTICES.md`](skill-packs/ai-knowledge-base/THIRD_PARTY_NOTICES.md)。
+AI 知識庫目前整合 Graphify 與本地 RAG（Ollama、`qwen3-embedding:4b`、lancedb、pyarrow、jieba、pypdf、requests），`notebooklm-py` 自 2026-10-31 起停用，並記錄其他概念來源。完整資訊見 [`skill-packs/ai-knowledge-base/THIRD_PARTY_NOTICES.md`](skill-packs/ai-knowledge-base/THIRD_PARTY_NOTICES.md)。
 
 ## AI 剪片工作流
 
