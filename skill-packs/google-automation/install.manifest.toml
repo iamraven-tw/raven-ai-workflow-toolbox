@@ -148,6 +148,9 @@ observed_node_engine = ">=20.0.0"
 observed_integrity = "sha512-92wlpu0loC9t4oADuTyJOxQm6T4H2dOD9oQ+BvdFJuzM2uP7cK5dGrrJQhb/m/HLbaR0UOsBXBqRlYbfyR9jbA=="
 license = "Apache-2.0"
 version_policy = "query_official_metadata_then_pin_compatible_version_per_user_project"
+tier = "C"
+tier_reason = "由使用者的 Apps Script 專案以 npm 取得，隨專案鎖定於其 package.json／lockfile，本包不封存"
+external_source_notice = "standard"
 status = "reference_only_not_installed_by_toolbox_pack"
 
 [[official_references]]

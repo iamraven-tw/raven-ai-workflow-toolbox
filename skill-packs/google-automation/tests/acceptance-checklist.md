@@ -2,7 +2,7 @@
 
 ## A. 來源、授權與公開邊界
 
-- [x] Toolbox 自有路由、安裝器與文件適用 Apache License 2.0。
+- [x] Toolbox 自有路由、安裝器與文件依買家授權條款（根目錄 LICENSE）提供；Learn-GAS 技能維持 MIT。
 - [x] 原 Learn-GAS 技能由 Toolbox 內建，保留歷史 commit、tree、MIT License 與 LICENSE SHA-256。
 - [x] Toolbox Git tree 包含完整四個 Apps Script 技能、範例、測試與授權。
 - [x] 公開內容沒有帳號、OAuth 憑證、Script ID、Cloud Project ID、真實 Google 資源網址、私人路徑或維護者工作習慣。

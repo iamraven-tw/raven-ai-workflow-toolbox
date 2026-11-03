@@ -65,4 +65,4 @@ python3 scripts/manage_install.py status \
 
 Windows 本機測試以目前 interpreter 啟動 Python 子程序；假 Wrangler 的 .py 腳本可位於中文／空白路徑。部署 helper 解析 npx.cmd 並保留 Windows 必要環境；本次僅驗證 npx／npm 自身版本命令，未取得真實 Wrangler 登入或部署證據。沒有 symlink 建立權限的測試只針對 WinError 1314 明確略過，仍須在具權限 runner 補驗；Node 真實建置須另啟用 WEBSITE_NODE_ACCEPTANCE，不以略過當成功。
 
-安裝與設定技能不會安裝 Node.js、Astro 或 Wrangler。`website-build` 會在使用者確認計畫後建立專案並執行 `npm ci`（從 npm registry 下載 lockfile 鎖定的套件），但不會建立 Cloudflare 或外部服務帳號、不會登入、部署、購買網域或建立服務資源。Cloudflare 動作屬於 `website-deploy`；表單、電子報、預約與付款入口屬於 `website-service-integration`；健康檢查、備份、隔離復原與更新規劃屬於 `website-operations`。三者都維持預覽、明確授權與讀回邊界；目前真實 Cloudflare、服務帳號、公開監控、異地備份與線上回復尚未驗收。
+安裝與設定技能不會安裝 Node.js、Astro 或 Wrangler。`website-build` 會在使用者確認計畫後建立專案並執行 `npm ci`（從 npm registry 下載 lockfile 鎖定的套件；這是 C 級外部來源，首次執行前 Agent 宣讀標準外部來源提醒並取得同意），但不會建立 Cloudflare 或外部服務帳號、不會登入、部署、購買網域或建立服務資源。Cloudflare 動作屬於 `website-deploy`；表單、電子報、預約與付款入口屬於 `website-service-integration`；健康檢查、備份、隔離復原與更新規劃屬於 `website-operations`。三者都維持預覽、明確授權與讀回邊界；目前真實 Cloudflare、服務帳號、公開監控、異地備份與線上回復尚未驗收。

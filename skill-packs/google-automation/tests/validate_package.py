@@ -33,6 +33,10 @@ PRIVATE_MARKERS = (
     "taiwan" + "kaiyuan",
 )
 PRIVATE_HOME = re.compile(r"/Users/(?!<)[A-Za-z0-9_.-]+/")
+# 付費版刻意公開給買家的網域：掃描私人標記前先移除，避免把領取頁網址當成外洩。
+ALLOWED_PUBLIC_HOSTS = (
+    "raven-toolbox-access." + "taiwan" + "kaiyuan" + ".workers.dev",  # 拆字串，避免驗證器掃到自己
+)
 EXPECTED_LEARN_REF = "7d50a7bfcfbe41ea9d88c2aef8f11200871433a3"
 EXPECTED_LEARN_TREE = "ef6e45626d59ae18745eb5c7245de0b3f2e48cc9"
 EXPECTED_LICENSE_SHA256 = "39106e322b00c852430a6e6fca5f93b1465b24a6abd8a6d723df99ae9d2eaa15"
@@ -255,8 +259,8 @@ def validate_required_files_and_links() -> None:
             fail(f"缺少必要檔案：{file_path}")
 
     license_text = (PACKAGE_ROOT / "LICENSE").read_text(encoding="utf-8")
-    if "Apache License" not in license_text or "Version 2.0" not in license_text:
-        fail("Toolbox 根授權不是 Apache License 2.0")
+    if "LicenseRef-Raven-Toolbox-Buyer" not in license_text:
+        fail("技能包 LICENSE 必須指向 Raven AI 一人公司工具包買家授權條款")
 
     markdown_files = list(PACKAGE_ROOT.rglob("*.md"))
     markdown_files.extend(
@@ -299,6 +303,8 @@ def validate_privacy() -> None:
         if not file_path.is_file():
             continue
         content = file_path.read_text(encoding="utf-8")
+        for host in ALLOWED_PUBLIC_HOSTS:
+            content = content.replace(host, "<allowed-public-host>")
         if PRIVATE_HOME.search(content):
             fail(f"發現私人家目錄：{file_path}")
         for marker in PRIVATE_MARKERS:

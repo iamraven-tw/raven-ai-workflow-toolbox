@@ -10,7 +10,7 @@
 - 授權：MIT License，Copyright (c) 2026 iamraven-tw
 - 整合方式：以上 commit 是一次性移入的歷史基線；原始碼已收進本包並只在 Toolbox 維護。完整 MIT 文字位於 `LICENSE.learn-gas`，四個技能目錄各自附帶 LICENSE。
 
-安裝 Agent 必須驗證本包 `bundle.lock.json` 與 MIT 授權雜湊。歷史 commit、tree 僅供追溯，不再下載舊來源。Toolbox 自有的 `google-workflow-router` 適用根專案 Apache License 2.0；Learn-GAS 的檔案仍適用其 MIT License。
+安裝 Agent 必須驗證本包 `bundle.lock.json` 與 MIT 授權雜湊。歷史 commit、tree 僅供追溯，不再下載舊來源。Toolbox 自有的 `google-workflow-router` 與安裝器依買家授權條款（根目錄 LICENSE）提供；Learn-GAS 的檔案仍適用其 MIT License（開源例外）。
 
 ## Google clasp
 
@@ -20,7 +20,7 @@
 - 2026-08-31 查驗版本：`@google/clasp 3.4.1`，要求 Node.js 20 以上，Apache License 2.0。
 - npm integrity：`sha512-92wlpu0loC9t4oADuTyJOxQm6T4H2dOD9oQ+BvdFJuzM2uP7cK5dGrrJQhb/m/HLbaR0UOsBXBqRlYbfyR9jbA==`
 
-技能包本身不安裝 `clasp`。Learn-GAS 會在實際專案開始前即時核對官方版本與引擎需求，再把相容版本固定於該專案的 `package.json`／lockfile。這項即時查驗不授權安裝、OAuth 或遠端同步。
+技能包本身不安裝 `clasp`。Learn-GAS 會在實際專案開始前即時核對官方版本與引擎需求，再把相容版本固定於該專案的 `package.json`／lockfile。這項即時查驗不授權安裝、OAuth 或遠端同步。依 ADR 0006，npm registry 是工具包無法封存的外部來源（C 級）；首次在使用者專案安裝 `clasp` 前，Agent 宣讀 `docs/dependency-policy.md` 的標準外部來源提醒並取得同意。
 
 ## Google 服務
 

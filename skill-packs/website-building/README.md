@@ -28,7 +28,7 @@
 
 ## 起始範本
 
-`template/` 是自有的 Astro 6 起始範本 `solo-site-starter`，Apache-2.0，品牌、文案、聯絡方式與圖片全部虛構。依賴由 `package.json` 鎖定確切版本並附 `package-lock.json`，使用者專案一律 `npm ci`。
+`template/` 是自有的 Astro 6 起始範本 `solo-site-starter`，依買家授權條款（根目錄 LICENSE）提供，品牌、文案、聯絡方式與圖片全部虛構。依賴由 `package.json` 鎖定確切版本並附 `package-lock.json`，使用者專案一律 `npm ci`。
 
 | 類型 | 內容 |
 |---|---|

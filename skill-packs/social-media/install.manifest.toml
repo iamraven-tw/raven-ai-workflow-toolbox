@@ -8,7 +8,7 @@ status = "local_candidate_full_pack"
 installable = true
 requires_network = false
 support_level = "full_pack_installable_candidate_not_formally_supported"
-license_spdx = "Apache-2.0"
+license_spdx = "LicenseRef-Raven-Toolbox-Buyer-1.0"
 
 [runtime]
 local_strategy_requires_network = false

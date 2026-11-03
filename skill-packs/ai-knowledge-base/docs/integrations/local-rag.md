@@ -14,7 +14,7 @@
 
 | 元件 | 位置 | 來源與授權 | 分級 |
 |---|---|---|---|
-| 匯入與查詢腳本 `common.py`、`ingest.py`、`query.py` | `sources/rag/scripts/`（由範本複製） | 本技能包自有程式，Apache-2.0 | 技能包的一部分 |
+| 匯入與查詢腳本 `common.py`、`ingest.py`、`query.py` | `sources/rag/scripts/`（由範本複製） | 本技能包自有程式，依買家授權條款 | 技能包的一部分 |
 | Ollama（本機模型服務） | Homebrew 安裝；`brew services` 開機自動啟動 | [Homebrew formula](https://formulae.brew.sh/formula/ollama)、MIT | C 級 `latest` |
 | `qwen3-embedding:4b` 向量模型（約 2.5 GB） | Ollama 自己的模型目錄 | [Ollama 模型庫](https://ollama.com/library/qwen3-embedding)、Apache-2.0 | C 級 `latest` |
 | lancedb、pyarrow、jieba、pypdf、requests | 工作區內的 `sources/rag/.venv/`（約 500 MB） | PyPI；Apache-2.0、Apache-2.0、MIT、BSD-3-Clause、Apache-2.0 | C 級 `latest` |

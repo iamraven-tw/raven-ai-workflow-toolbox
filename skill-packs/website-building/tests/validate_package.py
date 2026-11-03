@@ -86,7 +86,7 @@ def validate_manifest(manifest: dict) -> None:
         "installable": True,
         "requires_network": False,
         "support_level": "complete_pack_installable_candidate_not_formally_supported",
-        "license_spdx": "Apache-2.0",
+        "license_spdx": "LicenseRef-Raven-Toolbox-Buyer-1.0",
     }
     for key, value in expected.items():
         if manifest.get(key) != value:

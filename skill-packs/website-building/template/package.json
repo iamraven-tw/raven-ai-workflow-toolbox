@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Raven AI 一人公司工具包的去識別化 Astro 起始範本。品牌、文案與圖片皆為虛構佔位，請由 website-build 依 website/config.json 產生。",
-  "license": "Apache-2.0",
+  "license": "LicenseRef-Raven-Toolbox-Buyer-1.0",
   "engines": {
     "node": ">=22.20.0",
     "npm": ">=9.6.5"

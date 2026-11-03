@@ -261,4 +261,4 @@ python3 -m unittest discover -s tests -p 'test_*.py' -v
 
 ## 授權
 
-本專案自行撰寫的內容採 Apache License 2.0。外部專案仍各自適用原有授權與條款。
+本專案自行撰寫的內容依買家授權條款（根目錄 LICENSE）提供。外部專案仍各自適用原有授權與條款。

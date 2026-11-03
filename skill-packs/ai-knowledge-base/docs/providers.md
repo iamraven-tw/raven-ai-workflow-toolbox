@@ -9,7 +9,7 @@
 | Provider | 安裝政策與已測版本 | 2026-10-31 查到的最新正式版 | 套件來源 | 授權 | 本次決策 |
 |---|---|---|---|---|---|
 | Graphify | C 級 `latest`（安裝當下的最新版）；已測版本 `0.9.35` 僅供參考 | [`0.9.99`](https://pypi.org/project/graphifyy/0.9.99/) | [PyPI 0.9.35](https://pypi.org/project/graphifyy/0.9.35/)、[v0.9.35 release](https://github.com/Graphify-Labs/graphify/releases/tag/v0.9.35) | Apache-2.0，並保留適用的舊 MIT 條款 | 依 ADR 0006 告知標準外部來源提醒後安裝最新版；`0.9.35` 的紀錄只用來核對與回報差異，最新版尚未在隔離環境完成本技能包相容性測試。 |
-| 本地 RAG | 自有腳本（隨範本提供）；外部元件 Ollama、`qwen3-embedding:4b`、lancedb、pyarrow、jieba、pypdf、requests 皆為 C 級 `latest` | 依安裝當下 | [Ollama Homebrew formula](https://formulae.brew.sh/formula/ollama)、[Ollama 模型庫](https://ollama.com/library/qwen3-embedding)、PyPI | 腳本採 Apache-2.0；元件見 `THIRD_PARTY_NOTICES.md` | 2026-10-31 起取代 NotebookLM／`notebooklm-py`。等待外部驗收；維護者單機參考數字見 `docs/integrations/local-rag.md`。 |
+| 本地 RAG | 自有腳本（隨範本提供）；外部元件 Ollama、`qwen3-embedding:4b`、lancedb、pyarrow、jieba、pypdf、requests 皆為 C 級 `latest` | 依安裝當下 | [Ollama Homebrew formula](https://formulae.brew.sh/formula/ollama)、[Ollama 模型庫](https://ollama.com/library/qwen3-embedding)、PyPI | 腳本依買家授權；元件見 `THIRD_PARTY_NOTICES.md` | 2026-10-31 起取代 NotebookLM／`notebooklm-py`。等待外部驗收；維護者單機參考數字見 `docs/integrations/local-rag.md`。 |
 
 Graphify 的 manifest 另保存已測版本 `0.9.35` 的 tag、commit、wheel 與 sdist SHA-256，供回報差異與追溯；實際安裝的是最新版，這些雜湊不用來阻擋安裝，也不代表套件已在目標電腦成功安裝。
 

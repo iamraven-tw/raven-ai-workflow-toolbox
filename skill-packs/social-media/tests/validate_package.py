@@ -455,8 +455,8 @@ def validate_manifest(manifest: dict) -> None:
         "instagram_login_function_scope_status": "verify_at_selected_official_endpoint_each_use",
     }:
         raise ValidationError("manifest 缺少 Instagram Login 當前權限證據限制")
-    if manifest.get("license_spdx") != "Apache-2.0":
-        raise ValidationError("缺少 Apache-2.0 授權聲明")
+    if manifest.get("license_spdx") != "LicenseRef-Raven-Toolbox-Buyer-1.0":
+        raise ValidationError("技能包 license_spdx 必須為買家授權條款識別碼")
     if not (ROOT / "LICENSE").is_file():
         raise ValidationError("可獨立散布的技能包缺少 LICENSE")
     validate_opencli_dependency(manifest)
