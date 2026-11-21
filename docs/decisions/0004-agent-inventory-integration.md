@@ -1,12 +1,14 @@
 # ADR 0004：agent-inventory 作為固定版本外部依賴
 
-- 狀態：Accepted for local candidate
+- 狀態：Superseded（2026-11-21 自免費版下架）
 - 日期：2026-09-06
 - 範圍：AI Agent 規則與技能盤點技能包
 
+> 2026-11-21 補註：上游 repository 已轉為私人，照本 ADR 的方式取得上游會失敗，因此 `skill-packs/agent-inventory/` 已自免費版移除，安裝入口也不再推薦。下文只保留歷史決策紀錄，請勿照著操作。
+
 ## 背景
 
-`iamraven-tw/agent-inventory` 已是獨立的公開 repository（MIT），內含六個技能、六個工具轉接器、掃描與合併腳本，以及一個本機網站。它解決的問題是：使用者累積了大量分散在不同 AI agent 的規則與技能，卻沒有一個地方能看到全貌。
+`iamraven-tw/agent-inventory` 當時（2026-09-06）是獨立的公開 repository（MIT），內含六個技能、六個工具轉接器、掃描與合併腳本，以及一個本機網站。它解決的問題是：使用者累積了大量分散在不同 AI agent 的規則與技能，卻沒有一個地方能看到全貌。
 
 Toolbox 要補的不是重寫一份盤點程式，而是把它納入既有的安裝、驗證、隱私與授權框架，讓它跟其他五個技能包用同一套規則被安裝與驗收。
 

@@ -20,7 +20,6 @@
 | 社群媒體管理 | 規劃內容、審核發布與回顧成效 | [查看](skill-packs/social-media/INSTALL.md) |
 | 官網打造 | 規劃、建立與維護一人公司的網站 | [查看](skill-packs/website-building/INSTALL.md) |
 | WordPress MCP 工作流 | 使用自己的帳號連線並管理 WordPress.com 網站 | [查看](skill-packs/wordpress-workflow/INSTALL.md) |
-| AI Agent 規則與技能盤點 | 看懂並整理電腦上的 Agent 規則與技能 | [查看](skill-packs/agent-inventory/INSTALL.md) |
 
 每個技能包可以單獨安裝。功能需要的帳號、軟體和實機驗證範圍各不相同；請讓 Agent 先讀取該套件的 `INSTALL.md` 與 `install.manifest.toml`，再決定是否安裝與使用。
 

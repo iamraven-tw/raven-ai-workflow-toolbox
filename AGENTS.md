@@ -27,12 +27,6 @@
 - 公開發行採版本快照：只有使用者明確要求納入的改進，才經過人工挑選、去識別化、參數化與公開驗證後，放進下一個版本。
 - `.local/` 只保存不提交的本機候選版、歷史草稿與驗證紀錄。即使其中存在舊的 `sync-manifest.toml`，AI Agent 也不得讀取或執行；除非使用者日後明確重新啟用同步設計。
 
-## 第一次安裝後的盤點邀請
-
-- 透過根 `INSTALL.md` 開始安裝時，在目標範圍的第一個 Toolbox 技能包完成全新安裝與技能發現驗證後，主動詢問一次使用者是否要盤點這台電腦上 AI Agent 的全域／專案規則與技能。
-- 詢問不是掃描授權。使用者同意後才依 `skill-packs/agent-inventory/INSTALL.md` 檢查或安裝六個盤點技能，再由 `inventory-setup` 列出偵測結果並讓使用者選擇掃描範圍；不得直接讀取規則內容。
-- 使用者拒絕或選擇稍後處理時，不影響已完成的安裝，且同一安裝流程不再重問。狀態查詢、相同版本重跑、修復、更新、回復與移除不觸發邀請。
-
 ## 執行錯誤的最小技能回填
 
 - 執行技能時若出現錯誤或可觀察結果與技能規則衝突，先保留原任務進度與外部狀態；結果不明的寫入不得重送。
@@ -67,15 +61,6 @@
 - 範本內建六個主題，每個都參考一個可追溯的公開示範頁的版面手法與動畫類型自行實作（版面、字型、間距、元件、動畫都不同），不得複製其程式碼、文案、圖片或字型檔，也不得只做同一版面換顏色；主題用意象命名，來源網址與「未複製」聲明記錄在 `theme.json` 與第三方聲明。所有主題共用 `src/lib/motion.ts` 的動畫層，必須尊重 `prefers-reduced-motion`。走到選風格的步驟時 Agent 必須主動用畫廊展示真正建置出來的頁面，不用文字描述取代。修改任一主題後必須重新執行 `export_previews.py`。
 - `template/` 是自有的 Astro 起始範本，只能含虛構品牌與佔位素材；依賴鎖定確切版本並附 lockfile，不得提交 `node_modules/`、`dist/` 或 `.astro/`。
 - 修改套件後執行其 `tests/validate_package.py` 與 `python3 -m unittest skill-packs.website-building.tests.test_install_lifecycle skill-packs.website-building.tests.test_workspace_config skill-packs.website-building.tests.test_scaffold_site skill-packs.website-building.tests.test_check_site skill-packs.website-building.tests.test_style_gallery skill-packs.website-building.tests.test_deploy_site skill-packs.website-building.tests.test_content_writer skill-packs.website-building.tests.test_service_integration skill-packs.website-building.tests.test_operations`；改動範本後另以 `WEBSITE_NODE_ACCEPTANCE=1` 跑真實建置。
-
-## AI Agent 規則與技能盤點
-
-- `skill-packs/agent-inventory/` 只負責安裝與說明上游 `iamraven-tw/agent-inventory`，不得複製其原始碼，也不建立自有技能目錄。
-- 上游一律鎖定 tag 與完整 commit，並記錄 tree 與 LICENSE 的 SHA-256；不追蹤未鎖定的 `main`，不因上游有新版就自動升級。
-- 安裝流程不得執行掃描、讀取使用者規則內容、產生摘要或修改任何既有規則與技能。
-- 上游具備刪除檔案、改寫原檔與啟動外部程式的能力，必須維持在 manifest 的 `[human_authorization_gates]` 明列，文件不得暗示安裝器會代為執行。
-- 上游的對外網路行為（網頁編輯器從 `esm.sh` 載入 CodeMirror 6）必須保留在隱私文件與第三方聲明中。
-- 修改套件後執行其 `tests/validate_package.py` 與 `python3 -m unittest discover -s skill-packs/agent-inventory/tests -p 'test_*.py'`。
 
 ## 程式與驗證
 
