@@ -157,7 +157,7 @@ python -m unittest discover -s skill-packs/website-building/tests -p 'test_*.py'
 固定第三方來源：
 
 - Learn-GAS：commit `7d50a7bfcfbe41ea9d88c2aef8f11200871433a3`，tree `ef6e45626d59ae18745eb5c7245de0b3f2e48cc9`，MIT，LICENSE SHA-256 `39106e322b00c852430a6e6fca5f93b1465b24a6abd8a6d723df99ae9d2eaa15`。
-- agent-inventory：tag `v0.2.1`，commit `c162b0adce4d1519b60f76de15bc00df85d611ce`，tree `9ccdd73635bb74b95e6d2a111c994758602f5a23`，MIT，LICENSE SHA-256 `8e30b10020d068a10bf4376e97df27bf34c9a52b01de5c3d0f6e26f594353dac`。
+- agent-inventory（歷史紀錄；此包已於 2026-11-21 自免費版下架）：tag `v0.2.1`，commit `c162b0adce4d1519b60f76de15bc00df85d611ce`，tree `9ccdd73635bb74b95e6d2a111c994758602f5a23`，MIT，LICENSE SHA-256 `8e30b10020d068a10bf4376e97df27bf34c9a52b01de5c3d0f6e26f594353dac`。
 
 ## 已執行的基準測試
 
@@ -246,7 +246,6 @@ INS-03～08 一律只在新建的虛構暫存工作區操作，不移除實際�
 | Google 自動化 | Learn-GAS 43 項測試；教學範本實體化、課程進度保存、Webhook 虛構測試；五種 router 使用者故事正確分流。離線階段不能觸發 clasp push 或 Cloud 資源建立。 |
 | 社群媒體 | 七技能按設定 → 規劃 → 撰寫 → 圖片 → 發布 → 互動 → 成效串接。虛構 adapter 驗證預覽雜湊、跨平台去重、claim、讀回中斷恢復、unknown 不重送；週／月／季／年、UTC／臺北／DST、真正零與資料缺失分離。圖片補依賴後驗證繁中、溢位、hash、尺寸。 |
 | 官網打造 | 從已安裝的入口設定、文案、六主題畫廊、scaffold → npm ci → build → check_site；每主題 375／768／1440 寬度驗證首頁、服務、文章列表／內頁、聯絡、404、手機選單、reduced motion、內部連結與 noindex。 |
-| Agent 盤點 | AGENT_INVENTORY_CONFIG 指向虛構設定、只掃測試 fixture；六工具 adapter、去重、摘要／流程圖 JSON、127.0.0.1 網頁與離線 editor fallback。Windows 開啟檔案與回收桶行為只用虛構檔案測，安裝階段不掃真實使用者資料。 |
 | AI 剪片 | Windows manifest／runtime 就緒後，先無模型的 helper／FFmpeg subtitles filter／OpenCC／色塊音調 smoke；再按固定 revision 下載模型，驗證 CPU／可用 GPU、轉錄、對齊、繁中斷詞、字幕燒錄、橫直版輸出與中斷恢復。最後以合法素材做人工觀看與聆聽。 |
 
 ### T5：外部實機與最終驗收
@@ -288,9 +287,8 @@ $env:PYTHONDONTWRITEBYTECODE = '1'
 & $pythonExe skill-packs/google-automation/tests/validate_package.py
 & $pythonExe skill-packs/social-media/tests/validate_package.py
 & $pythonExe skill-packs/website-building/tests/validate_package.py
-& $pythonExe skill-packs/agent-inventory/tests/validate_package.py
 
-$packs = @('ai-knowledge-base', 'google-automation', 'social-media', 'website-building', 'agent-inventory')
+$packs = @('ai-knowledge-base', 'google-automation', 'social-media', 'website-building')
 foreach ($pack in $packs) {
     & $pythonExe -m unittest discover -s "skill-packs/$pack/tests" -p 'test_*.py' -v
     # 每個 exit code 都要保存；不可把迴圈最後一個 exit 0 當作全部成功。
