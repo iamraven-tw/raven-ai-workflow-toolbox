@@ -42,7 +42,7 @@ description: "從去識別化的 Astro 起始範本建立一人公司官網專�
 3. `scaffold_site.py plan`：列出計畫。向使用者一次確認目標目錄與計畫內容；使用者說「全部用預設」視為確認。
 4. `scaffold_site.py scaffold --confirm-write`：建立專案。命令旗標不是對話核准，必須先取得第 3 步的確認。
 5. 有使用者素材時放入 `public/images/` 並更新引用。
-6. `npm ci`。這一步會依 lockfile 從 npm registry 下載固定版本套件；第一次執行前說明容量與來源。失敗時讀錯誤訊息，常見原因見 `references/build-and-check.md`。
+6. `npm ci`。這一步會依 lockfile 從 npm registry 下載固定版本套件（499 個，含間接依賴）。npm registry 是工具包無法封存的外部來源（C 級）；第一次執行前依 `docs/dependency-policy.md` 宣讀標準外部來源提醒（這些套件不是工具包的一部分、容量多少、安裝時 npm 會依 lockfile 核對每個套件的指紋），取得同意後才執行。失敗時讀錯誤訊息，常見原因見 `references/build-and-check.md`。
 7. `npm run build`。失敗時停在這裡修正，不宣稱後面的步驟完成。
 8. `check_site.py --dist <target>/dist --config <workspace>/website/config.json`。有 finding 就修正後重跑，直到 `passed`。
 9. `npm run preview` 後，用瀏覽器工具在 375、768、1440 三個寬度截取首頁、404 與所有已選頁面；只有啟用部落格且有文章時才包含文章列表／單篇文章，檢查版面沒有溢出、導覽可用、手機選單可開合。截圖整理成一份給使用者看，不要求使用者自己打開瀏覽器。
